@@ -20,7 +20,7 @@ async function shareBusiness(b: BusinessProfile) {
   if (UUID_RE.test(b.id)) {
     supabase.rpc("increment_business_shares", { _id: b.id });
   }
-  const url = `${window.location.origin}/b/${b.slug}`;
+  const url = `${window.location.origin}/business/${b.slug}`;
   const shareData = { title: b.name, text: b.short_intro || b.name, url };
   try {
     if (navigator.share && (typeof navigator.canShare === "function" ? navigator.canShare(shareData) : true)) {

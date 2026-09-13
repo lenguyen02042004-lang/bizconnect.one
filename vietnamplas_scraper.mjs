@@ -83,7 +83,7 @@ async function setupIndustry(industryName) {
     const context = await browser.newContext();
     const page = await context.newPage();
     
-    for (let pageNum = 5; pageNum <= 31; pageNum++) {
+    for (let pageNum = 1; pageNum <= 31; pageNum++) {
       console.log(`\n=== Navigating to Page ${pageNum} ===`);
       let pageLoaded = false;
       for (let retries = 0; retries < 3; retries++) {

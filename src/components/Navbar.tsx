@@ -21,7 +21,7 @@ export function Navbar() {
               <Globe2 className="w-5 h-5 text-white" />
             </div>
           </div>
-          <span className="font-display font-bold text-lg tracking-tight">
+          <span className="font-display font-bold text-lg tracking-tight whitespace-nowrap shrink-0">
             BizConnect<span className="text-gradient">.One</span>
           </span>
         </Link>
@@ -67,16 +67,16 @@ export function Navbar() {
           ) : !loading ? (
             <>
               <Link to="/login">
-                <Button variant="ghost" size="sm" className="gap-2">
-                  <LogIn className="w-4 h-4" /> {t("nav.login")}
+                <Button variant="ghost" size="sm" className="gap-1.5 px-2 sm:px-3">
+                  <LogIn className="w-4 h-4" /> <span className="hidden sm:inline">{t("nav.login")}</span>
                 </Button>
               </Link>
               <Link to="/signup">
                 <Button
                   size="sm"
-                  className="gap-2 bg-gradient-vivid hover:opacity-90 text-white border-0 shadow-pink"
+                  className="gap-1.5 px-2 sm:px-3 bg-gradient-vivid hover:opacity-90 text-white border-0 shadow-pink"
                 >
-                  <Sparkles className="w-4 h-4" /> {t("nav.signup")}
+                  <Sparkles className="w-4 h-4" /> <span className="hidden sm:inline">{t("nav.signup")}</span>
                 </Button>
               </Link>
             </>

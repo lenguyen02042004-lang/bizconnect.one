@@ -58,11 +58,11 @@ function Dashboard() {
         ]);
       if (cancelled) return;
       
-      if (prof?.account_type === "personal") {
+      if ((prof as any)?.account_type === "personal") {
         navigate({ to: "/me" });
         return;
       }
-      setProfile(prof);
+      setProfile(prof as any);
       
       // Hide system-seeded demo businesses from the user's own dashboard
       const list = ((bizes ?? []) as Biz[]).filter((b) => !b.id.startsWith(DEMO_OWNER_PREFIX));
@@ -88,7 +88,7 @@ function Dashboard() {
   const publicBiz = businesses.find((b) => b.status === "public");
 
   const shareLink = async (slug: string) => {
-    const url = `${window.location.origin}/b/${slug}`;
+    const url = `${window.location.origin}/business/${slug}`;
     try {
       if (navigator.share) await navigator.share({ url, title: "Danh thiếp doanh nghiệp" });
       else { await navigator.clipboard.writeText(url); toast.success("Đã sao chép liên kết"); }
@@ -96,7 +96,7 @@ function Dashboard() {
   };
 
   const copyLink = async (slug: string) => {
-    await navigator.clipboard.writeText(`${window.location.origin}/b/${slug}`);
+    await navigator.clipboard.writeText(`${window.location.origin}/business/${slug}`);
     toast.success("Đã sao chép liên kết");
   };
 

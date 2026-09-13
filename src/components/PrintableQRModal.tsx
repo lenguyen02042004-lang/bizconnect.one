@@ -14,7 +14,7 @@ interface PrintableQRModalProps {
 
 export function PrintableQRModal({ business, qrUrl, isOpen, onClose }: PrintableQRModalProps) {
   const isLocal = typeof window !== "undefined" && window.location.origin.includes("localhost");
-  const profileUrl = typeof window !== "undefined" ? `${isLocal ? "https://bizconnect.one" : window.location.origin}/b/${business.slug}` : "";
+  const profileUrl = typeof window !== "undefined" ? `${isLocal ? "https://bizconnect.one" : window.location.origin}/business/${business.slug}` : "";
 
   const handleShare = async () => {
     try {

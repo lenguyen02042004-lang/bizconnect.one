@@ -1,8 +1,8 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, lazy, Suspense } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
-import { Globe3D } from "@/components/Globe3D";
+const Globe3D = lazy(() => import("@/components/Globe3D").then(module => ({ default: module.Globe3D })));
 import { BusinessCard } from "@/components/BusinessCard";
 import { getPublicStats } from "@/lib/stats.functions";
 import { getExploreBusinesses, getGlobalLists } from "@/lib/business-public.functions";
@@ -55,6 +55,12 @@ const INDUSTRY_ICONS: Record<string, React.ComponentType<{ className?: string }>
   "food-beverage": UtensilsCrossed, logistics: Truck, agriculture: Wheat, energy: Zap,
   marketing: Megaphone, consulting: Scale, construction: HardHat, fashion: Shirt,
   entertainment: Music, automotive: Car, other: MoreHorizontal,
+};
+
+const ALL_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  Cpu, Landmark, Building2, Factory, ShoppingBag, Plane, GraduationCap,
+  HeartPulse, UtensilsCrossed, Truck, Wheat, Zap, Megaphone, Scale,
+  HardHat, Shirt, Music, Car, MoreHorizontal,
 };
 
 function HomePage() {
@@ -113,7 +119,16 @@ function HomePage() {
       {/* ===== Hero: full-viewport globe ===== */}
       <section className="relative w-full h-screen overflow-hidden">
         <div className="absolute inset-0" suppressHydrationWarning>
-          {mounted && <Globe3D businesses={filtered} onSelect={setSelected} />}
+          {mounted && (
+            <Suspense fallback={
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+                <p className="mt-4 text-sm text-muted-foreground animate-pulse">Loading Map...</p>
+              </div>
+            }>
+              <Globe3D businesses={filtered} onSelect={setSelected} />
+            </Suspense>
+          )}
         </div>
 
         {/* SSR-rendered hero copy — paints instantly for fast LCP */}
@@ -337,7 +352,7 @@ function HomePage() {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
               {industries.map((ind: any) => {
-                const Icon = INDUSTRY_ICONS[ind.slug] || MoreHorizontal;
+                const Icon = (ind.icon ? ALL_ICONS[ind.icon] : null) || INDUSTRY_ICONS[ind.slug] || MoreHorizontal;
                 const count = counts[ind.slug] || 0;
                 const active = industry === ind.slug;
                 return (

@@ -32,7 +32,7 @@ export function BasicInfoTab({ industries, userId }: { industries: any[]; userId
         <div>
           <Label htmlFor="slug">Đường dẫn (slug)</Label>
           <Input id="slug" {...register("slug")} onChange={(e) => setValue("slug", slugify(e.target.value), { shouldDirty: true })} placeholder="cong-ty-abc" />
-          <p className="text-xs text-muted-foreground mt-1">URL: /b/{watch("slug") || "cong-ty-abc"}</p>
+          <p className="text-xs text-muted-foreground mt-1">URL: /business/{watch("slug") || "cong-ty-abc"}</p>
         </div>
         <div>
           <Label>Ngành nghề</Label>

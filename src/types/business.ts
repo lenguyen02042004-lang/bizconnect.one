@@ -19,6 +19,7 @@ export interface BusinessProfile {
   industry?: string;
   industry_slug?: string;
   views_count?: number;
+  followers_count?: number;
   icon_tier?: "standard" | "premium";
   socials?: Record<string, string>;
   gallery?: string[];

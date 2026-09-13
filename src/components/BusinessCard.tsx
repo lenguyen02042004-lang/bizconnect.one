@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import {
   MapPin, Phone, Mail, Globe, Eye, Share2, X, Sparkles, Send, BookmarkPlus, BookmarkCheck,
-  Building2, Award, FileText, Lock, Handshake, Printer, ExternalLink,
+  Building2, Award, FileText, Lock, Handshake, Printer, ExternalLink, Users,
+  QrCode, Copy, CheckCircle2, Factory, Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,8 +36,9 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
+  const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
-  const profileUrl = typeof window !== "undefined" ? `${window.location.origin}/b/${business.slug}` : "";
+  const profileUrl = typeof window !== "undefined" ? `${window.location.origin}/business/${business.slug}` : "";
 
   const description = business.description || business.short_intro || "";
   const certifications = business.certifications || [];
@@ -46,7 +48,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
       QRCode.toDataURL(`${profileUrl}?src=qr`, {
         margin: 1,
         color: { dark: "#c8102e", light: "#ffffff" },
-        width: 220,
+        width: 260,
       }).then(setQrUrl);
     }
   }, [profileUrl]);
@@ -90,6 +92,13 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
     }
   };
 
+  const handleCopyLink = async () => {
+    await navigator.clipboard.writeText(profileUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    toast.success("Đã sao chép liên kết!");
+  };
+
   const handleSaveContact = async () => {
     if (saving) return;
     setSaving(true);
@@ -117,239 +126,359 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
     <>
       <div
         className={
-        mode === "modal"
-          ? "relative w-full max-w-md md:max-w-3xl lg:max-w-4xl max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-2rem)] rounded-2xl sm:rounded-3xl bg-card shadow-glow border border-border/40 flex flex-col overflow-hidden"
-          : "relative w-full max-w-md md:max-w-3xl lg:max-w-4xl min-h-[80vh] mx-auto rounded-2xl sm:rounded-3xl bg-card shadow-glow border border-border/40 flex flex-col overflow-hidden"
-      }
-    >
-      
-      {/* Close button - only show in modal mode */}
-      {mode === "modal" && onClose && (
-        <button
-          onClick={onClose}
-          aria-label="Đóng"
-          className="absolute top-3 right-3 z-20 w-9 h-9 rounded-full bg-black/50 backdrop-blur text-white flex items-center justify-center hover:bg-black/70 transition-smooth"
-        >
-          <X className="w-4 h-4" />
-        </button>
-      )}
+          mode === "modal"
+            ? "relative w-full max-w-md md:max-w-2xl max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-2rem)] rounded-2xl sm:rounded-3xl bg-card shadow-glow border border-border/40 flex flex-col overflow-hidden"
+            : "relative w-full max-w-md md:max-w-2xl mx-auto rounded-2xl sm:rounded-3xl bg-card shadow-glow border border-border/40 flex flex-col overflow-hidden"
+        }
+      >
+        {/* Close button */}
+        {mode === "modal" && onClose && (
+          <button
+            onClick={onClose}
+            aria-label="Đóng"
+            className="absolute top-3 right-3 z-30 w-9 h-9 rounded-full bg-black/50 backdrop-blur text-white flex items-center justify-center hover:bg-black/70 transition-smooth"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
 
-        {/* HEADER */}
-        <div className="relative bg-gradient-vivid shrink-0">
-          {business.banner_url && (
-            <img src={business.banner_url} alt="" className="absolute inset-0 w-full h-full object-cover opacity-25" />
+        {/* === HERO HEADER === */}
+        <div className="relative shrink-0 overflow-hidden">
+          {/* Background: banner or gradient */}
+          {business.banner_url ? (
+            <img src={business.banner_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-[#c8102e] via-[#9b0d23] to-[#5c0715]" />
           )}
-          <div className="relative px-4 sm:px-6 pt-4 pb-4 sm:pb-5 flex gap-3 sm:gap-4 items-start text-white">
-            <div className={`${isPremium ? "ring-premium" : ""} shrink-0`}>
-              {business.logo_url ? (
-                <img
-                  src={business.logo_url}
-                  alt={business.name}
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white border-2 border-white/80 object-cover shadow-pink"
-                />
-              ) : (
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-muted/80 border-2 border-white/80 shadow-pink flex items-center justify-center">
-                  <Building2 className="w-8 h-8 text-muted-foreground/60" />
+          {/* Dark overlay for readability */}
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
+
+          {/* Decorative orbs */}
+          <div className="absolute -top-8 -right-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+          <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-rose-400/20 rounded-full blur-xl" />
+
+          <div className="relative z-10 px-5 pt-6 pb-5">
+            <div className="flex gap-4 items-start">
+              {/* Logo */}
+              <div className="shrink-0 relative">
+                <div className={`${isPremium ? "ring-2 ring-yellow-400 ring-offset-2 ring-offset-transparent" : ""} rounded-2xl shadow-2xl`}>
+                  {business.logo_url ? (
+                    <img
+                      src={`https://wsrv.nl/?url=${encodeURIComponent(business.logo_url)}&w=160&h=160&fit=cover`}
+                      alt={business.name}
+                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white/90 object-contain p-1"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white/20 backdrop-blur border-2 border-white/30 flex items-center justify-center">
+                      <Building2 className="w-10 h-10 text-white/80" />
+                    </div>
+                  )}
                 </div>
+                {isPremium && (
+                  <div className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center shadow-lg">
+                    <Star className="w-3.5 h-3.5 text-yellow-900 fill-yellow-900" />
+                  </div>
+                )}
+              </div>
+
+              {/* Info */}
+              <div className="flex-1 min-w-0 text-white">
+                <div className="flex flex-wrap gap-1.5 mb-1.5">
+                  {isPremium && (
+                    <Badge className="bg-yellow-400/90 text-yellow-900 border-0 gap-1 h-5 px-2 text-[10px] font-bold">
+                      <Sparkles className="w-2.5 h-2.5" /> Premium
+                    </Badge>
+                  )}
+                  {business.industry && (
+                    <Badge className="bg-white/15 text-white border-white/20 h-5 px-2 text-[10px] backdrop-blur">
+                      <Factory className="w-2.5 h-2.5 mr-1" /> {business.industry}
+                    </Badge>
+                  )}
+                  {business.country_name && (
+                    <Badge className="bg-white/15 text-white border-white/20 h-5 px-2 text-[10px] backdrop-blur">
+                      {business.country_name}
+                    </Badge>
+                  )}
+                </div>
+
+                <h1 className="text-xl sm:text-2xl font-bold leading-tight tracking-tight mb-1">
+                  <a href={profileUrl} target="_blank" rel="noopener noreferrer"
+                    className="hover:text-white/90 flex items-start gap-1.5 group">
+                    <span>{business.name}</span>
+                    <ExternalLink className="w-4 h-4 opacity-60 group-hover:opacity-100 mt-0.5 shrink-0" />
+                  </a>
+                </h1>
+
+                {business.short_intro && (
+                  <p className="text-sm text-white/80 line-clamp-2 leading-snug mb-2">{business.short_intro}</p>
+                )}
+
+                <div className="flex items-center gap-3 text-xs text-white/70 mb-3">
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-3 h-3" />{formatCount(business.views_count || 0)} lượt xem
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Users className="w-3 h-3" />{formatCount(business.followers_count || 0)} theo dõi
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <FollowButton
+                    businessId={business.id}
+                    variant="full"
+                    className="bg-white text-primary hover:bg-white/90 border-0 shadow-md h-8 text-xs font-semibold"
+                  />
+                </div>
+              </div>
+
+              {/* QR Code desktop */}
+              {qrUrl && (
+                <button
+                  onClick={() => setShowQR(true)}
+                  title="Xem & In mã QR"
+                  className="shrink-0 hidden sm:block group"
+                >
+                  <div className="w-20 h-20 rounded-xl bg-white p-1.5 shadow-xl hover:scale-105 transition-smooth relative">
+                    <img src={qrUrl} alt={`QR ${business.name}`} className="w-full h-full" />
+                    <div className="absolute inset-0 bg-black/20 rounded-xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                      <QrCode className="w-6 h-6 text-white" />
+                    </div>
+                  </div>
+                </button>
               )}
             </div>
-
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                {isPremium && (
-                  <Badge className="bg-white/90 text-primary border-0 gap-1 h-5 px-1.5 text-[10px]">
-                    <Sparkles className="w-2.5 h-2.5" /> Premium
-                  </Badge>
-                )}
-                <Badge variant="secondary" className="bg-white/15 text-white border-white/20 h-5 px-1.5 text-[10px] backdrop-blur">
-                  <Building2 className="w-2.5 h-2.5 mr-1" /> {business.industry}
-                </Badge>
-              </div>
-              <h1 className="text-lg sm:text-2xl font-bold leading-tight mt-1 truncate">
-                <a href={profileUrl} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1.5" title="Mở trang riêng của doanh nghiệp">
-                  {business.name}
-                  <ExternalLink className="w-4 h-4 opacity-70" />
-                </a>
-              </h1>
-              <p className="text-[11px] sm:text-xs text-white/85 mt-0.5 line-clamp-2">{business.short_intro}</p>
-
-              <div className="flex items-center gap-3 text-[10px] sm:text-xs text-white/80 mt-1.5">
-                <span className="flex items-center gap-1"><Eye className="w-3 h-3" />{formatCount(business.views_count || 0)}</span>
-                <span className="truncate">
-                  {[business.province, business.country_name].filter(Boolean).join(", ")}
-                </span>
-              </div>
-
-              {/* Follow button — vị trí nổi bật ngay dưới identity */}
-              <div className="mt-2.5">
-                <FollowButton
-                  businessId={business.id}
-                  variant="full"
-                  className="bg-white text-primary hover:bg-white/90 border-0 shadow-pink h-8"
-                />
-              </div>
-            </div>
-
-            {qrUrl && (
-              <button
-                onClick={() => setShowQR(true)}
-                title="Mở mã QR In Ấn"
-                className="shrink-0 hidden sm:block text-left"
-              >
-                <div className="w-20 h-20 lg:w-24 lg:h-24 rounded-xl bg-white p-1.5 shadow-pink hover:scale-105 transition-smooth relative group">
-                  <img src={qrUrl} alt={`Mã QR danh thiếp doanh nghiệp ${business.name}`} className="w-full h-full" />
-                  <div className="absolute inset-0 bg-black/20 rounded-xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                    <ExternalLink className="w-6 h-6 text-white" />
-                  </div>
-                </div>
-              </button>
-            )}
           </div>
         </div>
 
-        {/* BODY */}
-        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-5">
+        {/* === BODY === */}
+        <div className="flex-1 overflow-y-auto">
+          
+          {/* QR mobile strip */}
           {qrUrl && (
-            <button onClick={() => setShowQR(true)}
-               className="w-full sm:hidden flex items-center gap-3 p-3 rounded-xl bg-accent/40 border border-border text-left hover:bg-accent/60 transition-colors">
-              <img src={qrUrl} alt={`Mã QR danh thiếp doanh nghiệp ${business.name}`} className="w-16 h-16 rounded-lg bg-white p-1" />
-              <div className="text-xs flex-1 min-w-0">
-                <p className="font-semibold">Mã QR In Ấn & Chia Sẻ</p>
-                <p className="text-muted-foreground truncate">{profileUrl.replace(/^https?:\/\//, "")}</p>
+            <button
+              onClick={() => setShowQR(true)}
+              className="w-full sm:hidden flex items-center gap-3 px-4 py-3 bg-accent/30 border-b border-border/50 text-left hover:bg-accent/50 transition-colors"
+            >
+              <img src={qrUrl} alt="QR Code" className="w-14 h-14 rounded-lg bg-white p-1 shadow-sm" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold">Mã QR Danh Thiếp</p>
+                <p className="text-xs text-muted-foreground truncate">{profileUrl.replace(/^https?:\/\//, "")}</p>
               </div>
-              <ExternalLink className="w-4 h-4 text-muted-foreground shrink-0" />
+              <QrCode className="w-4 h-4 text-muted-foreground shrink-0" />
             </button>
           )}
 
-          {/* Contact grid */}
-          <div className="grid sm:grid-cols-2 gap-2 text-xs sm:text-sm">
-            <div className="flex items-start gap-2 text-foreground/80">
-              <MapPin className="w-4 h-4 mt-0.5 text-primary shrink-0" />
-              <span className="leading-snug">
-                {[business.address, business.province, business.country_name].filter(Boolean).join(", ")}
-              </span>
-            </div>
-            {business.phone && (
-              unlocked ? (
-                <a href={`tel:${business.phone}`} className="flex items-center gap-2 text-foreground/80 hover:text-primary transition-smooth">
-                  <Phone className="w-4 h-4 text-primary shrink-0" />
-                  <span className="truncate">{business.phone}</span>
-                </a>
-              ) : (
-                <span className="flex items-center gap-2 text-muted-foreground">
-                  <Lock className="w-4 h-4 text-primary shrink-0" />
-                  <span className="truncate">{maskPhone(business.phone)}</span>
-                </span>
-              )
-            )}
-            {business.email && (
-              unlocked ? (
-                <a href={`mailto:${business.email}`} className="flex items-center gap-2 text-foreground/80 hover:text-primary transition-smooth">
-                  <Mail className="w-4 h-4 text-primary shrink-0" />
-                  <span className="truncate">{business.email}</span>
-                </a>
-              ) : (
-                <span className="flex items-center gap-2 text-muted-foreground">
-                  <Lock className="w-4 h-4 text-primary shrink-0" />
-                  <span className="truncate">{maskEmail(business.email)}</span>
-                </span>
-              )
-            )}
-            {business.website && (
-              <a href={business.website} target="_blank" rel="noopener noreferrer"
-                 className="flex items-center gap-2 text-foreground/80 hover:text-primary transition-smooth">
-                <Globe className="w-4 h-4 text-primary shrink-0" />
-                <span className="truncate">{business.website.replace(/^https?:\/\//, "")}</span>
-              </a>
-            )}
-          </div>
+          <div className="px-4 sm:px-6 py-5 space-y-6">
 
-          {!unlocked && (business.phone || business.email) && (
-            <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 flex flex-wrap items-center justify-between gap-3">
-              <p className="text-xs text-muted-foreground max-w-sm">
-                Liên hệ được bảo vệ. Bấm <strong className="text-foreground">Kết nối giao thương</strong> để mở khóa,
-                đồng thời gửi danh thiếp của bạn cho doanh nghiệp.
-              </p>
-              <Button size="sm" onClick={() => setShowSend(true)} className="gap-1.5 bg-gradient-vivid text-white border-0 shadow-pink">
-                <Handshake className="w-4 h-4" /> Kết nối giao thương
-              </Button>
-            </div>
-          )}
+            {/* Contact info cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {/* Address */}
+              {(business.address || business.province || business.country_name) && (
+                <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-accent/40 border border-border/50 hover:border-primary/30 transition-colors">
+                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <MapPin className="w-4 h-4 text-primary" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">Địa chỉ</p>
+                    <p className="text-sm font-medium leading-snug">
+                      {[business.address, business.province, business.country_name].filter(Boolean).join(", ")}
+                    </p>
+                  </div>
+                </div>
+              )}
 
-
-          {/* GIỚI THIỆU */}
-          <div>
-            <p className="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold tracking-wider text-muted-foreground mb-2">
-              <FileText className="w-3.5 h-3.5" /> GIỚI THIỆU
-            </p>
-            <p className="text-sm leading-relaxed text-foreground/85 whitespace-pre-line">{description}</p>
-          </div>
-
-          {/* CHỨNG NHẬN / DANH HIỆU */}
-          {certifications.length > 0 && (
-            <div>
-              <p className="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold tracking-wider text-muted-foreground mb-2">
-                <Award className="w-3.5 h-3.5" /> CHỨNG NHẬN & DANH HIỆU
-              </p>
-              <div className="grid sm:grid-cols-2 gap-2">
-                {certifications.map((c, i) => (
-                  <div key={i} className="flex items-start gap-2.5 p-2.5 rounded-lg bg-accent/40 border border-border/60">
-                    <div className="text-xl leading-none mt-0.5">{c.icon || "🏅"}</div>
+              {/* Phone */}
+              {business.phone && (
+                unlocked ? (
+                  <a href={`tel:${business.phone}`}
+                    className="flex items-start gap-3 p-3.5 rounded-2xl bg-accent/40 border border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-colors group">
+                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
+                      <Phone className="w-4 h-4 text-primary" />
+                    </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold leading-tight truncate">{c.name}</p>
-                      <p className="text-[11px] text-muted-foreground truncate">
-                        {[c.issuer, c.year].filter(Boolean).join(" · ")}
-                      </p>
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">Điện thoại</p>
+                      <p className="text-sm font-semibold text-primary">{business.phone}</p>
+                    </div>
+                  </a>
+                ) : (
+                  <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-accent/40 border border-border/50">
+                    <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center shrink-0">
+                      <Lock className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">Điện thoại</p>
+                      <p className="text-sm font-medium text-muted-foreground">{maskPhone(business.phone)}</p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
+                )
+              )}
 
-          {business.socials && Object.keys(business.socials).length > 0 && (
-            <div>
-              <p className="text-[10px] sm:text-xs font-semibold tracking-wider text-muted-foreground mb-1.5">KẾT NỐI</p>
-              <SocialIconList socials={business.socials} size="sm" />
-            </div>
-          )}
-
-          {(business.gallery?.length || 0) > 0 && (
-            <div>
-              <p className="text-[10px] sm:text-xs font-semibold tracking-wider text-muted-foreground mb-1.5">THƯ VIỆN</p>
-              <div className="grid grid-cols-5 gap-1.5">
-                {business.gallery!.slice(0, 5).map((src, i) => (
-                  <div key={i} className="aspect-square rounded-lg overflow-hidden bg-muted">
-                    <img src={src} alt="" className="w-full h-full object-cover hover:scale-110 transition-smooth" />
+              {/* Email */}
+              {business.email && (
+                unlocked ? (
+                  <a href={`mailto:${business.email}`}
+                    className="flex items-start gap-3 p-3.5 rounded-2xl bg-accent/40 border border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-colors group">
+                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
+                      <Mail className="w-4 h-4 text-primary" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">Email</p>
+                      <p className="text-sm font-medium truncate">{business.email}</p>
+                    </div>
+                  </a>
+                ) : (
+                  <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-accent/40 border border-border/50">
+                    <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center shrink-0">
+                      <Lock className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">Email</p>
+                      <p className="text-sm font-medium text-muted-foreground truncate">{maskEmail(business.email)}</p>
+                    </div>
                   </div>
-                ))}
-              </div>
+                )
+              )}
+
+              {/* Website */}
+              {business.website && (
+                <a href={business.website} target="_blank" rel="noopener noreferrer"
+                  className="flex items-start gap-3 p-3.5 rounded-2xl bg-accent/40 border border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-colors group">
+                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
+                    <Globe className="w-4 h-4 text-primary" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">Website</p>
+                    <p className="text-sm font-medium text-primary truncate">{business.website.replace(/^https?:\/\//, "")}</p>
+                  </div>
+                </a>
+              )}
             </div>
-          )}
+
+            {/* Unlock contact CTA */}
+            {!unlocked && (business.phone || business.email) && (
+              <div className="rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-rose-500/5 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <Handshake className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm mb-0.5">Mở khóa thông tin liên hệ</p>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Gửi danh thiếp để kết nối giao thương và nhận thông tin liên hệ đầy đủ.
+                    </p>
+                    <Button
+                      size="sm"
+                      onClick={() => setShowSend(true)}
+                      className="bg-gradient-vivid text-white border-0 shadow-pink gap-1.5"
+                    >
+                      <Handshake className="w-3.5 h-3.5" /> Kết nối giao thương
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* About */}
+            {description && (
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-1 h-4 rounded-full bg-gradient-vivid" />
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Giới thiệu</p>
+                </div>
+                <p className="text-sm leading-relaxed text-foreground/85 whitespace-pre-line bg-accent/30 rounded-2xl p-4 border border-border/40">
+                  {description}
+                </p>
+              </div>
+            )}
+
+            {/* Certifications */}
+            {certifications.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-1 h-4 rounded-full bg-gradient-vivid" />
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Chứng nhận & Danh hiệu</p>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-2.5">
+                  {certifications.map((c, i) => (
+                    <div key={i} className="flex items-start gap-3 p-3.5 rounded-2xl bg-gradient-to-br from-accent/60 to-accent/20 border border-border/60">
+                      <div className="text-2xl leading-none mt-0.5">{c.icon || "🏅"}</div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold leading-tight">{c.name}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {[c.issuer, c.year].filter(Boolean).join(" · ")}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Social links */}
+            {business.socials && Object.keys(business.socials).length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-1 h-4 rounded-full bg-gradient-vivid" />
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Mạng xã hội</p>
+                </div>
+                <SocialIconList socials={business.socials} size="sm" />
+              </div>
+            )}
+
+            {/* Gallery */}
+            {(business.gallery?.length || 0) > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-1 h-4 rounded-full bg-gradient-vivid" />
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Thư viện ảnh</p>
+                </div>
+                <div className="grid grid-cols-5 gap-1.5">
+                  {business.gallery!.slice(0, 5).map((src, i) => (
+                    <div key={i} className="aspect-square rounded-xl overflow-hidden bg-muted border border-border/40">
+                      <img src={src} alt="" className="w-full h-full object-cover hover:scale-110 transition-smooth" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Share link */}
+            <div className="flex items-center gap-2 p-3 rounded-2xl bg-accent/30 border border-border/40">
+              <Globe className="w-4 h-4 text-muted-foreground shrink-0" />
+              <p className="text-xs text-muted-foreground truncate flex-1">{profileUrl.replace(/^https?:\/\//, "")}</p>
+              <button onClick={handleCopyLink} className="shrink-0 text-primary hover:text-primary/80 transition-colors">
+                {copied ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+              </button>
+            </div>
+
+          </div>
         </div>
 
-        {/* Sticky action bar */}
-        <div className="border-t border-border/40 bg-card/95 backdrop-blur px-3 sm:px-5 py-3 flex gap-2 shrink-0">
-          <Button onClick={() => setShowSend(true)} className="flex-1 bg-gradient-vivid hover:opacity-90 text-white border-0 shadow-pink h-10">
-            <Send className="w-4 h-4 mr-1.5" /> Gửi card
+        {/* === STICKY ACTION BAR === */}
+        <div className="border-t border-border/40 bg-card/95 backdrop-blur px-4 sm:px-5 py-3 flex gap-2 shrink-0">
+          <Button
+            onClick={() => setShowSend(true)}
+            className="flex-1 bg-gradient-vivid hover:opacity-90 text-white border-0 shadow-pink h-11 gap-1.5 font-semibold"
+          >
+            <Send className="w-4 h-4" /> Gửi card
           </Button>
           <Button
             onClick={handleSaveContact}
             disabled={saving}
             variant={saved ? "default" : "outline"}
-            className={`h-10 gap-1.5 ${saved ? "bg-primary text-primary-foreground" : ""}`}
-            title={saved ? "Đã lưu trong danh bạ" : "Lưu vào danh bạ để tra cứu sau"}
+            className={`h-11 gap-1.5 font-semibold ${saved ? "bg-green-500/15 text-green-600 border-green-500/30 hover:bg-green-500/20" : ""}`}
+            title={saved ? "Đã lưu trong danh bạ" : "Lưu vào danh bạ"}
           >
             {saved ? <BookmarkCheck className="w-4 h-4" /> : <BookmarkPlus className="w-4 h-4" />}
-            <span className="hidden sm:inline">{saved ? "Đã lưu" : "Lưu danh bạ"}</span>
+            <span className="hidden sm:inline text-sm">{saved ? "Đã lưu" : "Lưu"}</span>
           </Button>
-          <Button variant="outline" size="icon" className="h-10 w-10" onClick={handleShare} title="Chia sẻ">
+          <Button variant="outline" size="icon" className="h-11 w-11" onClick={handleShare} title="Chia sẻ">
             <Share2 className="w-4 h-4" />
           </Button>
           <Button
             variant="outline"
             size="icon"
-            className="h-10 w-10"
+            className="h-11 w-11"
             title="In card visit & bảng QR"
             onClick={() => navigate({ to: "/print/$type/$slug", params: { type: "business", slug: business.slug } })}
           >
@@ -359,11 +488,11 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
       </div>
 
       {showSend && (
-        <SendCardDialog 
-          toId={business.id} 
-          toName={business.name} 
-          toType="business" 
-          onClose={() => setShowSend(false)} 
+        <SendCardDialog
+          toId={business.id}
+          toName={business.name}
+          toType="business"
+          onClose={() => setShowSend(false)}
         />
       )}
 
