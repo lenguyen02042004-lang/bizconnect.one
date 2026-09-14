@@ -11,6 +11,9 @@ import { SocialIconList } from "./SocialIconList";
 import { SendCardDialog } from "./SendCardDialog";
 import { PrintableQRModal } from "@/components/PrintableQRModal";
 import { FollowButton } from "./FollowButton";
+import { QuickSignupExchange } from "./QuickSignupExchange";
+import { useAuth } from "@/hooks/use-auth";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { formatCount } from "@/lib/format";
 import type { BusinessProfile } from "@/types/business";
 import { saveBusinessContact, isContactSaved } from "@/lib/contacts";
@@ -37,6 +40,8 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
   const [saving, setSaving] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showQuickSignup, setShowQuickSignup] = useState(false);
+  const { user } = useAuth();
   const navigate = useNavigate();
   const profileUrl = typeof window !== "undefined" ? `${window.location.origin}/business/${business.slug}` : "";
 
@@ -100,17 +105,16 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
   };
 
   const handleSaveContact = async () => {
+    if (!user) {
+      setShowQuickSignup(true);
+      return;
+    }
     if (saving) return;
     setSaving(true);
     const res = await saveBusinessContact(business);
     setSaving(false);
     if (!res.ok) {
-      if (res.reason === "auth") {
-        toast.error("Vui lòng đăng nhập để lưu danh bạ");
-        navigate({ to: "/login" });
-      } else {
-        toast.error(res.message || "Không lưu được danh bạ");
-      }
+      toast.error(res.message || "Không lưu được danh bạ");
       return;
     }
     setSaved(true);
@@ -146,7 +150,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
         <div className="relative shrink-0 overflow-hidden">
           {/* Background: banner or gradient */}
           {business.banner_url ? (
-            <img src={business.banner_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            <img src={business.banner_url} alt="" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover" />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-[#c8102e] via-[#9b0d23] to-[#5c0715]" />
           )}
@@ -239,7 +243,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                   className="shrink-0 hidden sm:block group"
                 >
                   <div className="w-20 h-20 rounded-xl bg-white p-1.5 shadow-xl hover:scale-105 transition-smooth relative">
-                    <img src={qrUrl} alt={`QR ${business.name}`} className="w-full h-full" />
+                    <img src={qrUrl} alt={`QR ${business.name}`} loading="lazy" decoding="async" className="w-full h-full" />
                     <div className="absolute inset-0 bg-black/20 rounded-xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                       <QrCode className="w-6 h-6 text-white" />
                     </div>
@@ -259,7 +263,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
               onClick={() => setShowQR(true)}
               className="w-full sm:hidden flex items-center gap-3 px-4 py-3 bg-accent/30 border-b border-border/50 text-left hover:bg-accent/50 transition-colors"
             >
-              <img src={qrUrl} alt="QR Code" className="w-14 h-14 rounded-lg bg-white p-1 shadow-sm" />
+              <img src={qrUrl} alt="QR Code" loading="lazy" decoding="async" className="w-14 h-14 rounded-lg bg-white p-1 shadow-sm" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold">Mã QR Danh Thiếp</p>
                 <p className="text-xs text-muted-foreground truncate">{profileUrl.replace(/^https?:\/\//, "")}</p>
@@ -435,7 +439,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                 <div className="grid grid-cols-5 gap-1.5">
                   {business.gallery!.slice(0, 5).map((src, i) => (
                     <div key={i} className="aspect-square rounded-xl overflow-hidden bg-muted border border-border/40">
-                      <img src={src} alt="" className="w-full h-full object-cover hover:scale-110 transition-smooth" />
+                      <img src={src} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover hover:scale-110 transition-smooth" />
                     </div>
                   ))}
                 </div>
@@ -457,7 +461,10 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
         {/* === STICKY ACTION BAR === */}
         <div className="border-t border-border/40 bg-card/95 backdrop-blur px-4 sm:px-5 py-3 flex gap-2 shrink-0">
           <Button
-            onClick={() => setShowSend(true)}
+            onClick={() => {
+              if (!user) setShowQuickSignup(true);
+              else setShowSend(true);
+            }}
             className="flex-1 bg-gradient-vivid hover:opacity-90 text-white border-0 shadow-pink h-11 gap-1.5 font-semibold"
           >
             <Send className="w-4 h-4" /> Gửi card
@@ -503,6 +510,22 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
           isOpen={showQR}
           onClose={() => setShowQR(false)}
         />
+      )}
+
+      {showQuickSignup && (
+        <Dialog open={showQuickSignup} onOpenChange={setShowQuickSignup}>
+          <DialogContent className="sm:max-w-md bg-card border-border">
+            <QuickSignupExchange 
+              toId={business.id} 
+              toType="business" 
+              onSuccess={() => {
+                setShowQuickSignup(false);
+                // Also trigger saving the contact after signup
+                setTimeout(() => window.location.reload(), 1500);
+              }} 
+            />
+          </DialogContent>
+        </Dialog>
       )}
     </>
   );

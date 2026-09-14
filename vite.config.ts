@@ -16,5 +16,17 @@ export default defineConfig({
       environment: "jsdom",
       setupFiles: "./src/vitest.setup.ts",
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom'],
+            router: ['@tanstack/react-router'],
+            supabase: ['@supabase/supabase-js'],
+            ui: ['lucide-react', 'clsx', 'tailwind-merge']
+          }
+        }
+      }
+    }
   },
 });

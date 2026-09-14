@@ -76,7 +76,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover" },
       { name: "referrer", content: "no-referrer" },
       { title: i18n.t("meta.homeTitle", { defaultValue: "BizConnect.One — Bản đồ doanh nghiệp toàn cầu" }) },
       { name: "description", content: i18n.t("meta.homeDesc", { defaultValue: "Kết nối doanh nghiệp toàn cầu qua bản đồ tương tác 3D. Quảng bá thương hiệu, mở rộng giao thương quốc tế chỉ từ $5/năm." }) },

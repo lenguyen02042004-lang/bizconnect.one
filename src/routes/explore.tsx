@@ -95,7 +95,7 @@ function ExplorePage() {
                 className="w-full text-left p-3 rounded-2xl bg-background hover:bg-accent transition-smooth border border-border/40 hover:border-primary/40 hover:shadow-soft flex gap-3 items-center cursor-pointer"
               >
                 <div className={b.icon_tier === "premium" ? "ring-premium flex-shrink-0" : "flex-shrink-0"}>
-                  <img src={b.logo_url} alt={`Logo ${b.name}`} className="w-12 h-12 rounded-full bg-white object-cover" />
+                  <img src={b.logo_url} alt={`Logo ${b.name}`} loading="lazy" decoding="async" className="w-12 h-12 rounded-full bg-white object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-sm truncate">{b.name}</p>

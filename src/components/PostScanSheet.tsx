@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { Link } from "@tanstack/react-router";
+import { QuickSignupExchange } from "@/components/QuickSignupExchange";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 export type ScannedPreview = {
   type: "business" | "personal";
@@ -33,6 +35,7 @@ export function PostScanSheet({ preview, onClose, onSendCard }: PostScanSheetPro
   const { user } = useAuth();
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [showQuickSignup, setShowQuickSignup] = useState(false);
 
   const profileUrl =
     preview.type === "business"
@@ -47,7 +50,7 @@ export function PostScanSheet({ preview, onClose, onSendCard }: PostScanSheetPro
 
   const saveContact = async () => {
     if (!user) {
-      toast.error("Bạn cần đăng nhập để lưu vào danh bạ");
+      setShowQuickSignup(true);
       return;
     }
     setSaving(true);
@@ -71,7 +74,7 @@ export function PostScanSheet({ preview, onClose, onSendCard }: PostScanSheetPro
       const payload =
         preview.type === "business"
           ? { ...base, business_id: preview.id }
-          : (base as any);
+          : { ...base, personal_profile_id: preview.id };
 
       const { error } = await supabase
         .from("saved_contacts")
@@ -79,7 +82,7 @@ export function PostScanSheet({ preview, onClose, onSendCard }: PostScanSheetPro
           onConflict:
             preview.type === "business"
               ? "user_id,business_id"
-              : "user_id,business_slug",
+              : "user_id,personal_profile_id",
         });
 
       if (error) throw error;
@@ -214,11 +217,14 @@ export function PostScanSheet({ preview, onClose, onSendCard }: PostScanSheetPro
 
             <div className="grid grid-cols-2 gap-2.5">
               {/* Send my card */}
-              {user && onSendCard && (
+              {onSendCard && (
                 <Button
                   variant="outline"
                   className="h-11 gap-2 text-sm rounded-xl"
-                  onClick={onSendCard}
+                  onClick={() => {
+                    if (!user) setShowQuickSignup(true);
+                    else onSendCard();
+                  }}
                 >
                   <Send className="w-4 h-4" /> Gửi card lại
                 </Button>
@@ -246,6 +252,21 @@ export function PostScanSheet({ preview, onClose, onSendCard }: PostScanSheetPro
           </div>
         </div>
       </div>
+      {/* Quick Signup Modal */}
+      {showQuickSignup && (
+        <Dialog open={showQuickSignup} onOpenChange={setShowQuickSignup}>
+          <DialogContent className="sm:max-w-md bg-card border-border z-[1500]">
+            <QuickSignupExchange 
+              toId={preview.id} 
+              toType={preview.type} 
+              onSuccess={() => {
+                setShowQuickSignup(false);
+                setTimeout(() => window.location.reload(), 1500);
+              }} 
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 }

@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { SendCardDialog } from "@/components/SendCardDialog";
+import { QuickSignupExchange } from "@/components/QuickSignupExchange";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -56,6 +58,7 @@ function PublicPersonalCard() {
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showQuickSignup, setShowQuickSignup] = useState(false);
   const { user } = useAuth();
 
   const url = typeof window !== "undefined" ? `${window.location.origin}/p/${slug}` : "";
@@ -106,7 +109,8 @@ function PublicPersonalCard() {
   const zalo = (profile.zalo || profile.phone || "").replace(/\D/g, "");
 
   const saveContact = async () => {
-    if (!user) { toast.error("Bạn cần đăng nhập để lưu danh bạ"); return; }
+    if (!user) { setShowQuickSignup(true); return; }
+    if (saving) return;
     setSaving(true);
     try {
       const { error } = await supabase.from("saved_contacts").upsert({
@@ -119,7 +123,8 @@ function PublicPersonalCard() {
         website: null,
         logo_url: profile.avatar_url ?? null,
         note: null,
-      }, { onConflict: "user_id,business_slug" });
+        personal_profile_id: profile.id,
+      }, { onConflict: profile.id ? "user_id,personal_profile_id" : "user_id,business_id" });
       if (error) throw error;
       setSaved(true);
       toast.success(`Đã lưu "${profile.full_name}" vào danh bạ!`);
@@ -316,7 +321,10 @@ function PublicPersonalCard() {
 
               {/* Send card */}
               <Button
-                onClick={() => setShowSend(true)}
+                onClick={() => {
+                  if (!user) setShowQuickSignup(true);
+                  else setShowSend(true);
+                }}
                 className="w-full h-13 rounded-2xl bg-gradient-vivid text-white shadow-pink hover:shadow-lg hover:scale-[1.02] transition-all duration-300 font-bold text-sm border-0 gap-2"
               >
                 <Send className="w-4 h-4" /> Gửi danh thiếp của tôi
@@ -368,6 +376,21 @@ function PublicPersonalCard() {
           toType="personal"
           onClose={() => setShowSend(false)}
         />
+      )}
+
+      {showQuickSignup && (
+        <Dialog open={showQuickSignup} onOpenChange={setShowQuickSignup}>
+          <DialogContent className="sm:max-w-md bg-card border-border">
+            <QuickSignupExchange 
+              toId={profile.user_id} 
+              toType="personal" 
+              onSuccess={() => {
+                setShowQuickSignup(false);
+                setTimeout(() => window.location.reload(), 1500);
+              }} 
+            />
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );

@@ -217,3 +217,6 @@
 /* Hide horizontal scrollbar for tab nav */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+
+html, body { overflow-x: hidden; width: 100%; }
+

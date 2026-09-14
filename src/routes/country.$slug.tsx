@@ -300,7 +300,7 @@ function CountryPage() {
                           <div className="px-4 pt-0 pb-4 flex-1 flex flex-col">
                             <div className="flex items-start gap-3 -mt-7">
                               <div className={`shrink-0 rounded-2xl bg-white p-1 shadow-md ${b.icon_tier === "premium" ? "ring-premium" : ""}`}>
-                                <img src={b.logo_url} alt={`Logo ${b.name}`} className="w-14 h-14 rounded-xl object-cover" />
+                                <img src={b.logo_url} alt={`Logo ${b.name}`} loading="lazy" decoding="async" className="w-14 h-14 rounded-xl object-cover" />
                               </div>
                               <div className="min-w-0 flex-1 pt-8">
                                 <h3 className="font-semibold text-sm leading-tight line-clamp-2">{b.name}</h3>
@@ -359,7 +359,7 @@ function CountryPage() {
                         className="p-3 rounded-2xl bg-card hover:bg-accent transition-smooth border border-border/40 hover:border-primary/40 hover:shadow-soft flex gap-3 items-center cursor-pointer"
                       >
                         <div className={b.icon_tier === "premium" ? "ring-premium flex-shrink-0" : "flex-shrink-0"}>
-                          <img src={b.logo_url} alt={`Logo ${b.name}`} className="w-12 h-12 rounded-full bg-white object-cover" />
+                          <img src={b.logo_url} alt={`Logo ${b.name}`} loading="lazy" decoding="async" className="w-12 h-12 rounded-full bg-white object-cover" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-sm truncate">{b.name}</p>

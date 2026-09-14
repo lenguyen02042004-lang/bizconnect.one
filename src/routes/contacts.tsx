@@ -91,10 +91,10 @@ function ContactsPage() {
     }
   };
 
-  const handleSaveEdit = async (id: string, newName: string, newNote: string) => {
+  const handleSaveEdit = async (id: string, newNote: string) => {
     const { error } = await supabase
       .from("saved_contacts")
-      .update({ business_name: newName, note: newNote })
+      .update({ note: newNote })
       .eq("id", id);
       
     if (error) {
@@ -103,7 +103,7 @@ function ContactsPage() {
     }
     
     toast.success("Đã cập nhật danh bạ");
-    setItems((s) => s.map((c) => c.id === id ? { ...c, business_name: newName, note: newNote } : c));
+    setItems((s) => s.map((c) => c.id === id ? { ...c, note: newNote } : c));
     setEditing(null);
   };
 
@@ -203,7 +203,7 @@ function ContactsPage() {
 
                   <div className="flex items-start gap-3">
                     {c.logo_url ? (
-                      <img src={c.logo_url} alt={`Ảnh ${c.business_name}`} className="w-12 h-12 rounded-lg object-cover border border-border" />
+                      <img src={c.logo_url} alt={`Ảnh ${c.business_name}`} loading="lazy" decoding="async" className="w-12 h-12 rounded-lg object-cover border border-border" />
                     ) : (
                       <div className="w-12 h-12 rounded-lg bg-accent flex items-center justify-center">
                         {c.personal_profile_id ? <User className="w-5 h-5 text-muted-foreground" /> : <Building2 className="w-5 h-5 text-muted-foreground" />}
@@ -293,15 +293,14 @@ function ContactsPage() {
         <EditDialog 
           contact={editing} 
           onClose={() => setEditing(null)} 
-          onSave={(name, note) => handleSaveEdit(editing.id, name, note)} 
+          onSave={(note) => handleSaveEdit(editing.id, note)} 
         />
       )}
     </DashboardShell>
   );
 }
 
-function EditDialog({ contact, onClose, onSave }: { contact: SavedContact, onClose: () => void, onSave: (name: string, note: string) => void }) {
-  const [name, setName] = useState(contact.business_name || "");
+function EditDialog({ contact, onClose, onSave }: { contact: SavedContact, onClose: () => void, onSave: (note: string) => void }) {
   const [note, setNote] = useState(contact.note || "");
   
   return (
@@ -311,18 +310,18 @@ function EditDialog({ contact, onClose, onSave }: { contact: SavedContact, onClo
         <button onClick={onClose} className="absolute top-3 right-3 w-8 h-8 rounded-full bg-muted hover:bg-accent flex items-center justify-center">
           <X className="w-4 h-4" />
         </button>
-        <h3 className="font-display text-xl font-bold mb-4">Chỉnh sửa danh bạ</h3>
+        <h3 className="font-display text-xl font-bold mb-4">Ghi chú danh bạ</h3>
         
-        <label className="text-xs font-medium text-muted-foreground">Tên gợi nhớ</label>
-        <input value={name} onChange={(e) => setName(e.target.value)} maxLength={200}
-               className="w-full mt-1 mb-3 px-3 py-2 rounded-xl border border-border bg-card" />
+        <p className="text-sm text-muted-foreground mb-4">
+          Tạo ghi chú cá nhân cho liên hệ này. Lưu ý: Tên liên hệ sẽ được đồng bộ tự động để luôn hiển thị đúng thông tin của họ.
+        </p>
                
-        <label className="text-xs font-medium text-muted-foreground">Ghi chú cá nhân</label>
+        <label className="text-xs font-medium text-muted-foreground">Ghi chú</label>
         <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={4} maxLength={1000}
                   className="w-full mt-1 mb-4 px-3 py-2 rounded-xl border border-border bg-card resize-none" />
 
-        <Button onClick={() => onSave(name, note)} className="w-full bg-gradient-vivid hover:opacity-90 text-white border-0">
-          Lưu thay đổi
+        <Button onClick={() => onSave(note)} className="w-full bg-gradient-vivid hover:opacity-90 text-white border-0">
+          Lưu ghi chú
         </Button>
       </div>
     </div>
