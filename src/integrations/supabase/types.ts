@@ -187,46 +187,37 @@ export type Database = {
         Row: {
           body: string | null
           created_at: string
-          from_business_id: string
+          from_business_id: string | null
+          from_user_id: string | null
           id: string
           read_at: string | null
           subject: string | null
-          to_business_id: string
+          to_business_id: string | null
+          to_user_id: string | null
         }
         Insert: {
           body?: string | null
           created_at?: string
-          from_business_id: string
+          from_business_id?: string | null
+          from_user_id?: string | null
           id?: string
           read_at?: string | null
           subject?: string | null
-          to_business_id: string
+          to_business_id?: string | null
+          to_user_id?: string | null
         }
         Update: {
           body?: string | null
           created_at?: string
-          from_business_id?: string
+          from_business_id?: string | null
+          from_user_id?: string | null
           id?: string
           read_at?: string | null
           subject?: string | null
-          to_business_id?: string
+          to_business_id?: string | null
+          to_user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "connect_messages_from_business_id_fkey"
-            columns: ["from_business_id"]
-            isOneToOne: false
-            referencedRelation: "businesses"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "connect_messages_to_business_id_fkey"
-            columns: ["to_business_id"]
-            isOneToOne: false
-            referencedRelation: "businesses"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       connections: {
         Row: {
@@ -481,6 +472,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_type: string | null
           avatar_url: string | null
           created_at: string
           display_name: string | null
@@ -489,6 +481,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          account_type?: string | null
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
@@ -497,6 +490,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          account_type?: string | null
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
@@ -508,7 +502,7 @@ export type Database = {
       }
       saved_contacts: {
         Row: {
-          business_id: string
+          business_id: string | null
           business_name: string
           business_slug: string | null
           country_name: string | null
@@ -518,6 +512,7 @@ export type Database = {
           industry: string | null
           logo_url: string | null
           note: string | null
+          personal_profile_id: string | null
           phone: string | null
           province: string | null
           updated_at: string
@@ -525,7 +520,7 @@ export type Database = {
           website: string | null
         }
         Insert: {
-          business_id: string
+          business_id?: string | null
           business_name: string
           business_slug?: string | null
           country_name?: string | null
@@ -535,6 +530,7 @@ export type Database = {
           industry?: string | null
           logo_url?: string | null
           note?: string | null
+          personal_profile_id?: string | null
           phone?: string | null
           province?: string | null
           updated_at?: string
@@ -542,7 +538,7 @@ export type Database = {
           website?: string | null
         }
         Update: {
-          business_id?: string
+          business_id?: string | null
           business_name?: string
           business_slug?: string | null
           country_name?: string | null
@@ -552,6 +548,7 @@ export type Database = {
           industry?: string | null
           logo_url?: string | null
           note?: string | null
+          personal_profile_id?: string | null
           phone?: string | null
           province?: string | null
           updated_at?: string
@@ -569,6 +566,7 @@ export type Database = {
           provider: Database["public"]["Enums"]["payment_provider"]
           provider_subscription_id: string | null
           status: Database["public"]["Enums"]["subscription_status"]
+          sub_type: string | null
           updated_at: string
           user_id: string
         }
@@ -580,6 +578,7 @@ export type Database = {
           provider: Database["public"]["Enums"]["payment_provider"]
           provider_subscription_id?: string | null
           status?: Database["public"]["Enums"]["subscription_status"]
+          sub_type?: string | null
           updated_at?: string
           user_id: string
         }
@@ -591,6 +590,7 @@ export type Database = {
           provider?: Database["public"]["Enums"]["payment_provider"]
           provider_subscription_id?: string | null
           status?: Database["public"]["Enums"]["subscription_status"]
+          sub_type?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -732,11 +732,25 @@ export type Database = {
       send_card_visit: {
         Args: {
           _body: string
-          _from_business: string
+          _from_business?: string | null
+          _from_user?: string | null
           _subject: string
-          _to_business: string
+          _to_business?: string | null
+          _to_user?: string | null
         }
         Returns: string
+      }
+      get_my_quota: {
+        Args: never
+        Returns: { used_count: number; bonus_credits: number; limit: number }
+      }
+      admin_add_quota_bonus: {
+        Args: { _user_id: string; _amount: number }
+        Returns: undefined
+      }
+      admin_add_wallet_block: {
+        Args: { _user_id: string }
+        Returns: undefined
       }
     }
     Enums: {

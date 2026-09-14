@@ -318,11 +318,9 @@ export const adminUpdatePaymentStatus = createServerFn({ method: "POST" })
           await supabaseAdmin.from("subscriptions").insert({
             user_id: ownerId,
             business_id: bizId,
-            status: "active",
+            status: "active" as const,
             sub_type: subType,
-            plan: subType === "icon_premium" ? "icon_premium" : "b2b_annual",
-            provider: "manual",
-            current_period_start: now.toISOString(),
+            provider: "manual" as const,
             current_period_end: periodEnd.toISOString(),
           });
         }
@@ -344,7 +342,7 @@ export const adminUpdatePaymentStatus = createServerFn({ method: "POST" })
             bonus_credits: 1000,
           }, { onConflict: "business_id,period_year", ignoreDuplicates: false });
           // Use raw SQL to increment instead
-          await supabaseAdmin.rpc("admin_add_quota_bonus", { _business_id: bizId, _credits: 1000 }).maybeSingle();
+          await (supabaseAdmin as any).rpc("admin_add_quota_bonus", { _user_id: ownerId, _amount: 1000 }).maybeSingle();
         } else if (subType === "contact_block_addon") {
           // Grant +500 wallet via service role update
           await supabaseAdmin
@@ -367,7 +365,7 @@ export const adminUpdatePaymentStatus = createServerFn({ method: "POST" })
       // Deactivate matching pending subscriptions
       await supabaseAdmin
         .from("subscriptions")
-        .update({ status: "cancelled" })
+        .update({ status: "canceled" as const })
         .eq("business_id", bizId)
         .eq("status", "active");
     } else if (data.status === "rejected" && ownerId) {
@@ -386,7 +384,7 @@ export const adminUpdatePaymentStatus = createServerFn({ method: "POST" })
         if (latestSub) {
           await supabaseAdmin
             .from("subscriptions")
-            .update({ status: "cancelled" })
+            .update({ status: "canceled" as const })
             .eq("id", latestSub.id);
         }
       }
@@ -444,11 +442,9 @@ export const adminGrantSubscription = createServerFn({ method: "POST" })
     const { error } = await supabaseAdmin.from("subscriptions").insert({
       user_id: data.user_id,
       business_id: data.business_id ?? null,
-      status: "active",
+      status: "active" as const,
       sub_type: data.sub_type,
-      plan: data.sub_type,
-      provider: "manual",
-      current_period_start: now.toISOString(),
+      provider: "manual" as const,
       current_period_end: periodEnd.toISOString(),
     });
     if (error) throw new Error(error.message);
@@ -471,7 +467,7 @@ export const getMySubscriptions = createServerFn({ method: "GET" })
       .rpc("my_wallet_limits");
 
     return {
-      subscriptions: (subs ?? []) as Array<{
+      subscriptions: ((subs ?? []) as unknown) as Array<{
         id: string;
         sub_type: string;
         status: string;

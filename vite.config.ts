@@ -11,22 +11,13 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
+    // @ts-ignore — UserConfig from @lovable.dev/vite-tanstack-config doesn't expose `test`,
+    // but Vitest reads it correctly at runtime via vite.config.ts merge.
     test: {
       globals: true,
       environment: "jsdom",
       setupFiles: "./src/vitest.setup.ts",
+      exclude: ["tests/**", "node_modules/**"],
     },
-    build: {
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            vendor: ['react', 'react-dom'],
-            router: ['@tanstack/react-router'],
-            supabase: ['@supabase/supabase-js'],
-            ui: ['lucide-react', 'clsx', 'tailwind-merge']
-          }
-        }
-      }
-    }
   },
 });

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import type { Session, User } from "@supa/business/ase/supabase-js";
+import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
 interface AuthContextType {
@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .eq("id", userId)
           .maybeSingle();
         if (active) {
-          setAccountType(data?.account_type ?? "personal");
+          setAccountType((data?.account_type as "personal" | "business" | null) ?? "personal");
         }
       } catch {
         if (active) setAccountType("personal");

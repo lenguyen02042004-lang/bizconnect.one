@@ -97,15 +97,15 @@ export const getMyQuota = createServerFn({ method: "GET" })
     if (error) {
       // Fallback manual calculation if RPC fails
       const year = new Date().getFullYear();
-      const { data: row } = await context.supabase
+      const sb = context.supabase as any;
+      const { data: row } = await sb
         .from("message_quotas")
         .select("used_count, bonus_credits")
-        .eq("user_id", context.userId)
         .eq("period_year", year)
         .maybeSingle();
 
-      // 2. Count active b2b_block_500 subscriptions
-      const { data: subs } = await context.supabase
+      // Count active b2b_block_500 subscriptions
+      const { data: subs } = await sb
         .from("subscriptions")
         .select("status, sub_type, current_period_end")
         .eq("user_id", context.userId)
@@ -124,16 +124,13 @@ export const getMyQuota = createServerFn({ method: "GET" })
       const base = 200;
       const used = row?.used_count ?? 0;
       const bonus = row?.bonus_credits ?? 0;
-      const limit = base + (activeBlocks * 500); // 200 + 500 * blocks
-      return {
-        used_count: used,
-        bonus_credits: bonus,
-        limit,
-      };
+      const limit = base + (activeBlocks * 500);
+      return { used_count: used, bonus_credits: bonus, limit };
     }
-    
+
     return quota as { used_count: number; bonus_credits: number; limit: number };
   });
+
 
 
 export const getMyBusinesses = createServerFn({ method: "GET" })
@@ -180,7 +177,7 @@ export const getBusinessStats = createServerFn({ method: "GET" })
       .limit(50);
 
     const partnerIds = Array.from(
-      new Set((history ?? []).map((m) => (m.from_business_id === businessId ? m.to_business_id : m.from_business_id)))
+      new Set((history ?? []).map((m) => (m.from_business_id === businessId ? m.to_business_id : m.from_business_id)).filter((id): id is string => id !== null))
     );
     const { data: partners } = partnerIds.length
       ? await supabase.from("businesses").select("id, name, slug, logo_url").in("id", partnerIds)
@@ -230,7 +227,7 @@ export const getBusinessStats = createServerFn({ method: "GET" })
           created_at: m.created_at,
           read_at: m.read_at,
           direction: isOutgoing ? ("out" as const) : ("in" as const),
-          partner: partnerMap.get(partnerId) ?? null,
+          partner: partnerId ? (partnerMap.get(partnerId) ?? null) : null,
         };
       }),
     };

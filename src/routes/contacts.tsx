@@ -59,7 +59,7 @@ function ContactsPage() {
       .order("created_at", { ascending: true });
     
     if (error) toast.error(error.message);
-    setItems((data as SavedContact[]) ?? []);
+    setItems(((data as unknown) as SavedContact[]) ?? []);
     setWallet(await getMyWallet());
     setLoading(false);
   };

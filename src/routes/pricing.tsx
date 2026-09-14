@@ -71,16 +71,17 @@ function PricingPage() {
     supabase.auth.getUser().then(({ data }) => {
       setUserEmail(data.user?.email ?? "");
     });
-    supabase.from("app_settings").select("value").eq("key", "bank_info").single().then(({ data }) => {
+    // Fetch bank info from settings (uses any-typed query)
+    (supabase as any).from("app_settings").select("value").eq("key", "bank_info").single().then(({ data }: any) => {
       if (data?.value) setBankInfo({ ...BANK, ...(data.value as any) });
     });
   }, []);
 
-  const openPayment = async (t: PaymentTarget) => {
-    if (t.price === 0) { navigate({ to: "/signup" }); return; }
+  const openPayment = async (planTarget: PaymentTarget) => {
+    if (planTarget.price === 0) { navigate({ to: "/signup" }); return; }
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { toast.error(t("pricing.loginToUpgrade")); navigate({ to: "/login" }); return; }
-    setTarget(t);
+    setTarget(planTarget);
     setReceiptUrl(null);
     setQrLoaded(false);
     setShowModal(true);
@@ -132,9 +133,8 @@ function PricingPage() {
       
       const { error: sErr } = await supabase.from("subscriptions").insert({
         user_id: user.id,
-        status: "active", // Kích hoạt ngay
-        sub_type: subType,
-        current_period_start: new Date().toISOString(),
+        provider: "manual" as const,
+        status: "active" as const,
         current_period_end: end.toISOString(),
       });
       if (sErr) throw sErr;

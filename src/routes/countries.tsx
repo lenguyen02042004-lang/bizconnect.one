@@ -57,28 +57,27 @@ function CountriesPage() {
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {sorted.map((c) => {
-            const n = counts.get(c.code) ?? 0;
             const region = REGION_BY_CODE[c.code] ?? "asia";
             const gradient = REGION_GRADIENTS[region];
             return (
               <Link
                 key={c.code}
                 to="/country/$slug"
-                params={{ slug: c.slug }}
-                aria-label={`Xem doanh nghiệp tại ${c.name} (${n})`}
+                params={{ slug: c.code.toLowerCase() }}
+                aria-label={`Xem doanh nghiệp tại ${c.name}`}
                 className="group relative overflow-hidden p-4 rounded-2xl bg-card hover:bg-accent border border-border/50 hover:border-primary/40 transition-smooth hover:shadow-soft"
               >
                 <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${gradient} opacity-70 group-hover:opacity-100 transition-opacity`} />
                 <div className="relative">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-background/70 backdrop-blur text-muted-foreground">
-                      {c.code}
+                      {c.flag ?? c.code}
                     </span>
                     <ArrowRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
                   </div>
                   <p className="font-semibold text-base truncate">{c.name}</p>
                   <p className="text-xs text-muted-foreground inline-flex items-center gap-1 mt-1">
-                    <Building2 className="w-3 h-3" /> {n} doanh nghiệp
+                    <Building2 className="w-3 h-3" /> Xem doanh nghiệp
                   </p>
                 </div>
               </Link>
@@ -89,3 +88,4 @@ function CountriesPage() {
     </div>
   );
 }
+

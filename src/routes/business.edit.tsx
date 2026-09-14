@@ -65,7 +65,7 @@ function EditBusinessPage() {
   const [isAutoSaving, setIsAutoSaving] = useState(false);
 
   const methods = useForm<BusinessFormValues>({
-    resolver: zodResolver(businessFormSchema),
+    resolver: zodResolver(businessFormSchema) as any,
     defaultValues: {
       id: null, name: "", slug: "", short_intro: "", description: "", industry_id: null,
       logo_url: null, banner_url: null, address: "", province: null, country_code: null,
@@ -181,7 +181,7 @@ function EditBusinessPage() {
 
     if (isNew) {
       reset({ ...currentValues, id: bizId });
-      navigate({ search: { id: bizId }, replace: true });
+      navigate({ search: { id: bizId } as any, replace: true });
     }
     
     if (!isAutoSave) {

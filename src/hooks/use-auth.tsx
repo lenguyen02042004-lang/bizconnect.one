@@ -20,7 +20,7 @@ export function useAuth() {
           .eq("id", userId)
           .maybeSingle();
         if (active) {
-          setAccountType(data?.account_type ?? "personal");
+          setAccountType((data?.account_type as "personal" | "business" | null) ?? "personal");
         }
       } catch {
         if (active) setAccountType("personal");

@@ -16,6 +16,31 @@ import { supabase } from "@/integrations/supabase/client";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+type BusinessProfile = {
+  id: string;
+  name: string;
+  slug: string;
+  logo_url: string;
+  country_code: string;
+  country_name: string;
+  industry: string;
+  industry_slug: string;
+  lat: number;
+  lng: number;
+  views_count: number;
+  icon_tier: "standard" | "premium";
+  short_intro: string;
+  description: string;
+  certifications: any[];
+  address: string;
+  phone?: string;
+  email?: string;
+  website?: string;
+  banner_url?: string;
+  socials?: any;
+  gallery?: string[];
+};
+
 async function shareBusiness(b: BusinessProfile) {
   if (UUID_RE.test(b.id)) {
     supabase.rpc("increment_business_shares", { _id: b.id });

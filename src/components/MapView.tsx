@@ -66,7 +66,7 @@ export function MapView({ onSelect, businesses = [] }: Props) {
           </div>`;
 
         const icon = L.divIcon({ html, className: "biz-marker", iconSize: [size, size], iconAnchor: [size / 2, size / 2] });
-        const marker = L.marker([b.lat, b.lng], { icon }).addTo(map);
+        const marker = L.marker([b.lat ?? 0, b.lng ?? 0], { icon }).addTo(map);
         marker.on("click", () => onSelect(b));
         marker.bindTooltip(b.name, { direction: "top", offset: [0, -size / 2] });
       });

@@ -78,7 +78,7 @@ export function PostScanSheet({ preview, onClose, onSendCard }: PostScanSheetPro
 
       const { error } = await supabase
         .from("saved_contacts")
-        .upsert(payload, {
+        .upsert(payload as any, {
           onConflict:
             preview.type === "business"
               ? "user_id,business_id"

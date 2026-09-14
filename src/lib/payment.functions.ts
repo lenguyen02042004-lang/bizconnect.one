@@ -39,9 +39,10 @@ export const submitPaymentAndActivate = createServerFn({ method: "POST" })
     const { error: sErr } = await supabaseAdmin.from("subscriptions").insert({
       user_id: userId,
       business_id: data.businessId,
-      status: "active", // Kích hoạt ngay
-      provider: "manual",
+      status: "active" as const,
+      provider: "manual" as const,
       provider_subscription_id: payment.id,
+      sub_type: data.subType,
       current_period_end: end.toISOString(),
     });
 
@@ -60,14 +61,13 @@ export const submitPaymentAndActivate = createServerFn({ method: "POST" })
     } else if (data.subType === "b2b_block_500" && data.businessId) {
       // Cộng ngay 500 lượt nhắn tin B2B
       const year = new Date().getFullYear();
-      await supabaseAdmin.from("message_quotas").upsert({
+      await (supabaseAdmin as any).from("message_quotas").upsert({
         business_id: data.businessId,
         period_year: year,
-        bonus_credits: 500, // Khởi tạo nếu chưa có
+        bonus_credits: 500,
       }, { onConflict: "business_id,period_year", ignoreDuplicates: false });
-      
       // Dùng hàm SQL an toàn để cộng thêm
-      await supabaseAdmin.rpc("admin_add_quota_bonus", { _business_id: data.businessId, _credits: 500 });
+      await (supabaseAdmin as any).rpc("admin_add_quota_bonus", { _user_id: userId, _amount: 500 });
     } else if (data.subType === "contact_block_addon") {
       // Mở rộng bộ nhớ danh bạ cá nhân +500
       await supabaseAdmin
