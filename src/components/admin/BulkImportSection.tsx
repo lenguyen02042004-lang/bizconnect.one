@@ -148,7 +148,7 @@ export function BulkImportSection({ importFn }: { importFn: ReturnType<typeof us
                   {result.failed.map((f) => (
                     <tr key={f.row} className="border-t border-border text-destructive">
                       <td className="p-2">{f.row}</td>
-                      <td className="p-2">{(f as any).slug}</td>
+                      <td className="p-2">{f.slug}</td>
                       <td className="p-2">{f.error}</td>
                     </tr>
                   ))}

@@ -71,7 +71,7 @@ export const bulkImportBusinesses = createServerFn({ method: "POST" })
     const results = {
       ok: 0,
       created_users: 0,
-      failed: [] as { row: number; error: string }[],
+      failed: [] as { row: number; error: string; slug?: string }[],
       credentials: [] as { row: number; email: string; password: string; slug: string; created: boolean }[],
     };
 
@@ -133,7 +133,7 @@ export const bulkImportBusinesses = createServerFn({ method: "POST" })
           created: createdNow,
         });
       } catch (e: any) {
-        results.failed.push({ row: i + 1, error: e.message ?? String(e) });
+        results.failed.push({ row: i + 2, error: e.message ?? String(e), slug: data.rows[i]?.slug });
       }
     }
     return results;

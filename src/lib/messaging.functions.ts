@@ -97,15 +97,14 @@ export const getMyQuota = createServerFn({ method: "GET" })
     if (error) {
       // Fallback manual calculation if RPC fails
       const year = new Date().getFullYear();
-      const sb = context.supabase as any;
-      const { data: row } = await sb
+      const { data: row } = await context.supabase
         .from("message_quotas")
         .select("used_count, bonus_credits")
         .eq("period_year", year)
         .maybeSingle();
 
       // Count active b2b_block_500 subscriptions
-      const { data: subs } = await sb
+      const { data: subs } = await context.supabase
         .from("subscriptions")
         .select("status, sub_type, current_period_end")
         .eq("user_id", context.userId)

@@ -113,7 +113,7 @@ function EditBusinessPage() {
         id: biz.id,
         name: biz.name, slug: biz.slug,
         short_intro: biz.short_intro ?? "",
-        description: (biz as any).description ?? "",
+        description: biz.description ?? "",
         industry_id: biz.industry_id,
         logo_url: biz.logo_url, banner_url: biz.banner_url,
         address: biz.address ?? "", province: biz.province, country_code: biz.country_code,
@@ -122,7 +122,9 @@ function EditBusinessPage() {
         status: biz.status as "draft" | "public",
         socials: Object.fromEntries((socials ?? []).map((s) => [s.platform, s.url])),
         gallery: (gallery ?? []).map((g) => g.image_url),
-        certifications: Array.isArray((biz as any).certifications) ? (biz as any).certifications : [],
+        certifications: Array.isArray(biz.certifications) 
+          ? (biz.certifications as BusinessFormValues["certifications"]) 
+          : [],
       });
       setOwnerId(biz.owner_id);
       setLoading(false);

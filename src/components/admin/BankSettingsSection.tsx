@@ -14,7 +14,7 @@ export function BankSettingsSection() {
   useQuery({
     queryKey: ["admin-bank-settings"],
     queryFn: async () => {
-      const { data } = await (supabase as any).from("app_settings").select("value").eq("key", "bank_info").single();
+      const { data } = await supabase.from("app_settings").select("value").eq("key", "bank_info").single();
       if (data?.value) {
         const val: any = data.value;
         setBankInfo({ name: val.bank_name || "", account: val.account_number || "", owner: val.account_owner || "", bin: val.bin || "" });
@@ -33,7 +33,7 @@ export function BankSettingsSection() {
         bin: bankInfo.bin,
         vndRate: 25000,
       };
-      const { error } = await (supabase as any).from("app_settings").upsert({ key: "bank_info", value: payload });
+      const { error } = await supabase.from("app_settings").upsert({ key: "bank_info", value: payload });
       if (error) throw error;
     },
     onSuccess: () => toast.success("Đã cập nhật thông tin thanh toán!"),

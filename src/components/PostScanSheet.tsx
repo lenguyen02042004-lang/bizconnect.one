@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X, BookmarkPlus, Send, ExternalLink, CheckCircle2, Loader2, Globe, Phone, Mail, MapPin } from "lucide-react";
+import type { Database } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -71,14 +72,14 @@ export function PostScanSheet({ preview, onClose, onSendCard }: PostScanSheetPro
         note: null,
       };
 
-      const payload =
+      const payload: Database["public"]["Tables"]["saved_contacts"]["Insert"] =
         preview.type === "business"
           ? { ...base, business_id: preview.id }
           : { ...base, personal_profile_id: preview.id };
 
       const { error } = await supabase
         .from("saved_contacts")
-        .upsert(payload as any, {
+        .upsert(payload, {
           onConflict:
             preview.type === "business"
               ? "user_id,business_id"

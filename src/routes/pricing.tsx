@@ -48,7 +48,7 @@ function vietQrUrl(amount: number, content: string, bankInfo: typeof BANK) {
 type PaymentTarget = {
   name: string;
   price: number;
-  subType?: string;
+  subType?: "membership" | "extra_quota" | "icon_premium";
   isAddon?: boolean;
   addonId?: string;
 };
@@ -72,8 +72,8 @@ function PricingPage() {
       setUserEmail(data.user?.email ?? "");
     });
     // Fetch bank info from settings (uses any-typed query)
-    (supabase as any).from("app_settings").select("value").eq("key", "bank_info").single().then(({ data }: any) => {
-      if (data?.value) setBankInfo({ ...BANK, ...(data.value as any) });
+    supabase.from("app_settings").select("value").eq("key", "bank_info").single().then(({ data }) => {
+      if (data?.value) setBankInfo({ ...BANK, ...(data.value as Record<string, any>) });
     });
   }, []);
 
@@ -119,8 +119,8 @@ function PricingPage() {
         business_id: businessId,
         amount: target.price,
         currency: "USD",
-        provider: "manual" as any,
-        type: subType as any,
+        provider: "manual",
+        type: subType,
         status: "pending",
         provider_payment_id: receiptUrl,
         receipt_url: receiptUrl,
@@ -236,7 +236,7 @@ function PricingPage() {
     },
   ];
 
-  const BUSINESS_ADDONS = [] as any[];
+  const BUSINESS_ADDONS: Array<any> = [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -295,7 +295,7 @@ function PricingPage() {
                   ))}
                 </ul>
                 <Button
-                  onClick={() => openPayment({ name: plan.name, price: plan.price, subType: plan.subType })}
+                  onClick={() => openPayment({ name: plan.name, price: plan.price, subType: plan.subType as PaymentTarget["subType"] })}
                   disabled={plan.disabled}
                   className={`w-full ${
                     plan.featured
@@ -321,7 +321,7 @@ function PricingPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <p className="text-lg font-bold">{a.price === 0 ? "0" : (a.price / 1000) + "k"}</p>
-                    <Button size="sm" onClick={() => openPayment({ name: a.name, price: a.price, subType: a.id, isAddon: true })} className="gap-1 bg-gradient-vivid text-white border-0">
+                    <Button size="sm" onClick={() => openPayment({ name: a.name, price: a.price, subType: a.id as PaymentTarget["subType"], isAddon: true })} className="gap-1 bg-gradient-vivid text-white border-0">
                       <Plus className="w-3.5 h-3.5" /> {t("pricing.buyBtn")}
                     </Button>
                   </div>
@@ -372,7 +372,7 @@ function PricingPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <p className="text-lg font-bold">{a.price === 0 ? "0" : (a.price / 1000) + "k"}</p>
-                    <Button size="sm" onClick={() => openPayment({ name: a.name, price: a.price, subType: a.id, isAddon: true })} className="gap-1 bg-gradient-vivid text-white border-0">
+                    <Button size="sm" onClick={() => openPayment({ name: a.name, price: a.price, subType: a.id as PaymentTarget["subType"], isAddon: true })} className="gap-1 bg-gradient-vivid text-white border-0">
                       <Plus className="w-3.5 h-3.5" /> {t("pricing.buyBtn")}
                     </Button>
                   </div>
