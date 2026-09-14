@@ -25,17 +25,25 @@
     subgraph "cluster_src" {label="src" subgraph "cluster_src/assets" {label="assets" "src/assets/countries-og.jpg" [label=<countries-og.jpg> tooltip="countries-og.jpg" URL="src/assets/countries-og.jpg" ] } }
     subgraph "cluster_src" {label="src" subgraph "cluster_src/components" {label="components" "src/components/BusinessCard.tsx" [label=<BusinessCard.tsx> tooltip="BusinessCard.tsx" URL="src/components/BusinessCard.tsx" fillcolor="#bbfeff"] } }
     "src/components/BusinessCard.tsx" -> "src/components/FollowButton.tsx"
+    "src/components/BusinessCard.tsx" -> "src/components/QuickSignupExchange.tsx"
     "src/components/BusinessCard.tsx" -> "src/components/SendCardDialog.tsx"
     "src/components/BusinessCard.tsx" -> "src/components/SocialIconList.tsx"
+    "src/components/BusinessCard.tsx" -> "src/components/PrintableQRModal.tsx"
     "src/components/BusinessCard.tsx" -> "src/components/ui/badge.tsx"
     "src/components/BusinessCard.tsx" -> "src/components/ui/button.tsx"
+    "src/components/BusinessCard.tsx" -> "src/components/ui/dialog.tsx"
+    "src/components/BusinessCard.tsx" -> "src/hooks/use-auth.tsx"
     "src/components/BusinessCard.tsx" -> "src/integrations/supabase/client.ts"
     "src/components/BusinessCard.tsx" -> "src/lib/connect.ts"
     "src/components/BusinessCard.tsx" -> "src/lib/contacts.ts"
     "src/components/BusinessCard.tsx" -> "src/lib/format.ts"
     "src/components/BusinessCard.tsx" -> "src/lib/mask.ts"
-    "src/components/BusinessCard.tsx" -> "src/lib/mock-businesses.ts"
-    "src/components/BusinessCard.tsx" -> "src/lib/mock-businesses.ts" [arrowhead="onormal" penwidth="1.0"]
+    "src/components/BusinessCard.tsx" -> "src/types/business.ts" [arrowhead="onormal" penwidth="1.0"]
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/components" {label="components" "src/components/CardFAB.tsx" [label=<CardFAB.tsx> tooltip="CardFAB.tsx" URL="src/components/CardFAB.tsx" fillcolor="#bbfeff"] } }
+    "src/components/CardFAB.tsx" -> "src/components/MyCardModal.tsx"
+    "src/components/CardFAB.tsx" -> "src/components/QRScannerDialog.tsx"
+    "src/components/CardFAB.tsx" -> "src/hooks/use-auth.tsx"
+    "src/components/CardFAB.tsx" -> "src/integrations/supabase/client.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/components" {label="components" "src/components/DashboardShell.tsx" [label=<DashboardShell.tsx> tooltip="DashboardShell.tsx" URL="src/components/DashboardShell.tsx" fillcolor="#bbfeff"] } }
     "src/components/DashboardShell.tsx" -> "src/components/Navbar.tsx"
     "src/components/DashboardShell.tsx" -> "src/hooks/use-auth.tsx"
@@ -52,7 +60,7 @@
     "src/components/GeocodeField.tsx" -> "src/components/ui/input.tsx"
     "src/components/GeocodeField.tsx" -> "src/lib/geocode.functions.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/components" {label="components" "src/components/Globe3D.tsx" [label=<Globe3D.tsx> tooltip="Globe3D.tsx" URL="src/components/Globe3D.tsx" fillcolor="#bbfeff"] } }
-    "src/components/Globe3D.tsx" -> "src/lib/mock-businesses.ts"
+    "src/components/Globe3D.tsx" -> "src/types/business.ts" [arrowhead="onormal" penwidth="1.0"]
     subgraph "cluster_src" {label="src" subgraph "cluster_src/components" {label="components" "src/components/ImageUpload.tsx" [label=<ImageUpload.tsx> tooltip="ImageUpload.tsx" URL="src/components/ImageUpload.tsx" fillcolor="#bbfeff"] } }
     "src/components/ImageUpload.tsx" -> "src/components/ui/button.tsx"
     "src/components/ImageUpload.tsx" -> "src/lib/upload.ts"
@@ -65,13 +73,40 @@
     "src/components/LanguageSwitcher.tsx" -> "src/components/ui/dropdown-menu.tsx"
     "src/components/LanguageSwitcher.tsx" -> "src/i18n/index.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/components" {label="components" "src/components/MapView.tsx" [label=<MapView.tsx> tooltip="MapView.tsx" URL="src/components/MapView.tsx" fillcolor="#bbfeff"] } }
-    "src/components/MapView.tsx" -> "src/lib/mock-businesses.ts"
+    "src/components/MapView.tsx" -> "src/types/business.ts" [arrowhead="onormal" penwidth="1.0"]
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/components" {label="components" "src/components/MyCardModal.tsx" [label=<MyCardModal.tsx> tooltip="MyCardModal.tsx" URL="src/components/MyCardModal.tsx" fillcolor="#bbfeff"] } }
+    "src/components/MyCardModal.tsx" -> "src/components/ui/button.tsx"
+    "src/components/MyCardModal.tsx" -> "src/components/ui/dialog.tsx"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/components" {label="components" "src/components/Navbar.tsx" [label=<Navbar.tsx> tooltip="Navbar.tsx" URL="src/components/Navbar.tsx" fillcolor="#bbfeff"] } }
     "src/components/Navbar.tsx" -> "src/components/InboxBell.tsx"
     "src/components/Navbar.tsx" -> "src/components/LanguageSwitcher.tsx"
     "src/components/Navbar.tsx" -> "src/components/ui/button.tsx"
     "src/components/Navbar.tsx" -> "src/hooks/use-auth.tsx"
     "src/components/Navbar.tsx" -> "src/integrations/supabase/client.ts"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/components" {label="components" "src/components/PostScanSheet.tsx" [label=<PostScanSheet.tsx> tooltip="PostScanSheet.tsx" URL="src/components/PostScanSheet.tsx" fillcolor="#bbfeff"] } }
+    "src/components/PostScanSheet.tsx" -> "src/components/QuickSignupExchange.tsx"
+    "src/components/PostScanSheet.tsx" -> "src/components/ui/button.tsx"
+    "src/components/PostScanSheet.tsx" -> "src/components/ui/dialog.tsx"
+    "src/components/PostScanSheet.tsx" -> "src/hooks/use-auth.tsx"
+    "src/components/PostScanSheet.tsx" -> "src/integrations/supabase/client.ts"
+    "src/components/PostScanSheet.tsx" -> "src/integrations/supabase/types.ts" [arrowhead="onormal" penwidth="1.0"]
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/components" {label="components" "src/components/PrintableQRModal.tsx" [label=<PrintableQRModal.tsx> tooltip="PrintableQRModal.tsx" URL="src/components/PrintableQRModal.tsx" fillcolor="#bbfeff"] } }
+    "src/components/PrintableQRModal.tsx" -> "src/components/ui/button.tsx"
+    "src/components/PrintableQRModal.tsx" -> "src/components/ui/dialog.tsx"
+    "src/components/PrintableQRModal.tsx" -> "src/types/business.ts" [arrowhead="onormal" penwidth="1.0"]
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/components" {label="components" "src/components/QRScannerDialog.tsx" [label=<QRScannerDialog.tsx> tooltip="QRScannerDialog.tsx" URL="src/components/QRScannerDialog.tsx" fillcolor="#bbfeff"] } }
+    "src/components/QRScannerDialog.tsx" -> "src/components/PostScanSheet.tsx"
+    "src/components/QRScannerDialog.tsx" -> "src/components/SendCardDialog.tsx"
+    "src/components/QRScannerDialog.tsx" -> "src/components/ui/button.tsx"
+    "src/components/QRScannerDialog.tsx" -> "src/components/ui/dialog.tsx"
+    "src/components/QRScannerDialog.tsx" -> "src/integrations/supabase/client.ts"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/components" {label="components" "src/components/QuickSignupExchange.tsx" [label=<QuickSignupExchange.tsx> tooltip="QuickSignupExchange.tsx" URL="src/components/QuickSignupExchange.tsx" fillcolor="#bbfeff"] } }
+    "src/components/QuickSignupExchange.tsx" -> "src/components/ui/button.tsx"
+    "src/components/QuickSignupExchange.tsx" -> "src/components/ui/input.tsx"
+    "src/components/QuickSignupExchange.tsx" -> "src/components/ui/label.tsx"
+    "src/components/QuickSignupExchange.tsx" -> "src/components/ui/radio-group.tsx"
+    "src/components/QuickSignupExchange.tsx" -> "src/integrations/supabase/client.ts"
+    "src/components/QuickSignupExchange.tsx" -> "src/lib/personal-card.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/components" {label="components" "src/components/SendCardDialog.tsx" [label=<SendCardDialog.tsx> tooltip="SendCardDialog.tsx" URL="src/components/SendCardDialog.tsx" fillcolor="#bbfeff"] } }
     "src/components/SendCardDialog.tsx" -> "src/components/ui/button.tsx"
     "src/components/SendCardDialog.tsx" -> "src/hooks/use-auth.tsx"
@@ -248,6 +283,8 @@
     "src/components/ui/toggle.tsx" -> "src/lib/utils.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/components" {label="components" subgraph "cluster_src/components/ui" {label="ui" "src/components/ui/tooltip.tsx" [label=<tooltip.tsx> tooltip="tooltip.tsx" URL="src/components/ui/tooltip.tsx" fillcolor="#bbfeff"] } } }
     "src/components/ui/tooltip.tsx" -> "src/lib/utils.ts"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/contexts" {label="contexts" "src/contexts/AuthContext.tsx" [label=<AuthContext.tsx> tooltip="AuthContext.tsx" URL="src/contexts/AuthContext.tsx" fillcolor="#bbfeff"] } }
+    "src/contexts/AuthContext.tsx" -> "src/integrations/supabase/client.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/hooks" {label="hooks" "src/hooks/use-auth.tsx" [label=<use-auth.tsx> tooltip="use-auth.tsx" URL="src/hooks/use-auth.tsx" fillcolor="#bbfeff"] } }
     "src/hooks/use-auth.tsx" -> "src/integrations/supabase/client.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/hooks" {label="hooks" "src/hooks/use-mobile.tsx" [label=<use-mobile.tsx> tooltip="use-mobile.tsx" URL="src/hooks/use-mobile.tsx" fillcolor="#bbfeff"] } }
@@ -278,8 +315,8 @@
     "src/lib/connect.ts" -> "src/integrations/supabase/client.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" "src/lib/constants.ts" [label=<constants.ts> tooltip="constants.ts" URL="src/lib/constants.ts" fillcolor="#ddfeff"] } }
     subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" "src/lib/contacts.ts" [label=<contacts.ts> tooltip="contacts.ts" URL="src/lib/contacts.ts" fillcolor="#ddfeff"] } }
-    "src/lib/contacts.ts" -> "src/lib/mock-businesses.ts" [arrowhead="onormal" penwidth="1.0"]
     "src/lib/contacts.ts" -> "src/integrations/supabase/client.ts"
+    "src/lib/contacts.ts" -> "src/types/business.ts" [arrowhead="onormal" penwidth="1.0"]
     subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" "src/lib/csv.ts" [label=<csv.ts> tooltip="csv.ts" URL="src/lib/csv.ts" fillcolor="#ddfeff"] } }
     subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" "src/lib/error-capture.ts" [label=<error-capture.ts> tooltip="error-capture.ts" URL="src/lib/error-capture.ts" fillcolor="#ddfeff"] } }
     subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" "src/lib/error-page.ts" [label=<error-page.ts> tooltip="error-page.ts" URL="src/lib/error-page.ts" fillcolor="#ddfeff"] } }
@@ -291,7 +328,9 @@
     subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" "src/lib/mask.ts" [label=<mask.ts> tooltip="mask.ts" URL="src/lib/mask.ts" fillcolor="#ddfeff"] } }
     subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" "src/lib/messaging.functions.ts" [label=<messaging.functions.ts> tooltip="messaging.functions.ts" URL="src/lib/messaging.functions.ts" fillcolor="#ddfeff"] } }
     "src/lib/messaging.functions.ts" -> "src/integrations/supabase/auth-middleware.ts"
-    subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" "src/lib/mock-businesses.ts" [label=<mock-businesses.ts> tooltip="mock-businesses.ts" URL="src/lib/mock-businesses.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" "src/lib/payment.functions.ts" [label=<payment.functions.ts> tooltip="payment.functions.ts" URL="src/lib/payment.functions.ts" fillcolor="#ddfeff"] } }
+    "src/lib/payment.functions.ts" -> "src/integrations/supabase/auth-middleware.ts"
+    "src/lib/payment.functions.ts" -> "src/integrations/supabase/client.server.ts" [style="dashed"]
     subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" "src/lib/personal-card.ts" [label=<personal-card.ts> tooltip="personal-card.ts" URL="src/lib/personal-card.ts" fillcolor="#ddfeff"] } }
     "src/lib/personal-card.ts" -> "src/integrations/supabase/client.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" "src/lib/personal-public.functions.ts" [label=<personal-public.functions.ts> tooltip="personal-public.functions.ts" URL="src/lib/personal-public.functions.ts" fillcolor="#ddfeff"] } }
@@ -305,13 +344,13 @@
     "src/lib/upload.ts" -> "src/integrations/supabase/client.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" "src/lib/utils.ts" [label=<utils.ts> tooltip="utils.ts" URL="src/lib/utils.ts" fillcolor="#ddfeff"] } }
     subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" "src/lib/vcard.ts" [label=<vcard.ts> tooltip="vcard.ts" URL="src/lib/vcard.ts" fillcolor="#ddfeff"] } }
-    "src/lib/vcard.ts" -> "src/lib/mock-businesses.ts" [arrowhead="onormal" penwidth="1.0"]
+    "src/lib/vcard.ts" -> "src/types/business.ts"
     subgraph "cluster_src" {label="src" "src/routeTree.gen.ts" [label=<routeTree.gen.ts> tooltip="routeTree.gen.ts" URL="src/routeTree.gen.ts" fillcolor="#ddfeff"] }
     "src/routeTree.gen.ts" -> "src/router.tsx" [arrowhead="normalnoneodot" penwidth="1.0"]
     "src/routeTree.gen.ts" -> "src/routes/__root.tsx"
     "src/routeTree.gen.ts" -> "src/routes/admin.tsx"
-    "src/routeTree.gen.ts" -> "src/routes/b.\$slug.tsx"
     "src/routeTree.gen.ts" -> "src/routes/blog.how-to-find-international-b2b-partners.tsx"
+    "src/routeTree.gen.ts" -> "src/routes/business.\$slug.tsx"
     "src/routeTree.gen.ts" -> "src/routes/business.edit.tsx"
     "src/routeTree.gen.ts" -> "src/routes/business.stats.tsx"
     "src/routeTree.gen.ts" -> "src/routes/contacts.tsx"
@@ -338,23 +377,27 @@
     "src/router.tsx" -> "src/routeTree.gen.ts" [arrowhead="normalnoneodot"]
     subgraph "cluster_src" {label="src" subgraph "cluster_src/routes" {label="routes" "src/routes/__root.tsx" [label=<__root.tsx> tooltip="__root.tsx" URL="src/routes/__root.tsx" fillcolor="#bbfeff"] } }
     "src/routes/__root.tsx" -> "src/styles.css"
+    "src/routes/__root.tsx" -> "src/components/CardFAB.tsx"
     "src/routes/__root.tsx" -> "src/components/ui/sonner.tsx"
+    "src/routes/__root.tsx" -> "src/contexts/AuthContext.tsx"
     "src/routes/__root.tsx" -> "src/i18n/index.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/routes" {label="routes" "src/routes/admin.tsx" [label=<admin.tsx> tooltip="admin.tsx" URL="src/routes/admin.tsx" fillcolor="#bbfeff"] } }
+    "src/routes/admin.tsx" -> "src/components/admin/BankSettingsSection.tsx"
+    "src/routes/admin.tsx" -> "src/components/admin/BulkImportSection.tsx"
+    "src/routes/admin.tsx" -> "src/components/admin/BusinessTableSection.tsx"
+    "src/routes/admin.tsx" -> "src/components/admin/DemoAccountsSection.tsx"
+    "src/routes/admin.tsx" -> "src/components/admin/PaymentReviewSection.tsx"
+    "src/routes/admin.tsx" -> "src/components/admin/SubscriptionManagementSection.tsx"
     "src/routes/admin.tsx" -> "src/components/DashboardShell.tsx"
-    "src/routes/admin.tsx" -> "src/components/ui/button.tsx"
-    "src/routes/admin.tsx" -> "src/components/ui/input.tsx"
-    "src/routes/admin.tsx" -> "src/components/ui/label.tsx"
     "src/routes/admin.tsx" -> "src/integrations/supabase/client.ts"
     "src/routes/admin.tsx" -> "src/lib/admin.functions.ts"
-    "src/routes/admin.tsx" -> "src/lib/csv.ts"
-    subgraph "cluster_src" {label="src" subgraph "cluster_src/routes" {label="routes" "src/routes/b.\$slug.tsx" [label=<b.\$slug.tsx> tooltip="b.\$slug.tsx" URL="src/routes/b.\$slug.tsx" fillcolor="#bbfeff"] } }
-    "src/routes/b.\$slug.tsx" -> "src/components/BusinessCard.tsx"
-    "src/routes/b.\$slug.tsx" -> "src/components/Navbar.tsx"
-    "src/routes/b.\$slug.tsx" -> "src/lib/business-public.functions.ts"
-    "src/routes/b.\$slug.tsx" -> "src/lib/mock-businesses.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/routes" {label="routes" "src/routes/blog.how-to-find-international-b2b-partners.tsx" [label=<blog.how-to-find-international-b2b-partners.tsx> tooltip="blog.how-to-find-international-b2b-partners.tsx" URL="src/routes/blog.how-to-find-international-b2b-partners.tsx" fillcolor="#bbfeff"] } }
     "src/routes/blog.how-to-find-international-b2b-partners.tsx" -> "src/components/Navbar.tsx"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/routes" {label="routes" "src/routes/business.\$slug.tsx" [label=<business.\$slug.tsx> tooltip="business.\$slug.tsx" URL="src/routes/business.\$slug.tsx" fillcolor="#bbfeff"] } }
+    "src/routes/business.\$slug.tsx" -> "src/components/BusinessCard.tsx"
+    "src/routes/business.\$slug.tsx" -> "src/components/Navbar.tsx"
+    "src/routes/business.\$slug.tsx" -> "src/components/ui/button.tsx"
+    "src/routes/business.\$slug.tsx" -> "src/lib/business-public.functions.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/routes" {label="routes" "src/routes/business.edit.tsx" [label=<business.edit.tsx> tooltip="business.edit.tsx" URL="src/routes/business.edit.tsx" fillcolor="#bbfeff"] } }
     "src/routes/business.edit.tsx" -> "src/components/business/wizard/AboutTab.tsx"
     "src/routes/business.edit.tsx" -> "src/components/business/wizard/BasicInfoTab.tsx"
@@ -387,8 +430,7 @@
     subgraph "cluster_src" {label="src" subgraph "cluster_src/routes" {label="routes" "src/routes/countries.tsx" [label=<countries.tsx> tooltip="countries.tsx" URL="src/routes/countries.tsx" fillcolor="#bbfeff"] } }
     "src/routes/countries.tsx" -> "src/assets/countries-og.jpg"
     "src/routes/countries.tsx" -> "src/components/Navbar.tsx"
-    "src/routes/countries.tsx" -> "src/lib/constants.ts"
-    "src/routes/countries.tsx" -> "src/lib/mock-businesses.ts"
+    "src/routes/countries.tsx" -> "src/lib/business-public.functions.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/routes" {label="routes" "src/routes/country.\$slug.tsx" [label=<country.\$slug.tsx> tooltip="country.\$slug.tsx" URL="src/routes/country.\$slug.tsx" fillcolor="#bbfeff"] } }
     "src/routes/country.\$slug.tsx" -> "src/components/BusinessCard.tsx"
     "src/routes/country.\$slug.tsx" -> "src/components/FollowButton.tsx"
@@ -398,9 +440,8 @@
     "src/routes/country.\$slug.tsx" -> "src/components/ui/input.tsx"
     "src/routes/country.\$slug.tsx" -> "src/components/ui/select.tsx"
     "src/routes/country.\$slug.tsx" -> "src/integrations/supabase/client.ts"
-    "src/routes/country.\$slug.tsx" -> "src/lib/constants.ts"
+    "src/routes/country.\$slug.tsx" -> "src/lib/business-public.functions.ts"
     "src/routes/country.\$slug.tsx" -> "src/lib/format.ts"
-    "src/routes/country.\$slug.tsx" -> "src/lib/mock-businesses.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/routes" {label="routes" "src/routes/dashboard.tsx" [label=<dashboard.tsx> tooltip="dashboard.tsx" URL="src/routes/dashboard.tsx" fillcolor="#bbfeff"] } }
     "src/routes/dashboard.tsx" -> "src/components/DashboardShell.tsx"
     "src/routes/dashboard.tsx" -> "src/components/SubscriptionWidget.tsx"
@@ -416,7 +457,6 @@
     "src/routes/explore.tsx" -> "src/components/MapView.tsx"
     "src/routes/explore.tsx" -> "src/components/Navbar.tsx"
     "src/routes/explore.tsx" -> "src/lib/business-public.functions.ts"
-    "src/routes/explore.tsx" -> "src/lib/constants.ts"
     "src/routes/explore.tsx" -> "src/lib/format.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/routes" {label="routes" "src/routes/following.tsx" [label=<following.tsx> tooltip="following.tsx" URL="src/routes/following.tsx" fillcolor="#bbfeff"] } }
     "src/routes/following.tsx" -> "src/components/DashboardShell.tsx"
@@ -434,14 +474,14 @@
     "src/routes/inbox.tsx" -> "src/lib/vcard.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/routes" {label="routes" "src/routes/index.tsx" [label=<index.tsx> tooltip="index.tsx" URL="src/routes/index.tsx" fillcolor="#bbfeff"] } }
     "src/routes/index.tsx" -> "src/components/BusinessCard.tsx"
-    "src/routes/index.tsx" -> "src/components/Globe3D.tsx"
+    "src/routes/index.tsx" -> "src/components/Globe3D.tsx" [style="dashed"]
+    "src/routes/index.tsx" -> "src/components/LanguageSwitcher.tsx"
     "src/routes/index.tsx" -> "src/components/ui/button.tsx"
     "src/routes/index.tsx" -> "src/components/ui/input.tsx"
     "src/routes/index.tsx" -> "src/components/ui/select.tsx"
     "src/routes/index.tsx" -> "src/hooks/use-auth.tsx"
     "src/routes/index.tsx" -> "src/integrations/supabase/client.ts"
-    "src/routes/index.tsx" -> "src/lib/constants.ts"
-    "src/routes/index.tsx" -> "src/lib/mock-businesses.ts"
+    "src/routes/index.tsx" -> "src/lib/business-public.functions.ts"
     "src/routes/index.tsx" -> "src/lib/stats.functions.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/routes" {label="routes" "src/routes/leads.tsx" [label=<leads.tsx> tooltip="leads.tsx" URL="src/routes/leads.tsx" fillcolor="#bbfeff"] } }
     "src/routes/leads.tsx" -> "src/components/DashboardShell.tsx"
@@ -469,8 +509,13 @@
     "src/routes/me.tsx" -> "src/lib/personal-card.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/routes" {label="routes" "src/routes/p.\$slug.tsx" [label=<p.\$slug.tsx> tooltip="p.\$slug.tsx" URL="src/routes/p.\$slug.tsx" fillcolor="#bbfeff"] } }
     "src/routes/p.\$slug.tsx" -> "src/components/Navbar.tsx"
+    "src/routes/p.\$slug.tsx" -> "src/components/QuickSignupExchange.tsx"
     "src/routes/p.\$slug.tsx" -> "src/components/SendCardDialog.tsx"
+    "src/routes/p.\$slug.tsx" -> "src/components/ui/badge.tsx"
     "src/routes/p.\$slug.tsx" -> "src/components/ui/button.tsx"
+    "src/routes/p.\$slug.tsx" -> "src/components/ui/dialog.tsx"
+    "src/routes/p.\$slug.tsx" -> "src/hooks/use-auth.tsx"
+    "src/routes/p.\$slug.tsx" -> "src/integrations/supabase/client.ts"
     "src/routes/p.\$slug.tsx" -> "src/lib/personal-public.functions.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/routes" {label="routes" "src/routes/pricing.tsx" [label=<pricing.tsx> tooltip="pricing.tsx" URL="src/routes/pricing.tsx" fillcolor="#bbfeff"] } }
     "src/routes/pricing.tsx" -> "src/components/Navbar.tsx"
@@ -509,8 +554,8 @@
     "src/routes/signup.tsx" -> "src/i18n/index.ts"
     "src/routes/signup.tsx" -> "src/integrations/supabase/client.ts"
     subgraph "cluster_src" {label="src" subgraph "cluster_src/routes" {label="routes" "src/routes/sitemap[.]xml.ts" [label=<sitemap[.]xml.ts> tooltip="sitemap[.]xml.ts" URL="src/routes/sitemap[.]xml.ts" fillcolor="#ddfeff"] } }
+    "src/routes/sitemap[.]xml.ts" -> "src/integrations/supabase/client.ts"
     "src/routes/sitemap[.]xml.ts" -> "src/lib/constants.ts"
-    "src/routes/sitemap[.]xml.ts" -> "src/lib/mock-businesses.ts"
     subgraph "cluster_src" {label="src" "src/server.ts" [label=<server.ts> tooltip="server.ts" URL="src/server.ts" fillcolor="#ddfeff"] }
     "src/server.ts" -> "src/lib/error-capture.ts"
     "src/server.ts" -> "src/lib/error-page.ts"
@@ -518,6 +563,7 @@
     "src/start.ts" -> "src/lib/error-page.ts"
     "src/start.ts" -> "src/integrations/supabase/auth-attacher.ts"
     subgraph "cluster_src" {label="src" "src/styles.css" [label=<styles.css> tooltip="styles.css" URL="src/styles.css" ] }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/types" {label="types" "src/types/business.ts" [label=<business.ts> tooltip="business.ts" URL="src/types/business.ts" fillcolor="#ddfeff"] } }
     subgraph "cluster_src" {label="src" "src/vite-env.d.ts" [label=<vite-env.d.ts> tooltip="vite-env.d.ts" URL="src/vite-env.d.ts" fillcolor="#ccffcc"] }
     subgraph "cluster_src" {label="src" "src/vitest.setup.ts" [label=<vitest.setup.ts> tooltip="vitest.setup.ts" URL="src/vitest.setup.ts" fillcolor="#ccffcc"] }
 }

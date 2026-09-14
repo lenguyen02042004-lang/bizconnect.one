@@ -65,7 +65,7 @@ function PrintPage() {
   const [size, setSize] = useState<Size>("card");
   const [qr, setQr] = useState("");
 
-  const url = typeof window !== "undefined" ? `${window.location.origin}${data.path}?src=qr` : "";
+  const url = typeof window !== "undefined" ? `https://bizconnect.one${data.path}?src=qr` : "";
   const cleanUrl = url.replace(/^https?:\/\//, "").replace(/\?src=qr$/, "");
 
   useEffect(() => {

@@ -675,6 +675,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      submit_manual_payment: {
+        Args: {
+          p_plan_id: string
+          p_receipt_url: string
+          p_business_id?: string | null
+        }
+        Returns: undefined
+      }
       buy_contact_block: {
         Args: never
         Returns: {

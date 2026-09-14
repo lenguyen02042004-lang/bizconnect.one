@@ -61,7 +61,7 @@ export function SubscriptionWidget() {
         <div className="rounded-xl bg-muted/50 p-4 text-center">
           <p className="text-sm font-medium mb-1">📦 Đang dùng gói Miễn phí</p>
           <p className="text-xs text-muted-foreground mb-3">
-            100 lượt gửi danh thiếp/năm · Lưu tối đa {wallet ? wallet.max_saved_allowed : 200} liên hệ
+            200 lượt gửi danh thiếp/năm · Lưu tối đa {wallet ? wallet.max_saved_allowed : 200} liên hệ
           </p>
           <Link to="/pricing">
             <Button size="sm" className="bg-gradient-vivid text-white border-0 gap-1.5">

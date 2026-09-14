@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getMyPersonalProfile, upsertMyPersonalProfile, type PersonalProfile } from "@/lib/personal-card";
 import { SubscriptionWidget } from "@/components/SubscriptionWidget";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { Loader2, Save, Eye, Printer, Share2, Copy } from "lucide-react";
 
 export const Route = createFileRoute("/me")({
@@ -35,8 +36,9 @@ function MePage() {
   const [qr, setQr] = useState("");
   const [userId, setUserId] = useState("");
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
-  const publicUrl = profile && typeof window !== "undefined" ? `${window.location.origin}/p/${profile.slug}` : "";
+  const publicUrl = profile && typeof window !== "undefined" ? `https://bizconnect.one/p/${profile.slug}` : "";
 
   useEffect(() => {
     (async () => {
@@ -50,7 +52,6 @@ function MePage() {
       }
 
       setAuthed(true);
-      setUserId(user.id);
       setUserId(user.id);
       const p = await getMyPersonalProfile();
       if (p) {
@@ -73,37 +74,37 @@ function MePage() {
   }, [publicUrl]);
 
   const save = async () => {
-    if (!form.full_name.trim()) { toast.error("Vui lòng nhập họ tên"); return; }
+    if (!form.full_name.trim()) { toast.error(t("me.errName")); return; }
     setSaving(true);
     const res = await upsertMyPersonalProfile(form);
     setSaving(false);
-    if (!res.ok) { toast.error("message" in res ? res.message : "Không lưu được"); return; }
+    if (!res.ok) { toast.error("message" in res ? res.message : t("me.errSave")); return; }
     setProfile(res.profile);
-    toast.success("Đã lưu danh thiếp cá nhân");
+    toast.success(t("me.successSave"));
   };
 
   const set = (k: keyof typeof EMPTY) => (e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, [k]: e.target.value });
 
-  const copy = async () => { await navigator.clipboard.writeText(publicUrl); toast.success("Đã sao chép liên kết"); };
+  const copy = async () => { await navigator.clipboard.writeText(publicUrl); toast.success(t("me.successCopy")); };
   const share = async () => {
     if (navigator.share) { try { await navigator.share({ title: form.full_name, url: publicUrl }); } catch {} } else copy();
   };
 
   return (
     <DashboardShell
-      title="Danh thiếp cá nhân"
-      subtitle="Card visit online của riêng bạn — dùng để trao đổi tại triển lãm, hội thảo."
+      title={t("me.title")}
+      subtitle={t("me.subtitle")}
       maxWidth="5xl"
       actions={
         <>
           {profile && (
             <>
-              <Link to="/p/$slug" params={{ slug: profile.slug }}><Button variant="outline" size="sm" className="gap-1.5"><Eye className="w-4 h-4" /> Xem</Button></Link>
-              <Link to="/print/$type/$slug" params={{ type: "personal", slug: profile.slug }}><Button variant="outline" size="sm" className="gap-1.5"><Printer className="w-4 h-4" /> Xuất bản in</Button></Link>
+              <Link to="/p/$slug" params={{ slug: profile.slug }}><Button variant="outline" size="sm" className="gap-1.5"><Eye className="w-4 h-4" /> {t("me.view")}</Button></Link>
+              <Link to="/print/$type/$slug" params={{ type: "personal", slug: profile.slug }}><Button variant="outline" size="sm" className="gap-1.5"><Printer className="w-4 h-4" /> {t("me.print")}</Button></Link>
             </>
           )}
           <Button onClick={save} disabled={saving || loading} size="sm" className="gap-1.5 bg-gradient-vivid text-white border-0 shadow-pink">
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Lưu
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t("me.save")}
           </Button>
         </>
       }
@@ -133,21 +134,21 @@ function MePage() {
           </aside>
         </div>
       ) : authed === false ? (
-        <div className="text-center py-16"><Link to="/login"><Button>Đăng nhập</Button></Link></div>
+        <div className="text-center py-16"><Link to="/login"><Button>{t("me.login")}</Button></Link></div>
       ) : (
         <div className="grid lg:grid-cols-[1fr_360px] gap-8 items-start">
           <div className="rounded-2xl border border-border bg-card p-6 space-y-8">
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">1</div>
-                Ảnh đại diện
+                {t("me.avatar")}
               </h2>
               <ImageUpload
                 bucket="avatars"
                 userId={userId}
                 value={form.avatar_url || null}
                 onChange={(url) => setForm({ ...form, avatar_url: url ?? "" })}
-                label="Tải lên ảnh đại diện"
+                label={t("me.uploadAvatar")}
                 aspect="square"
                 className="w-32"
               />
@@ -156,33 +157,33 @@ function MePage() {
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">2</div>
-                Thông tin cá nhân
+                {t("me.personalInfo")}
               </h2>
               <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5 sm:col-span-2"><Label>Họ và tên *</Label><Input value={form.full_name} onChange={set("full_name")} className="h-11" placeholder="Nhập họ tên của bạn" /></div>
-                <div className="space-y-1.5"><Label>Chức vụ</Label><Input value={form.job_title} onChange={set("job_title")} className="h-11" placeholder="Ví dụ: Giám đốc kinh doanh" /></div>
-                <div className="space-y-1.5"><Label>Công ty</Label><Input value={form.company_name} onChange={set("company_name")} className="h-11" placeholder="Ví dụ: Công ty ABC" /></div>
+                <div className="space-y-1.5 sm:col-span-2"><Label>{t("me.fullName")}</Label><Input value={form.full_name} onChange={set("full_name")} className="h-11" placeholder={t("me.fullNamePlaceholder")} /></div>
+                <div className="space-y-1.5"><Label>{t("me.jobTitle")}</Label><Input value={form.job_title} onChange={set("job_title")} className="h-11" placeholder={t("me.jobTitlePlaceholder")} /></div>
+                <div className="space-y-1.5"><Label>{t("me.company")}</Label><Input value={form.company_name} onChange={set("company_name")} className="h-11" placeholder={t("me.companyPlaceholder")} /></div>
               </div>
             </div>
 
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">3</div>
-                Thông tin liên hệ
+                {t("me.contactInfo")}
               </h2>
               <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5"><Label>Điện thoại</Label><Input value={form.phone} onChange={set("phone")} inputMode="tel" className="h-11" placeholder="09xxxx" /></div>
-                <div className="space-y-1.5"><Label>Zalo</Label><Input value={form.zalo} onChange={set("zalo")} className="h-11" placeholder="Mặc định = số điện thoại" /></div>
-                <div className="space-y-1.5 sm:col-span-2"><Label>Email</Label><Input value={form.email} onChange={set("email")} type="email" className="h-11" placeholder="email@example.com" /></div>
-                <div className="space-y-1.5"><Label>Facebook</Label><Input value={form.facebook_url} onChange={set("facebook_url")} className="h-11" placeholder="https://facebook.com/…" /></div>
-                <div className="space-y-1.5"><Label>LinkedIn</Label><Input value={form.linkedin_url} onChange={set("linkedin_url")} className="h-11" placeholder="https://linkedin.com/in/…" /></div>
+                <div className="space-y-1.5"><Label>{t("me.phone")}</Label><Input value={form.phone} onChange={set("phone")} inputMode="tel" className="h-11" placeholder="09xxxx" /></div>
+                <div className="space-y-1.5"><Label>{t("me.zalo")}</Label><Input value={form.zalo} onChange={set("zalo")} className="h-11" placeholder={t("me.zaloPlaceholder")} /></div>
+                <div className="space-y-1.5 sm:col-span-2"><Label>{t("me.email")}</Label><Input value={form.email} onChange={set("email")} type="email" className="h-11" placeholder="email@example.com" /></div>
+                <div className="space-y-1.5"><Label>{t("me.facebook")}</Label><Input value={form.facebook_url} onChange={set("facebook_url")} className="h-11" placeholder="https://facebook.com/…" /></div>
+                <div className="space-y-1.5"><Label>{t("me.linkedin")}</Label><Input value={form.linkedin_url} onChange={set("linkedin_url")} className="h-11" placeholder="https://linkedin.com/in/…" /></div>
               </div>
             </div>
 
             <div className="flex items-center justify-between rounded-2xl border border-primary/20 bg-primary/5 p-4">
               <div>
-                <p className="text-sm font-semibold">Trạng thái danh thiếp</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Ai có link/QR đều xem được. Tắt để ẩn tạm thời.</p>
+                <p className="text-sm font-semibold">{t("me.status")}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{t("me.statusDesc")}</p>
               </div>
               <Switch checked={form.is_public} onCheckedChange={(v) => setForm({ ...form, is_public: v })} />
             </div>
@@ -206,9 +207,9 @@ function MePage() {
                 )}
                 
                 <div className="mt-4 w-full">
-                  <p className="font-bold text-xl leading-tight truncate text-foreground">{form.full_name || "Họ tên của bạn"}</p>
+                  <p className="font-bold text-xl leading-tight truncate text-foreground">{form.full_name || t("me.defaultName")}</p>
                   <p className="text-sm text-muted-foreground truncate mt-1">
-                    {[form.job_title, form.company_name].filter(Boolean).join(" tại ") || "Chức vụ · Công ty"}
+                    {[form.job_title, form.company_name].filter(Boolean).join(" tại ") || t("me.defaultJob")}
                   </p>
                 </div>
               </div>
@@ -220,16 +221,16 @@ function MePage() {
                     <p className="text-[11px] text-muted-foreground mt-3 break-all font-medium">{publicUrl.replace(/^https?:\/\//, "")}</p>
                     <div className="flex gap-2 mt-4">
                       <Button variant="outline" size="sm" className="flex-1 gap-1.5 h-10 rounded-xl" onClick={copy}>
-                        <Copy className="w-4 h-4" /> Sao chép
+                        <Copy className="w-4 h-4" /> {t("me.copy")}
                       </Button>
                       <Button variant="outline" size="sm" className="flex-1 gap-1.5 h-10 rounded-xl" onClick={share}>
-                        <Share2 className="w-4 h-4" /> Chia sẻ
+                        <Share2 className="w-4 h-4" /> {t("me.share")}
                       </Button>
                     </div>
                   </div>
                 ) : (
                   <div className="bg-muted/30 p-8 rounded-2xl border border-dashed border-border/50">
-                    <p className="text-sm text-muted-foreground">Lưu danh thiếp để nhận mã QR riêng.</p>
+                    <p className="text-sm text-muted-foreground">{t("me.saveQR")}</p>
                   </div>
                 )}
               </div>

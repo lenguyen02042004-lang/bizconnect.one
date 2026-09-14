@@ -1,6 +1,7 @@
 import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 import { Navbar } from "@/components/Navbar";
 import { BusinessCard } from "@/components/BusinessCard";
+import { useTranslation } from "react-i18next";
 
 import { getBusinessBySlug } from "@/lib/business-public.functions";
 import { ArrowLeft } from "lucide-react";
@@ -56,29 +57,36 @@ export const Route = createFileRoute("/business/$slug")({
       scripts: [{ type: "application/ld+json", children: JSON.stringify(jsonLd) }],
     };
   },
-  errorComponent: ({ error }) => (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <div className="pt-32 text-center px-4">
-        <h1 className="font-display text-2xl font-bold mb-2">Không tải được doanh nghiệp</h1>
-        <p className="text-muted-foreground">{error.message}</p>
+  errorComponent: ({ error }) => {
+    const { t } = useTranslation();
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="pt-32 text-center px-4">
+          <h1 className="font-display text-2xl font-bold mb-2">{t("businessCard.errorLoad")}</h1>
+          <p className="text-muted-foreground">{error.message}</p>
+        </div>
       </div>
-    </div>
-  ),
-  notFoundComponent: () => (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <div className="pt-32 text-center px-4">
-        <h1 className="font-display text-2xl font-bold mb-2">Không tìm thấy doanh nghiệp</h1>
-        <p className="text-muted-foreground">Link có thể đã đổi hoặc doanh nghiệp chưa xuất bản.</p>
+    );
+  },
+  notFoundComponent: () => {
+    const { t } = useTranslation();
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="pt-32 text-center px-4">
+          <h1 className="font-display text-2xl font-bold mb-2">{t("businessCard.errorNotFound")}</h1>
+          <p className="text-muted-foreground">{t("businessCard.errorNotFoundDesc")}</p>
+        </div>
       </div>
-    </div>
-  ),
+    );
+  },
 });
 
 function BusinessDetailPage() {
   const { business } = Route.useLoaderData();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Animated Mesh-like Background */}
@@ -90,7 +98,7 @@ function BusinessDetailPage() {
       <main className="relative pt-24 pb-16 px-4 z-10">
         <div className="max-w-4xl mx-auto mb-4">
           <Button variant="ghost" onClick={() => window.history.back()} className="gap-2 text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="w-4 h-4" /> Quay lại
+            <ArrowLeft className="w-4 h-4" /> {t("businessCard.back")}
           </Button>
         </div>
         <BusinessCard business={business as any} mode="inline" />

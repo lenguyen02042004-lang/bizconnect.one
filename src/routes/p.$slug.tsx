@@ -16,6 +16,7 @@ import { QuickSignupExchange } from "@/components/QuickSignupExchange";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/p/$slug")({
   loader: async ({ params }) => {
@@ -60,8 +61,9 @@ function PublicPersonalCard() {
   const [copied, setCopied] = useState(false);
   const [showQuickSignup, setShowQuickSignup] = useState(false);
   const { user } = useAuth();
+  const { t } = useTranslation();
 
-  const url = typeof window !== "undefined" ? `${window.location.origin}/p/${slug}` : "";
+  const url = typeof window !== "undefined" ? `https://bizconnect.one/p/${slug}` : "";
 
   useEffect(() => {
     if (!url) return;
@@ -96,14 +98,14 @@ function PublicPersonalCard() {
       try { await navigator.share({ title: profile.full_name, url }); return; } catch { /* cancelled */ }
     }
     await navigator.clipboard.writeText(url);
-    toast.success("Đã sao chép liên kết");
+    toast.success(t("publicCard.copied"));
   };
 
   const copyLink = async () => {
     await navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-    toast.success("Đã sao chép liên kết!");
+    toast.success(t("publicCard.copiedExclaim"));
   };
 
   const zalo = (profile.zalo || profile.phone || "").replace(/\D/g, "");
@@ -127,9 +129,9 @@ function PublicPersonalCard() {
       }, { onConflict: profile.id ? "user_id,personal_profile_id" : "user_id,business_id" });
       if (error) throw error;
       setSaved(true);
-      toast.success(`Đã lưu "${profile.full_name}" vào danh bạ!`);
+      toast.success(t("publicCard.saveSuccess", { name: profile.full_name }));
     } catch (e: any) {
-      toast.error(e.message ?? "Lỗi khi lưu danh bạ");
+      toast.error(e.message ?? t("publicCard.saveError"));
     } finally { setSaving(false); }
   };
 
@@ -215,7 +217,7 @@ function PublicPersonalCard() {
                     <Phone className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Điện thoại</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("publicCard.phone")}</p>
                     <p className="font-bold text-sm">{profile.phone}</p>
                   </div>
                   <ExternalLink className="w-4 h-4 text-muted-foreground ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -229,7 +231,7 @@ function PublicPersonalCard() {
                     <Mail className="w-5 h-5 text-primary" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Email</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("publicCard.email")}</p>
                     <p className="font-bold text-sm truncate">{profile.email}</p>
                   </div>
                   <ExternalLink className="w-4 h-4 text-muted-foreground ml-auto shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -243,8 +245,8 @@ function PublicPersonalCard() {
                     <MessageCircle className="w-5 h-5 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Zalo</p>
-                    <p className="font-bold text-sm text-blue-700 dark:text-blue-400">Chat Zalo ngay</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("publicCard.zalo")}</p>
+                    <p className="font-bold text-sm text-blue-700 dark:text-blue-400">{t("publicCard.zaloDesc")}</p>
                   </div>
                   <ExternalLink className="w-4 h-4 text-blue-500 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                 </a>
@@ -273,7 +275,7 @@ function PublicPersonalCard() {
             <div className="px-5 py-5 border-b border-border/30 flex flex-col items-center">
               <div className="flex items-center gap-2 mb-4 self-start">
                 <div className="w-1 h-4 rounded-full bg-gradient-vivid" />
-                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Mã QR danh thiếp</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{t("publicCard.qrTitle")}</p>
               </div>
               <div className="flex gap-5 items-center w-full">
                 <div className="bg-white rounded-2xl p-3 shadow-md border border-gray-100 shrink-0">
@@ -285,10 +287,10 @@ function PublicPersonalCard() {
                 </div>
                 <div className="flex-1 space-y-2">
                   <p className="text-sm font-medium text-foreground leading-snug">
-                    Cho đối tác quét để xem & lưu danh thiếp
+                    {t("publicCard.qrDesc1")}
                   </p>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Hoạt động ngay trên điện thoại, không cần cài app
+                    {t("publicCard.qrDesc2")}
                   </p>
                   <div className="flex items-center gap-1.5 text-xs text-primary font-mono bg-primary/5 rounded-lg px-2.5 py-1.5 border border-primary/10">
                     <Globe className="w-3 h-3 shrink-0" />
@@ -316,7 +318,7 @@ function PublicPersonalCard() {
                 variant="outline"
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <CheckCircle2 className="w-4 h-4" /> : <BookmarkPlus className="w-4 h-4" />}
-                {saved ? "Đã lưu vào danh bạ" : saving ? "Đang lưu..." : "Lưu vào danh bạ"}
+                {saved ? t("publicCard.saved") : saving ? t("publicCard.saving") : t("publicCard.saveContact")}
               </Button>
 
               {/* Send card */}
@@ -327,7 +329,7 @@ function PublicPersonalCard() {
                 }}
                 className="w-full h-13 rounded-2xl bg-gradient-vivid text-white shadow-pink hover:shadow-lg hover:scale-[1.02] transition-all duration-300 font-bold text-sm border-0 gap-2"
               >
-                <Send className="w-4 h-4" /> Gửi danh thiếp của tôi
+                <Send className="w-4 h-4" /> {t("publicCard.sendCard")}
               </Button>
 
               {/* Secondary actions */}
@@ -344,11 +346,11 @@ function PublicPersonalCard() {
                   variant="outline"
                   className="h-11 rounded-xl gap-1.5 text-xs font-semibold"
                 >
-                  <Share2 className="w-3.5 h-3.5 text-primary" /> Chia sẻ
+                  <Share2 className="w-3.5 h-3.5 text-primary" /> {t("publicCard.share")}
                 </Button>
                 <Link to="/print/$type/$slug" params={{ type: "personal", slug }}>
                   <Button variant="outline" className="w-full h-11 rounded-xl gap-1.5 text-xs font-semibold">
-                    <Printer className="w-3.5 h-3.5 text-primary" /> In thẻ
+                    <Printer className="w-3.5 h-3.5 text-primary" /> {t("publicCard.print")}
                   </Button>
                 </Link>
               </div>

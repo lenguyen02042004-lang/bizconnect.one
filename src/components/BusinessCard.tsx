@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { maskPhone, maskEmail } from "@/lib/mask";
 import { isConnectedTo } from "@/lib/connect";
+import { useTranslation } from "react-i18next";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const viewedThisSession = new Set<string>();
@@ -43,7 +44,8 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
   const [showQuickSignup, setShowQuickSignup] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
-  const profileUrl = typeof window !== "undefined" ? `${window.location.origin}/business/${business.slug}` : "";
+  const { t } = useTranslation();
+  const profileUrl = typeof window !== "undefined" ? `https://bizconnect.one/business/${business.slug}` : "";
 
   const description = business.description || business.short_intro || "";
   const certifications = business.certifications || [];
@@ -93,7 +95,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
       try { await navigator.share({ title: business.name, text: business.short_intro, url: profileUrl }); } catch {}
     } else {
       await navigator.clipboard.writeText(profileUrl);
-      toast.success("Đã sao chép liên kết!");
+      toast.success(t("publicCard.copiedExclaim"));
     }
   };
 
@@ -101,7 +103,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
     await navigator.clipboard.writeText(profileUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-    toast.success("Đã sao chép liên kết!");
+    toast.success(t("publicCard.copiedExclaim"));
   };
 
   const handleSaveContact = async () => {
@@ -114,13 +116,13 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
     const res = await saveBusinessContact(business);
     setSaving(false);
     if (!res.ok) {
-      toast.error(res.message || "Không lưu được danh bạ");
+      toast.error(res.message || t("businessCard.saveError"));
       return;
     }
     setSaved(true);
-    toast.success("Đã lưu vào danh bạ của bạn", {
-      description: "Bạn có thể tra cứu sau tại trang Danh bạ.",
-      action: { label: "Mở danh bạ", onClick: () => navigate({ to: "/contacts" }) },
+    toast.success(t("businessCard.saveSuccess"), {
+      description: t("businessCard.saveSuccessDesc"),
+      action: { label: t("businessCard.openContacts"), onClick: () => navigate({ to: "/contacts" }) },
     });
   };
 
@@ -139,7 +141,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
         {mode === "modal" && onClose && (
           <button
             onClick={onClose}
-            aria-label="Đóng"
+            aria-label={t("businessCard.close")}
             className="absolute top-3 right-3 z-30 w-9 h-9 rounded-full bg-black/50 backdrop-blur text-white flex items-center justify-center hover:bg-black/70 transition-smooth"
           >
             <X className="w-4 h-4" />
@@ -219,10 +221,10 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
 
                 <div className="flex items-center gap-3 text-xs text-white/70 mb-3">
                   <span className="flex items-center gap-1">
-                    <Eye className="w-3 h-3" />{formatCount(business.views_count || 0)} lượt xem
+                    <Eye className="w-3 h-3" />{t("businessCard.views", { count: formatCount(business.views_count || 0) })}
                   </span>
                   <span className="flex items-center gap-1">
-                    <Users className="w-3 h-3" />{formatCount(business.followers_count || 0)} theo dõi
+                    <Users className="w-3 h-3" />{t("businessCard.followers", { count: formatCount(business.followers_count || 0) })}
                   </span>
                 </div>
 
@@ -239,7 +241,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
               {qrUrl && (
                 <button
                   onClick={() => setShowQR(true)}
-                  title="Xem & In mã QR"
+                  title={t("businessCard.viewPrintQR")}
                   className="shrink-0 hidden sm:block group"
                 >
                   <div className="w-20 h-20 rounded-xl bg-white p-1.5 shadow-xl hover:scale-105 transition-smooth relative">
@@ -265,7 +267,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
             >
               <img src={qrUrl} alt="QR Code" loading="lazy" decoding="async" className="w-14 h-14 rounded-lg bg-white p-1 shadow-sm" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold">Mã QR Danh Thiếp</p>
+                <p className="text-sm font-semibold">{t("businessCard.qrTitle")}</p>
                 <p className="text-xs text-muted-foreground truncate">{profileUrl.replace(/^https?:\/\//, "")}</p>
               </div>
               <QrCode className="w-4 h-4 text-muted-foreground shrink-0" />
@@ -283,7 +285,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                     <MapPin className="w-4 h-4 text-primary" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">Địa chỉ</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">{t("businessCard.address")}</p>
                     <p className="text-sm font-medium leading-snug">
                       {[business.address, business.province, business.country_name].filter(Boolean).join(", ")}
                     </p>
@@ -300,7 +302,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                       <Phone className="w-4 h-4 text-primary" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">Điện thoại</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">{t("businessCard.phone")}</p>
                       <p className="text-sm font-semibold text-primary">{business.phone}</p>
                     </div>
                   </a>
@@ -310,7 +312,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                       <Lock className="w-4 h-4 text-muted-foreground" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">Điện thoại</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">{t("businessCard.phone")}</p>
                       <p className="text-sm font-medium text-muted-foreground">{maskPhone(business.phone)}</p>
                     </div>
                   </div>
@@ -326,7 +328,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                       <Mail className="w-4 h-4 text-primary" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">Email</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">{t("businessCard.email")}</p>
                       <p className="text-sm font-medium truncate">{business.email}</p>
                     </div>
                   </a>
@@ -336,7 +338,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                       <Lock className="w-4 h-4 text-muted-foreground" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">Email</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">{t("businessCard.email")}</p>
                       <p className="text-sm font-medium text-muted-foreground truncate">{maskEmail(business.email)}</p>
                     </div>
                   </div>
@@ -351,7 +353,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                     <Globe className="w-4 h-4 text-primary" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">Website</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">{t("businessCard.website")}</p>
                     <p className="text-sm font-medium text-primary truncate">{business.website.replace(/^https?:\/\//, "")}</p>
                   </div>
                 </a>
@@ -366,16 +368,16 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                     <Handshake className="w-5 h-5 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm mb-0.5">Mở khóa thông tin liên hệ</p>
+                    <p className="font-semibold text-sm mb-0.5">{t("businessCard.unlockTitle")}</p>
                     <p className="text-xs text-muted-foreground mb-3">
-                      Gửi danh thiếp để kết nối giao thương và nhận thông tin liên hệ đầy đủ.
+                      {t("businessCard.unlockDesc")}
                     </p>
                     <Button
                       size="sm"
                       onClick={() => setShowSend(true)}
                       className="bg-gradient-vivid text-white border-0 shadow-pink gap-1.5"
                     >
-                      <Handshake className="w-3.5 h-3.5" /> Kết nối giao thương
+                      <Handshake className="w-3.5 h-3.5" /> {t("businessCard.unlockBtn")}
                     </Button>
                   </div>
                 </div>
@@ -387,7 +389,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
               <div>
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-1 h-4 rounded-full bg-gradient-vivid" />
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Giới thiệu</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{t("businessCard.about")}</p>
                 </div>
                 <p className="text-sm leading-relaxed text-foreground/85 whitespace-pre-line bg-accent/30 rounded-2xl p-4 border border-border/40">
                   {description}
@@ -400,7 +402,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
               <div>
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-1 h-4 rounded-full bg-gradient-vivid" />
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Chứng nhận & Danh hiệu</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{t("businessCard.certifications")}</p>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-2.5">
                   {certifications.map((c, i) => (
@@ -423,7 +425,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
               <div>
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-1 h-4 rounded-full bg-gradient-vivid" />
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Mạng xã hội</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{t("businessCard.socials")}</p>
                 </div>
                 <SocialIconList socials={business.socials} size="sm" />
               </div>
@@ -434,7 +436,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
               <div>
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-1 h-4 rounded-full bg-gradient-vivid" />
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Thư viện ảnh</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{t("businessCard.gallery")}</p>
                 </div>
                 <div className="grid grid-cols-5 gap-1.5">
                   {business.gallery!.slice(0, 5).map((src, i) => (
@@ -467,26 +469,26 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
             }}
             className="flex-1 bg-gradient-vivid hover:opacity-90 text-white border-0 shadow-pink h-11 gap-1.5 font-semibold"
           >
-            <Send className="w-4 h-4" /> Gửi card
+            <Send className="w-4 h-4" /> {t("businessCard.sendCard")}
           </Button>
           <Button
             onClick={handleSaveContact}
             disabled={saving}
             variant={saved ? "default" : "outline"}
             className={`h-11 gap-1.5 font-semibold ${saved ? "bg-green-500/15 text-green-600 border-green-500/30 hover:bg-green-500/20" : ""}`}
-            title={saved ? "Đã lưu trong danh bạ" : "Lưu vào danh bạ"}
+            title={saved ? t("businessCard.savedToContacts") : t("businessCard.saveToContacts")}
           >
             {saved ? <BookmarkCheck className="w-4 h-4" /> : <BookmarkPlus className="w-4 h-4" />}
-            <span className="hidden sm:inline text-sm">{saved ? "Đã lưu" : "Lưu"}</span>
+            <span className="hidden sm:inline text-sm">{saved ? t("businessCard.saved") : t("businessCard.save")}</span>
           </Button>
-          <Button variant="outline" size="icon" className="h-11 w-11" onClick={handleShare} title="Chia sẻ">
+          <Button variant="outline" size="icon" className="h-11 w-11" onClick={handleShare} title={t("businessCard.shareTitle")}>
             <Share2 className="w-4 h-4" />
           </Button>
           <Button
             variant="outline"
             size="icon"
             className="h-11 w-11"
-            title="In card visit & bảng QR"
+            title={t("businessCard.printTitle")}
             onClick={() => navigate({ to: "/print/$type/$slug", params: { type: "business", slug: business.slug } })}
           >
             <Printer className="w-4 h-4" />

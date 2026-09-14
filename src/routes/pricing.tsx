@@ -48,7 +48,7 @@ function vietQrUrl(amount: number, content: string, bankInfo: typeof BANK) {
 type PaymentTarget = {
   name: string;
   price: number;
-  subType?: "membership" | "extra_quota" | "icon_premium";
+  subType?: string;
   isAddon?: boolean;
   addonId?: string;
 };
@@ -111,33 +111,16 @@ function PricingPage() {
         .from("businesses").select("id").eq("owner_id", user.id).limit(1);
       const businessId = businesses?.[0]?.id ?? null;
 
-      const subType = target.subType ?? "membership";
+      const planId = target.subType ?? "membership";
 
-      // 1. Tạo payments_log (với trạng thái pending chờ admin check)
-      const { error: pErr } = await supabase.from("payments_log").insert({
-        user_id: user.id,
-        business_id: businessId,
-        amount: target.price,
-        currency: "USD",
-        provider: "manual",
-        type: subType,
-        status: "pending",
-        provider_payment_id: receiptUrl,
-        receipt_url: receiptUrl,
-      }).select("id").single();
-      if (pErr) throw pErr;
-
-      // 2. NGAY LẬP TỨC CẤP QUYỀN (trải nghiệm nhanh, admin duyệt sau)
-      const end = new Date();
-      end.setFullYear(end.getFullYear() + 1);
-      
-      const { error: sErr } = await supabase.from("subscriptions").insert({
-        user_id: user.id,
-        provider: "manual" as const,
-        status: "active" as const,
-        current_period_end: end.toISOString(),
+      // Sử dụng hàm RPC bảo mật (Trust First) thay vì insert trực tiếp
+      const { error: rpcErr } = await supabase.rpc("submit_manual_payment", {
+        p_plan_id: planId,
+        p_receipt_url: receiptUrl ?? "",
+        p_business_id: businessId,
       });
-      if (sErr) throw sErr;
+
+      if (rpcErr) throw rpcErr;
 
       toast.success(t("pricing.upgradeSuccess"));
       setShowModal(false);
@@ -254,13 +237,12 @@ function PricingPage() {
           <p className="text-muted-foreground max-w-xl mx-auto mb-8">
             {t("pricing.headerDesc")}
           </p>
-          <img src="/pricing.png" className="w-full max-w-4xl mx-auto h-auto rounded-3xl shadow-lg border border-border object-cover" alt="BizConnect.One Plans" />
         </div>
 
         {/* ── Tài khoản Doanh nghiệp ── */}
         <div className="mb-3">
           <h2 className="text-xl font-bold flex items-center gap-2 mb-4">
-            🏢 {t("pricing.bizAccount")}
+            {t("pricing.bizAccount")}
           </h2>
           <div className="grid md:grid-cols-3 gap-5 mb-6">
             {BUSINESS_PLANS.map((plan) => (
@@ -282,7 +264,7 @@ function PricingPage() {
                   <h3 className="text-lg font-bold">{plan.name}</h3>
                 </div>
                 <div className="mb-3">
-                  <span className="text-4xl font-bold">{plan.price === 0 ? "0" : (plan.price / 1000) + "k"}</span>
+                  <span className="text-4xl font-bold">{plan.price === 0 ? "0đ" : (plan.price / 1000) + "k"}</span>
                   <span className={plan.featured ? "opacity-80" : "text-muted-foreground"}>{plan.period}</span>
                 </div>
                 <p className={`text-sm mb-5 ${plan.featured ? "opacity-90" : "text-muted-foreground"}`}>{plan.description}</p>
@@ -310,38 +292,40 @@ function PricingPage() {
           </div>
 
           {/* Biz Add-ons */}
-          <div className="bg-card border border-border rounded-2xl p-5">
-            <h3 className="font-bold mb-3 text-sm text-muted-foreground uppercase tracking-wide">{t("pricing.bizAddons")}</h3>
-            <div className="space-y-3">
-              {BUSINESS_ADDONS.map((a) => (
-                <div key={a.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/50">
-                  <div>
-                    <p className="font-medium text-sm">{a.name}</p>
-                    <p className="text-xs text-muted-foreground">{a.desc}</p>
+          {BUSINESS_ADDONS.length > 0 && (
+            <div className="bg-card border border-border rounded-2xl p-5">
+              <h3 className="font-bold mb-3 text-sm text-muted-foreground uppercase tracking-wide">{t("pricing.bizAddons")}</h3>
+              <div className="space-y-3">
+                {BUSINESS_ADDONS.map((a) => (
+                  <div key={a.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/50">
+                    <div>
+                      <p className="font-medium text-sm">{a.name}</p>
+                      <p className="text-xs text-muted-foreground">{a.desc}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <p className="text-lg font-bold">{a.price === 0 ? "0đ" : (a.price / 1000) + "k"}</p>
+                      <Button size="sm" onClick={() => openPayment({ name: a.name, price: a.price, subType: a.id as PaymentTarget["subType"], isAddon: true })} className="gap-1 bg-gradient-vivid text-white border-0">
+                        <Plus className="w-3.5 h-3.5" /> {t("pricing.buyBtn")}
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <p className="text-lg font-bold">{a.price === 0 ? "0" : (a.price / 1000) + "k"}</p>
-                    <Button size="sm" onClick={() => openPayment({ name: a.name, price: a.price, subType: a.id as PaymentTarget["subType"], isAddon: true })} className="gap-1 bg-gradient-vivid text-white border-0">
-                      <Plus className="w-3.5 h-3.5" /> {t("pricing.buyBtn")}
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* ── Tài khoản Cá nhân ── */}
         <div className="mt-10">
           <h2 className="text-xl font-bold flex items-center gap-2 mb-4">
-            👤 {t("pricing.personalAccount")}
+            {t("pricing.personalAccount")}
           </h2>
           <div className="grid md:grid-cols-2 gap-5 mb-6">
             {PERSONAL_PLANS.map((plan) => (
               <div key={plan.id} className="bg-card border border-border shadow-card rounded-3xl p-6">
                 <h3 className="text-lg font-bold mb-2">{plan.name}</h3>
                 <div className="mb-3">
-                  <span className="text-4xl font-bold">{plan.price === 0 ? "0" : (plan.price / 1000) + "k"}</span>
+                  <span className="text-4xl font-bold">{plan.price === 0 ? "0đ" : (plan.price / 1000) + "k"}</span>
                   <span className="text-muted-foreground"> {t("pricing.forever")}</span>
                 </div>
                 <p className="text-sm text-muted-foreground mb-5">{plan.description}</p>
@@ -371,7 +355,7 @@ function PricingPage() {
                     <p className="text-xs text-muted-foreground">{a.desc}</p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <p className="text-lg font-bold">{a.price === 0 ? "0" : (a.price / 1000) + "k"}</p>
+                    <p className="text-lg font-bold">{a.price === 0 ? "0đ" : (a.price / 1000) + "k"}</p>
                     <Button size="sm" onClick={() => openPayment({ name: a.name, price: a.price, subType: a.id as PaymentTarget["subType"], isAddon: true })} className="gap-1 bg-gradient-vivid text-white border-0">
                       <Plus className="w-3.5 h-3.5" /> {t("pricing.buyBtn")}
                     </Button>

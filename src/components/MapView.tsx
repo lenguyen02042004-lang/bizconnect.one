@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import "leaflet/dist/leaflet.css";
 import type { BusinessProfile } from "@/types/business";
 
 interface Props {
@@ -28,9 +29,9 @@ export function MapView({ onSelect, businesses = [] }: Props) {
         });
         mapRef.current = map;
 
-        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          maxZoom: 19,
+        L.tileLayer("https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}", {
+          attribution: '&copy; Google Maps',
+          maxZoom: 20,
         }).addTo(map);
 
         // Fix Leaflet tile loading/size issue when container is initially hidden or 0 height
@@ -41,6 +42,12 @@ export function MapView({ onSelect, businesses = [] }: Props) {
         });
         resizeObserver.observe(ref.current);
         
+        setTimeout(() => {
+          if (mapRef.current) {
+            mapRef.current.invalidateSize();
+          }
+        }, 200);
+
         // Store observer to clean up later
         (mapRef.current as any)._resizeObserver = resizeObserver;
       } else {

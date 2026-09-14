@@ -8,6 +8,7 @@ import {
   Heart, Inbox, ArrowRight, Users, Share2, Copy, CheckCircle2, BookOpen, BarChart3,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation, Trans } from "react-i18next";
 import { toast } from "sonner";
 import { DashboardShell, DEMO_OWNER_PREFIX } from "@/components/DashboardShell";
 import { SubscriptionWidget } from "@/components/SubscriptionWidget";
@@ -35,10 +36,11 @@ type Stats = { unread: number; used: number; limit: number; contacts: number; fo
 function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [profile, setProfile] = useState<{ display_name: string | null; email: string | null; account_type?: string } | null>(null);
   const [businesses, setBusinesses] = useState<Biz[]>([]);
   const [loadingBiz, setLoadingBiz] = useState(true);
-  const [stats, setStats] = useState<Stats>({ unread: 0, used: 0, limit: 100, contacts: 0, following: 0, tier: "free" });
+  const [stats, setStats] = useState<Stats>({ unread: 0, used: 0, limit: 200, contacts: 0, following: 0, tier: "free" });
 
   useEffect(() => {
     if (!user) return;
@@ -75,8 +77,8 @@ function Dashboard() {
       setStats({
         unread,
         used: quota?.used_count ?? 0,
-        limit: quota?.limit ?? 100,
-        tier: (quota?.limit ?? 100) > 100 ? "b2b_premium" : "free",
+        limit: quota?.limit ?? 200,
+        tier: (quota?.limit ?? 200) > 200 ? "b2b_premium" : "free",
         contacts: contactsCount ?? 0,
         following: followingCount ?? 0,
       });
@@ -90,25 +92,25 @@ function Dashboard() {
   const shareLink = async (slug: string) => {
     const url = `${window.location.origin}/business/${slug}`;
     try {
-      if (navigator.share) await navigator.share({ url, title: "Danh thiếp doanh nghiệp" });
-      else { await navigator.clipboard.writeText(url); toast.success("Đã sao chép liên kết"); }
+      if (navigator.share) await navigator.share({ url, title: t("dashboard.yourLink") });
+      else { await navigator.clipboard.writeText(url); toast.success(t("dashboard.copied")); }
     } catch { /* user cancelled */ }
   };
 
   const copyLink = async (slug: string) => {
     await navigator.clipboard.writeText(`${window.location.origin}/business/${slug}`);
-    toast.success("Đã sao chép liên kết");
+    toast.success(t("dashboard.copied"));
   };
 
   return (
     <DashboardShell
-      title={`Xin chào, ${profile?.display_name ?? user?.email?.split("@")[0] ?? ""} 👋`}
-      subtitle="Quản lý danh thiếp, kết nối và hoạt động doanh nghiệp của bạn."
+      title={t("dashboard.title", { name: profile?.display_name ?? user?.email?.split("@")[0] ?? "" })}
+      subtitle={t("dashboard.subtitle")}
       actions={
         businesses.length === 0 ? (
           <Link to="/business/edit">
             <Button size="sm" className="gap-1.5 bg-gradient-vivid text-white border-0 shadow-pink">
-              <Plus className="w-4 h-4" /> Tạo danh thiếp
+              <Plus className="w-4 h-4" /> {t("dashboard.createCard")}
             </Button>
           </Link>
         ) : null
@@ -116,23 +118,23 @@ function Dashboard() {
     >
       {/* KPI grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-        <KpiCard icon={Eye} label="Lượt xem" value={totalViews.toLocaleString()} accent="from-rose-600 to-red-500" />
-        <KpiCard icon={Users} label="Người theo dõi" value={totalFollowers.toLocaleString()} accent="from-pink-600 to-rose-500" />
-        <KpiCard icon={Send} label={stats.tier === "b2b_premium" ? "Danh thiếp đã gửi (B2B)" : "Danh thiếp đã gửi (Free)"} value={`${stats.used} / ${stats.limit || 200}`} accent="from-orange-500 to-rose-500" highlight={stats.used >= stats.limit * 0.8} />
-        <KpiCard icon={Mail} label="Lời ngỏ chưa đọc" value={stats.unread.toLocaleString()} accent="from-red-700 to-rose-500" highlight={stats.unread > 0} />
+        <KpiCard icon={Eye} label={t("dashboard.views")} value={totalViews.toLocaleString()} accent="from-rose-600 to-red-500" />
+        <KpiCard icon={Users} label={t("dashboard.followers")} value={totalFollowers.toLocaleString()} accent="from-pink-600 to-rose-500" />
+        <KpiCard icon={Send} label={stats.tier === "b2b_premium" ? t("dashboard.cardsSentB2B") : t("dashboard.cardsSentFree")} value={`${stats.used} / ${stats.limit || 200}`} accent="from-orange-500 to-rose-500" highlight={stats.used >= stats.limit * 0.8} />
+        <KpiCard icon={Mail} label={t("dashboard.unreadInbox")} value={stats.unread.toLocaleString()} accent="from-red-700 to-rose-500" highlight={stats.unread > 0} />
       </div>
 
       {/* Shortcuts */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-10">
-        <ShortcutCard to="/inbox" icon={Inbox} title="Hộp thư"
-          description={stats.unread > 0 ? `${stats.unread} lời ngỏ chưa đọc` : "Không có lời ngỏ mới"}
+        <ShortcutCard to="/inbox" icon={Inbox} title={t("dashboard.inbox")}
+          description={stats.unread > 0 ? t("dashboard.inboxUnread", { count: stats.unread }) : t("dashboard.inboxEmpty")}
           badge={stats.unread > 0 ? stats.unread : undefined} />
-        <ShortcutCard to="/contacts" icon={BookOpen} title="Danh bạ"
-          description={`${stats.contacts} liên hệ đã lưu`} />
-        <ShortcutCard to="/following" icon={Heart} title="Đang theo dõi"
-          description={`${stats.following} doanh nghiệp`} />
-        <ShortcutCard to="/business/stats" icon={BarChart3} title="Thống kê"
-          description="Hiệu suất theo thời gian" />
+        <ShortcutCard to="/contacts" icon={BookOpen} title={t("dashboard.contacts")}
+          description={t("dashboard.contactsCount", { count: stats.contacts })} />
+        <ShortcutCard to="/following" icon={Heart} title={t("dashboard.following")}
+          description={t("dashboard.followingCount", { count: stats.following })} />
+        <ShortcutCard to="/business/stats" icon={BarChart3} title={t("dashboard.stats")}
+          description={t("dashboard.statsDesc")} />
       </div>
 
       {publicBiz && (
@@ -142,16 +144,16 @@ function Dashboard() {
               <Share2 className="w-5 h-5" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold">Liên kết danh thiếp của bạn</p>
+              <p className="text-sm font-semibold">{t("dashboard.yourLink")}</p>
               <p className="text-xs text-muted-foreground truncate">/business/{publicBiz.slug}</p>
             </div>
           </div>
           <div className="flex gap-2">
             <Button size="sm" variant="outline" onClick={() => copyLink(publicBiz.slug)} className="gap-1.5">
-              <Copy className="w-3.5 h-3.5" /> Sao chép
+              <Copy className="w-3.5 h-3.5" /> {t("dashboard.copy")}
             </Button>
             <Button size="sm" onClick={() => shareLink(publicBiz.slug)} className="gap-1.5 bg-gradient-vivid text-white border-0">
-              <Share2 className="w-3.5 h-3.5" /> Chia sẻ
+              <Share2 className="w-3.5 h-3.5" /> {t("dashboard.share")}
             </Button>
           </div>
         </div>
@@ -161,12 +163,14 @@ function Dashboard() {
       {stats.tier === "free" && businesses.length > 0 && (
         <div className="mb-6 rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/5 to-rose-500/5 p-4 flex flex-wrap items-center gap-3">
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-sm">🚀 Mua thêm Block Giao thương (Block 500) — <span className="text-primary">$5/năm</span></p>
-            <p className="text-xs text-muted-foreground mt-0.5">Tài khoản Free chỉ có 200 lượt gửi/năm. Mua thêm block 500 để mở rộng ngay lập tức giới hạn gửi và lưu danh bạ.</p>
+            <p className="font-semibold text-sm">
+              <Trans i18nKey="dashboard.upgradeTitle" components={{ 1: <span className="text-primary" /> }} />
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">{t("dashboard.upgradeDesc")}</p>
           </div>
           <Link to="/pricing">
             <Button size="sm" className="bg-gradient-vivid text-white border-0 gap-1.5 flex-shrink-0">
-              <Sparkles className="w-3.5 h-3.5" /> Nâng cấp ngay
+              <Sparkles className="w-3.5 h-3.5" /> {t("dashboard.upgradeBtn")}
             </Button>
           </Link>
         </div>
@@ -176,10 +180,10 @@ function Dashboard() {
       {businesses.length > 0 && <SubscriptionWidget />}
 
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="font-display text-xl font-bold">Doanh nghiệp của bạn</h2>
+        <h2 className="font-display text-xl font-bold">{t("dashboard.yourBiz")}</h2>
         {businesses.length > 0 && (
           <Link to="/business/edit" className="text-sm text-primary hover:underline inline-flex items-center gap-1">
-            <Plus className="w-3.5 h-3.5" /> Thêm mới
+            <Plus className="w-3.5 h-3.5" /> {t("dashboard.addBiz")}
           </Link>
         )}
       </div>
@@ -192,13 +196,13 @@ function Dashboard() {
           <div className="absolute -bottom-10 -left-10 w-64 h-64 rounded-full bg-white/10 blur-3xl" />
           <div className="relative">
             <Sparkles className="w-8 h-8 mb-3" />
-            <h2 className="text-2xl font-bold mb-2">Tạo danh thiếp doanh nghiệp đầu tiên</h2>
+            <h2 className="text-2xl font-bold mb-2">{t("dashboard.createFirstTitle")}</h2>
             <p className="opacity-90 mb-5 max-w-lg">
-              Đưa doanh nghiệp lên bản đồ thế giới chỉ trong 2 phút.
+              {t("dashboard.createFirstDesc")}
             </p>
             <Link to="/business/edit">
               <Button size="lg" className="bg-white text-primary hover:bg-white/90 gap-2">
-                Bắt đầu tạo <Sparkles className="w-4 h-4" />
+                {t("dashboard.createFirstBtn")} <Sparkles className="w-4 h-4" />
               </Button>
             </Link>
           </div>
@@ -221,7 +225,7 @@ function Dashboard() {
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <h3 className="font-semibold truncate">{b.name}</h3>
                     <Badge variant={b.status === "public" ? "default" : "secondary"} className={b.status === "public" ? "bg-primary text-primary-foreground border-0 gap-1" : ""}>
-                      {b.status === "public" ? <><CheckCircle2 className="w-3 h-3" /> Công khai</> : "Bản nháp"}
+                      {b.status === "public" ? <><CheckCircle2 className="w-3 h-3" /> {t("dashboard.statusPublic")}</> : t("dashboard.statusDraft")}
                     </Badge>
                   </div>
                   {(b.country_code || b.province) && (
@@ -237,15 +241,15 @@ function Dashboard() {
               </div>
               <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-border">
                 <Link to="/business/edit" search={{ id: b.id }}>
-                  <Button size="sm" variant="outline" className="gap-1"><Pencil className="w-3 h-3" /> Sửa</Button>
+                  <Button size="sm" variant="outline" className="gap-1"><Pencil className="w-3 h-3" /> {t("dashboard.edit")}</Button>
                 </Link>
                 {b.status === "public" && (
                   <>
                     <Link to="/business/$slug" params={{ slug: b.slug }}>
-                      <Button size="sm" variant="ghost" className="gap-1"><Eye className="w-3 h-3" /> Xem</Button>
+                      <Button size="sm" variant="ghost" className="gap-1"><Eye className="w-3 h-3" /> {t("dashboard.view")}</Button>
                     </Link>
                     <Button size="sm" variant="ghost" onClick={() => shareLink(b.slug)} className="gap-1">
-                      <Share2 className="w-3 h-3" /> Chia sẻ
+                      <Share2 className="w-3 h-3" /> {t("dashboard.share")}
                     </Button>
                   </>
                 )}

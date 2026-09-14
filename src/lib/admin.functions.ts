@@ -285,46 +285,22 @@ export const adminUpdatePaymentStatus = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     const ownerId: string | null = payment.user_id ?? (payment.businesses as any)?.owner_id ?? null;
-    const subType: string = payment.type ?? "b2b_premium";
     const bizId: string | null = data.business_id ?? payment.business_id ?? null;
+    
+    // Map payment_log type back to exact subscription plan ID
+    const paymentLogType = payment.type;
+    let subType = "b2b_block_500"; // default fallback
+    if (paymentLogType === "membership") subType = "b2b_block_500";
+    else if (paymentLogType === "icon_premium") subType = "icon_premium";
+    else if (paymentLogType === "extra_quota") subType = "contact_block_addon"; 
 
     if (data.status === "verified" && ownerId) {
       const now = new Date();
 
-      if (subType === "b2b_premium" || subType === "icon_premium") {
-        // b2b_block_500 is already granted instantly in pricing.tsx, so we skip it here.
-        // But for old logic (b2b_premium, icon_premium), we still grant:
-        const periodEnd = new Date(now);
-        periodEnd.setFullYear(periodEnd.getFullYear() + 1);
-
-        // Upsert subscription (extend if already active)
-        const { data: existing } = await supabaseAdmin
-          .from("subscriptions")
-          .select("id, current_period_end")
-          .eq("user_id", ownerId)
-          .eq("sub_type", subType)
-          .maybeSingle();
-
-        if (existing?.id) {
-          // Extend from current end date (stack years)
-          const currentEnd = existing.current_period_end ? new Date(existing.current_period_end) : now;
-          const newEnd = new Date(Math.max(currentEnd.getTime(), now.getTime()));
-          newEnd.setFullYear(newEnd.getFullYear() + 1);
-          await supabaseAdmin
-            .from("subscriptions")
-            .update({ status: "active", current_period_end: newEnd.toISOString() })
-            .eq("id", existing.id);
-        } else {
-          await supabaseAdmin.from("subscriptions").insert({
-            user_id: ownerId,
-            business_id: bizId,
-            status: "active" as const,
-            sub_type: subType,
-            provider: "manual" as const,
-            current_period_end: periodEnd.toISOString(),
-          });
-        }
-
+      if (subType === "b2b_block_500" || subType === "icon_premium") {
+        // Trải nghiệm nhanh đã được cấp trong bảng subscriptions ở frontend.
+        // Ở đây admin duyệt chỉ mang tính chất ghi nhận hoặc cập nhật thêm icon_tier.
+        
         // For icon_premium: also update icon_tier on the business
         if (subType === "icon_premium" && bizId) {
           await supabaseAdmin
@@ -332,61 +308,54 @@ export const adminUpdatePaymentStatus = createServerFn({ method: "POST" })
             .update({ icon_tier: "premium", premium_until: new Date(now.getFullYear() + 1, now.getMonth(), now.getDate()).toISOString() })
             .eq("id", bizId);
         }
-      } else if (subType === "extra_quota" || subType === "contact_block_addon") {
-        // Add-on: grant bonus credits or contact block
-        if (subType === "extra_quota" && bizId) {
-          const year = new Date().getFullYear();
-          await supabaseAdmin.from("message_quotas").upsert({
-            business_id: bizId,
-            period_year: year,
-            bonus_credits: 1000,
-          }, { onConflict: "business_id,period_year", ignoreDuplicates: false });
-          // Use raw SQL to increment instead
-          await (supabaseAdmin as any).rpc("admin_add_quota_bonus", { _user_id: ownerId, _amount: 1000 }).maybeSingle();
-        } else if (subType === "contact_block_addon") {
-          // Grant +500 wallet via service role update
-          await supabaseAdmin
-            .from("wallet_limits")
-            .upsert({ user_id: ownerId, blocks_purchased: 1, max_saved_allowed: 700 }, { onConflict: "user_id", ignoreDuplicates: false });
-          await supabaseAdmin.rpc("admin_add_wallet_block", { _user_id: ownerId }).maybeSingle();
-        }
       }
+      // Note: Nếu là contact_block_addon, subscription cũng đã được tạo ở frontend nên wallet_limits tự động tăng thông qua logic tính tổng active blocks!
+      // Không cần phải upsert wallet_limits thủ công ở đây nữa, vì get_my_wallet_limits quét bảng subscriptions.
     }
 
     if (data.status === "rejected" && bizId) {
       // Revoke icon premium if that's what was rejected
-      const subType: string = payment.type ?? "";
       if (subType === "icon_premium") {
         await supabaseAdmin
           .from("businesses")
           .update({ premium_until: null, icon_tier: "standard" })
           .eq("id", bizId);
       }
+      
       // Deactivate matching pending subscriptions
-      await supabaseAdmin
+      const { data: latestSub } = await supabaseAdmin
         .from("subscriptions")
-        .update({ status: "canceled" as const })
+        .select("id")
         .eq("business_id", bizId)
-        .eq("status", "active");
-    } else if (data.status === "rejected" && ownerId) {
-      // Revert the instantly granted subscription block
-      if (subType === "b2b_block_500" || subType === "b2b_premium" || subType === "icon_premium") {
-        const { data: latestSub } = await supabaseAdmin
-          .from("subscriptions")
-          .select("id")
-          .eq("user_id", ownerId)
-          .eq("sub_type", subType)
-          .eq("status", "active")
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .single();
+        .eq("sub_type", subType)
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-        if (latestSub) {
-          await supabaseAdmin
-            .from("subscriptions")
-            .update({ status: "canceled" as const })
-            .eq("id", latestSub.id);
-        }
+      if (latestSub) {
+        await supabaseAdmin
+          .from("subscriptions")
+          .update({ status: "canceled" as const })
+          .eq("id", latestSub.id);
+      }
+    } else if (data.status === "rejected" && ownerId) {
+      // Revert the instantly granted subscription block (Personal or Business via Owner)
+      const { data: latestSub } = await supabaseAdmin
+        .from("subscriptions")
+        .select("id")
+        .eq("user_id", ownerId)
+        .eq("sub_type", subType)
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (latestSub) {
+        await supabaseAdmin
+          .from("subscriptions")
+          .update({ status: "canceled" as const })
+          .eq("id", latestSub.id);
       }
     }
 

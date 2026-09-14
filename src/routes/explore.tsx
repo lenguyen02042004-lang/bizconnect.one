@@ -9,6 +9,7 @@ import { FollowButton } from "@/components/FollowButton";
 import { getExploreBusinesses, getGlobalLists } from "@/lib/business-public.functions";
 import { formatCount } from "@/lib/format";
 import { Eye } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const exploreSearchSchema = z.object({
   industry: z.string().optional(),
@@ -48,6 +49,7 @@ function ExplorePage() {
   const sp = Route.useSearch();
   const navigate = Route.useNavigate();
   const { businesses, countries: dbCountries, industries: dbIndustries } = Route.useLoaderData();
+  const { t } = useTranslation();
   
   const [country, setCountry] = useState(sp.country ?? "all");
   const [industry, setIndustry] = useState(sp.industry ?? "all");
@@ -74,9 +76,9 @@ function ExplorePage() {
         {/* Sidebar with filter + list */}
         <aside className="w-full lg:w-96 flex-shrink-0 border-r border-border bg-card flex flex-col">
           <div className="p-4 border-b border-border">
-            <h1 className="font-display text-2xl font-bold mb-1">Khám phá</h1>
+            <h1 className="font-display text-2xl font-bold mb-1">{t("nav.explore")}</h1>
             <p className="text-sm text-muted-foreground mb-3">
-              {filtered.length} doanh nghiệp được hiển thị
+              {filtered.length} {t("home.matchedBusinesses")}
             </p>
             <FilterBar
               countries={dbCountries as any} industries={dbIndustries as any}
@@ -99,7 +101,7 @@ function ExplorePage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-sm truncate">{b.name}</p>
-                  <p className="text-xs text-muted-foreground truncate">{b.country_name} · {b.industry}</p>
+                  <p className="text-xs text-muted-foreground truncate">{b.country_name} · {t(`industry.${b.industry_slug}`, { defaultValue: b.industry })}</p>
                   <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
                     <Eye className="w-3 h-3" /> {formatCount(b.views_count)}
                   </p>

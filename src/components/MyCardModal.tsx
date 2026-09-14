@@ -47,8 +47,8 @@ export function MyCardModal({ card, isOpen, onClose }: MyCardModalProps) {
   const profileUrl =
     typeof window !== "undefined"
       ? card.type === "business"
-        ? `${window.location.origin}/business/${card.slug}`
-        : `${window.location.origin}/p/${card.slug}`
+        ? `https://bizconnect.one/business/${card.slug}`
+        : `https://bizconnect.one/p/${card.slug}`
       : "";
 
   useEffect(() => {
@@ -107,7 +107,7 @@ export function MyCardModal({ card, isOpen, onClose }: MyCardModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className="max-w-sm p-0 overflow-hidden border-0 shadow-2xl bg-transparent gap-0"
+        className="max-w-sm p-0 overflow-hidden border-0 shadow-2xl bg-transparent gap-0 [&>button]:hidden"
         style={{ zIndex: 1200 }}
       >
         {/* Theme toggle header */}
