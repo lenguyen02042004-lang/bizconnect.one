@@ -25,8 +25,8 @@ type BusinessProfile = {
   country_name: string;
   industry: string;
   industry_slug: string;
-  lat: number;
-  lng: number;
+  lat: number | null;
+  lng: number | null;
   views_count: number;
   icon_tier: "standard" | "premium";
   short_intro: string;

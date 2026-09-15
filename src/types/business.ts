@@ -11,8 +11,8 @@ export interface BusinessProfile {
   country_code?: string;
   country_name?: string;
   province?: string;
-  lat?: number;
-  lng?: number;
+  lat?: number | null;
+  lng?: number | null;
   phone?: string;
   email?: string;
   website?: string;
