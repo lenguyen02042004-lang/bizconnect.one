@@ -126,29 +126,31 @@ export function MapView({ onSelect, businesses = [] }: Props) {
           });
           mapRef.current = map;
 
-          // OSM tiles — free, no API key, NO crossOrigin (OSM does not support CORS)
-          const osmLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            maxZoom: 19,
-            subdomains: "abc",
+          // PRIMARY: ESRI World Street Map — free, no API key needed, reliable globally
+          const esriLayer = L.tileLayer(
+            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+            {
+              attribution:
+                'Tiles &copy; <a href="https://www.esri.com/">Esri</a> &mdash; Source: Esri, DeLorme, NAVTEQ',
+              maxZoom: 19,
+            }
+          );
+
+          let osmFallbackApplied = false;
+          // FALLBACK: OSM if ESRI fails on any network
+          esriLayer.on("tileerror", () => {
+            if (osmFallbackApplied) return;
+            osmFallbackApplied = true;
+            map.removeLayer(esriLayer);
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+              attribution:
+                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+              subdomains: "abc",
+              maxZoom: 19,
+            }).addTo(map);
           });
 
-          let fallbackApplied = false;
-          // OSM may fail on some networks — fallback to ESRI World Street Map (free, no API key)
-          osmLayer.on("tileerror", () => {
-            if (fallbackApplied) return;
-            fallbackApplied = true;
-            map.removeLayer(osmLayer);
-            L.tileLayer(
-              "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-              {
-                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012',
-                maxZoom: 19,
-              }
-            ).addTo(map);
-          });
-
-          osmLayer.addTo(map);
+          esriLayer.addTo(map);
 
           // Fix container size issues
           const resizeObserver = new ResizeObserver(() => {
