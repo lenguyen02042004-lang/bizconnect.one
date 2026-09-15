@@ -1,16 +1,44 @@
 import {
-  Facebook, Instagram, Twitter, Linkedin, Youtube, Music, AtSign,
-  Image as ImageIcon, Ghost, MessageCircle, Send, MessageSquare,
-  MessageSquareText, CircleUser, Gamepad2, Globe, Github, Palette,
+  Facebook,
+  Instagram,
+  Twitter,
+  Linkedin,
+  Youtube,
+  Music,
+  AtSign,
+  Image as ImageIcon,
+  Ghost,
+  MessageCircle,
+  Send,
+  MessageSquare,
+  MessageSquareText,
+  CircleUser,
+  Gamepad2,
+  Globe,
+  Github,
+  Palette,
 } from "lucide-react";
 import { SOCIAL_PLATFORMS } from "@/lib/social-platforms";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
-  facebook: Facebook, instagram: Instagram, twitter: Twitter, linkedin: Linkedin,
-  youtube: Youtube, music: Music, "at-sign": AtSign, image: ImageIcon, ghost: Ghost,
-  "message-circle": MessageCircle, send: Send, "message-square": MessageSquare,
-  "message-square-text": MessageSquareText, "circle-user": CircleUser,
-  "gamepad-2": Gamepad2, globe: Globe, github: Github, palette: Palette,
+  facebook: Facebook,
+  instagram: Instagram,
+  twitter: Twitter,
+  linkedin: Linkedin,
+  youtube: Youtube,
+  music: Music,
+  "at-sign": AtSign,
+  image: ImageIcon,
+  ghost: Ghost,
+  "message-circle": MessageCircle,
+  send: Send,
+  "message-square": MessageSquare,
+  "message-square-text": MessageSquareText,
+  "circle-user": CircleUser,
+  "gamepad-2": Gamepad2,
+  globe: Globe,
+  github: Github,
+  palette: Palette,
 };
 
 interface Props {
@@ -28,7 +56,7 @@ export function SocialIconList({ socials, size = "md" }: Props) {
   return (
     <div className="flex flex-wrap gap-1.5">
       {entries.map(([key, url]) => {
-        const platform = SOCIAL_PLATFORMS.find(p => p.key === key);
+        const platform = SOCIAL_PLATFORMS.find((p) => p.key === key);
         if (!platform) return null;
         const Icon = ICON_MAP[platform.icon] ?? Globe;
         return (

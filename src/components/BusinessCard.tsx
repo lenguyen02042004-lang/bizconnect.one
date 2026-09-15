@@ -1,9 +1,30 @@
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import {
-  MapPin, Phone, Mail, Globe, Eye, Share2, X, Sparkles, Send, BookmarkPlus, BookmarkCheck,
-  Building2, Award, FileText, Lock, Handshake, Printer, ExternalLink, Users,
-  QrCode, Copy, CheckCircle2, Factory, Star,
+  MapPin,
+  Phone,
+  Mail,
+  Globe,
+  Eye,
+  Share2,
+  X,
+  Sparkles,
+  Send,
+  BookmarkPlus,
+  BookmarkCheck,
+  Building2,
+  Award,
+  FileText,
+  Lock,
+  Handshake,
+  Printer,
+  ExternalLink,
+  Users,
+  QrCode,
+  Copy,
+  CheckCircle2,
+  Factory,
+  Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -45,7 +66,8 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const profileUrl = typeof window !== "undefined" ? `https://bizconnect.one/business/${business.slug}` : "";
+  const profileUrl =
+    typeof window !== "undefined" ? `https://bizconnect.one/business/${business.slug}` : "";
 
   const description = business.description || business.short_intro || "";
   const certifications = business.certifications || [];
@@ -63,7 +85,9 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = prev; };
+    return () => {
+      document.body.style.overflow = prev;
+    };
   }, []);
 
   useEffect(() => {
@@ -92,7 +116,13 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
       supabase.rpc("increment_business_shares", { _id: business.id });
     }
     if (navigator.share) {
-      try { await navigator.share({ title: business.name, text: business.short_intro, url: profileUrl }); } catch {}
+      try {
+        await navigator.share({
+          title: business.name,
+          text: business.short_intro,
+          url: profileUrl,
+        });
+      } catch {}
     } else {
       await navigator.clipboard.writeText(profileUrl);
       toast.success(t("publicCard.copiedExclaim"));
@@ -122,7 +152,10 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
     setSaved(true);
     toast.success(t("businessCard.saveSuccess"), {
       description: t("businessCard.saveSuccessDesc"),
-      action: { label: t("businessCard.openContacts"), onClick: () => navigate({ to: "/contacts" }) },
+      action: {
+        label: t("businessCard.openContacts"),
+        onClick: () => navigate({ to: "/contacts" }),
+      },
     });
   };
 
@@ -152,7 +185,13 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
         <div className="relative shrink-0 overflow-hidden">
           {/* Background: banner or gradient */}
           {business.banner_url ? (
-            <img src={business.banner_url} alt="" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover" />
+            <img
+              src={business.banner_url}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-[#c8102e] via-[#9b0d23] to-[#5c0715]" />
           )}
@@ -167,7 +206,9 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
             <div className="flex gap-4 items-start">
               {/* Logo */}
               <div className="shrink-0 relative">
-                <div className={`${isPremium ? "ring-2 ring-yellow-400 ring-offset-2 ring-offset-transparent" : ""} rounded-2xl shadow-2xl`}>
+                <div
+                  className={`${isPremium ? "ring-2 ring-yellow-400 ring-offset-2 ring-offset-transparent" : ""} rounded-2xl shadow-2xl`}
+                >
                   {business.logo_url ? (
                     <img
                       src={`https://wsrv.nl/?url=${encodeURIComponent(business.logo_url)}&w=160&h=160&fit=cover`}
@@ -208,23 +249,33 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                 </div>
 
                 <h1 className="text-xl sm:text-2xl font-bold leading-tight tracking-tight mb-1">
-                  <a href={profileUrl} target="_blank" rel="noopener noreferrer"
-                    className="hover:text-white/90 flex items-start gap-1.5 group">
+                  <a
+                    href={profileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white/90 flex items-start gap-1.5 group"
+                  >
                     <span>{business.name}</span>
                     <ExternalLink className="w-4 h-4 opacity-60 group-hover:opacity-100 mt-0.5 shrink-0" />
                   </a>
                 </h1>
 
                 {business.short_intro && (
-                  <p className="text-sm text-white/80 line-clamp-2 leading-snug mb-2">{business.short_intro}</p>
+                  <p className="text-sm text-white/80 line-clamp-2 leading-snug mb-2">
+                    {business.short_intro}
+                  </p>
                 )}
 
                 <div className="flex items-center gap-3 text-xs text-white/70 mb-3">
                   <span className="flex items-center gap-1">
-                    <Eye className="w-3 h-3" />{t("businessCard.views", { count: formatCount(business.views_count || 0) })}
+                    <Eye className="w-3 h-3" />
+                    {t("businessCard.views", { count: formatCount(business.views_count || 0) })}
                   </span>
                   <span className="flex items-center gap-1">
-                    <Users className="w-3 h-3" />{t("businessCard.followers", { count: formatCount(business.followers_count || 0) })}
+                    <Users className="w-3 h-3" />
+                    {t("businessCard.followers", {
+                      count: formatCount(business.followers_count || 0),
+                    })}
                   </span>
                 </div>
 
@@ -245,7 +296,13 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                   className="shrink-0 hidden sm:block group"
                 >
                   <div className="w-20 h-20 rounded-xl bg-white p-1.5 shadow-xl hover:scale-105 transition-smooth relative">
-                    <img src={qrUrl} alt={`QR ${business.name}`} loading="lazy" decoding="async" className="w-full h-full" />
+                    <img
+                      src={qrUrl}
+                      alt={`QR ${business.name}`}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full"
+                    />
                     <div className="absolute inset-0 bg-black/20 rounded-xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                       <QrCode className="w-6 h-6 text-white" />
                     </div>
@@ -258,24 +315,30 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
 
         {/* === BODY === */}
         <div className="flex-1 overflow-y-auto">
-          
           {/* QR mobile strip */}
           {qrUrl && (
             <button
               onClick={() => setShowQR(true)}
               className="w-full sm:hidden flex items-center gap-3 px-4 py-3 bg-accent/30 border-b border-border/50 text-left hover:bg-accent/50 transition-colors"
             >
-              <img src={qrUrl} alt="QR Code" loading="lazy" decoding="async" className="w-14 h-14 rounded-lg bg-white p-1 shadow-sm" />
+              <img
+                src={qrUrl}
+                alt="QR Code"
+                loading="lazy"
+                decoding="async"
+                className="w-14 h-14 rounded-lg bg-white p-1 shadow-sm"
+              />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold">{t("businessCard.qrTitle")}</p>
-                <p className="text-xs text-muted-foreground truncate">{profileUrl.replace(/^https?:\/\//, "")}</p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {profileUrl.replace(/^https?:\/\//, "")}
+                </p>
               </div>
               <QrCode className="w-4 h-4 text-muted-foreground shrink-0" />
             </button>
           )}
 
           <div className="px-4 sm:px-6 py-5 space-y-6">
-
             {/* Contact info cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {/* Address */}
@@ -285,24 +348,32 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                     <MapPin className="w-4 h-4 text-primary" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">{t("businessCard.address")}</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">
+                      {t("businessCard.address")}
+                    </p>
                     <p className="text-sm font-medium leading-snug">
-                      {[business.address, business.province, business.country_name].filter(Boolean).join(", ")}
+                      {[business.address, business.province, business.country_name]
+                        .filter(Boolean)
+                        .join(", ")}
                     </p>
                   </div>
                 </div>
               )}
 
               {/* Phone */}
-              {business.phone && (
-                unlocked ? (
-                  <a href={`tel:${business.phone}`}
-                    className="flex items-start gap-3 p-3.5 rounded-2xl bg-accent/40 border border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-colors group">
+              {business.phone &&
+                (unlocked ? (
+                  <a
+                    href={`tel:${business.phone}`}
+                    className="flex items-start gap-3 p-3.5 rounded-2xl bg-accent/40 border border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-colors group"
+                  >
                     <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
                       <Phone className="w-4 h-4 text-primary" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">{t("businessCard.phone")}</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">
+                        {t("businessCard.phone")}
+                      </p>
                       <p className="text-sm font-semibold text-primary">{business.phone}</p>
                     </div>
                   </a>
@@ -312,23 +383,30 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                       <Lock className="w-4 h-4 text-muted-foreground" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">{t("businessCard.phone")}</p>
-                      <p className="text-sm font-medium text-muted-foreground">{maskPhone(business.phone)}</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">
+                        {t("businessCard.phone")}
+                      </p>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {maskPhone(business.phone)}
+                      </p>
                     </div>
                   </div>
-                )
-              )}
+                ))}
 
               {/* Email */}
-              {business.email && (
-                unlocked ? (
-                  <a href={`mailto:${business.email}`}
-                    className="flex items-start gap-3 p-3.5 rounded-2xl bg-accent/40 border border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-colors group">
+              {business.email &&
+                (unlocked ? (
+                  <a
+                    href={`mailto:${business.email}`}
+                    className="flex items-start gap-3 p-3.5 rounded-2xl bg-accent/40 border border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-colors group"
+                  >
                     <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
                       <Mail className="w-4 h-4 text-primary" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">{t("businessCard.email")}</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">
+                        {t("businessCard.email")}
+                      </p>
                       <p className="text-sm font-medium truncate">{business.email}</p>
                     </div>
                   </a>
@@ -338,23 +416,34 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                       <Lock className="w-4 h-4 text-muted-foreground" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">{t("businessCard.email")}</p>
-                      <p className="text-sm font-medium text-muted-foreground truncate">{maskEmail(business.email)}</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">
+                        {t("businessCard.email")}
+                      </p>
+                      <p className="text-sm font-medium text-muted-foreground truncate">
+                        {maskEmail(business.email)}
+                      </p>
                     </div>
                   </div>
-                )
-              )}
+                ))}
 
               {/* Website */}
               {business.website && (
-                <a href={business.website} target="_blank" rel="noopener noreferrer"
-                  className="flex items-start gap-3 p-3.5 rounded-2xl bg-accent/40 border border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-colors group">
+                <a
+                  href={business.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-3 p-3.5 rounded-2xl bg-accent/40 border border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-colors group"
+                >
                   <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
                     <Globe className="w-4 h-4 text-primary" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">{t("businessCard.website")}</p>
-                    <p className="text-sm font-medium text-primary truncate">{business.website.replace(/^https?:\/\//, "")}</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">
+                      {t("businessCard.website")}
+                    </p>
+                    <p className="text-sm font-medium text-primary truncate">
+                      {business.website.replace(/^https?:\/\//, "")}
+                    </p>
                   </div>
                 </a>
               )}
@@ -389,7 +478,9 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
               <div>
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-1 h-4 rounded-full bg-gradient-vivid" />
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{t("businessCard.about")}</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                    {t("businessCard.about")}
+                  </p>
                 </div>
                 <p className="text-sm leading-relaxed text-foreground/85 whitespace-pre-line bg-accent/30 rounded-2xl p-4 border border-border/40">
                   {description}
@@ -402,11 +493,16 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
               <div>
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-1 h-4 rounded-full bg-gradient-vivid" />
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{t("businessCard.certifications")}</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                    {t("businessCard.certifications")}
+                  </p>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-2.5">
                   {certifications.map((c, i) => (
-                    <div key={i} className="flex items-start gap-3 p-3.5 rounded-2xl bg-gradient-to-br from-accent/60 to-accent/20 border border-border/60">
+                    <div
+                      key={i}
+                      className="flex items-start gap-3 p-3.5 rounded-2xl bg-gradient-to-br from-accent/60 to-accent/20 border border-border/60"
+                    >
                       <div className="text-2xl leading-none mt-0.5">{c.icon || "🏅"}</div>
                       <div className="min-w-0">
                         <p className="text-sm font-bold leading-tight">{c.name}</p>
@@ -425,7 +521,9 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
               <div>
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-1 h-4 rounded-full bg-gradient-vivid" />
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{t("businessCard.socials")}</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                    {t("businessCard.socials")}
+                  </p>
                 </div>
                 <SocialIconList socials={business.socials} size="sm" />
               </div>
@@ -436,12 +534,23 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
               <div>
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-1 h-4 rounded-full bg-gradient-vivid" />
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{t("businessCard.gallery")}</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                    {t("businessCard.gallery")}
+                  </p>
                 </div>
                 <div className="grid grid-cols-5 gap-1.5">
                   {business.gallery!.slice(0, 5).map((src, i) => (
-                    <div key={i} className="aspect-square rounded-xl overflow-hidden bg-muted border border-border/40">
-                      <img src={src} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover hover:scale-110 transition-smooth" />
+                    <div
+                      key={i}
+                      className="aspect-square rounded-xl overflow-hidden bg-muted border border-border/40"
+                    >
+                      <img
+                        src={src}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover hover:scale-110 transition-smooth"
+                      />
                     </div>
                   ))}
                 </div>
@@ -451,12 +560,20 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
             {/* Share link */}
             <div className="flex items-center gap-2 p-3 rounded-2xl bg-accent/30 border border-border/40">
               <Globe className="w-4 h-4 text-muted-foreground shrink-0" />
-              <p className="text-xs text-muted-foreground truncate flex-1">{profileUrl.replace(/^https?:\/\//, "")}</p>
-              <button onClick={handleCopyLink} className="shrink-0 text-primary hover:text-primary/80 transition-colors">
-                {copied ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+              <p className="text-xs text-muted-foreground truncate flex-1">
+                {profileUrl.replace(/^https?:\/\//, "")}
+              </p>
+              <button
+                onClick={handleCopyLink}
+                className="shrink-0 text-primary hover:text-primary/80 transition-colors"
+              >
+                {copied ? (
+                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                ) : (
+                  <Copy className="w-4 h-4" />
+                )}
               </button>
             </div>
-
           </div>
         </div>
 
@@ -479,9 +596,17 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
             title={saved ? t("businessCard.savedToContacts") : t("businessCard.saveToContacts")}
           >
             {saved ? <BookmarkCheck className="w-4 h-4" /> : <BookmarkPlus className="w-4 h-4" />}
-            <span className="hidden sm:inline text-sm">{saved ? t("businessCard.saved") : t("businessCard.save")}</span>
+            <span className="hidden sm:inline text-sm">
+              {saved ? t("businessCard.saved") : t("businessCard.save")}
+            </span>
           </Button>
-          <Button variant="outline" size="icon" className="h-11 w-11" onClick={handleShare} title={t("businessCard.shareTitle")}>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-11 w-11"
+            onClick={handleShare}
+            title={t("businessCard.shareTitle")}
+          >
             <Share2 className="w-4 h-4" />
           </Button>
           <Button
@@ -489,7 +614,12 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
             size="icon"
             className="h-11 w-11"
             title={t("businessCard.printTitle")}
-            onClick={() => navigate({ to: "/print/$type/$slug", params: { type: "business", slug: business.slug } })}
+            onClick={() =>
+              navigate({
+                to: "/print/$type/$slug",
+                params: { type: "business", slug: business.slug },
+              })
+            }
           >
             <Printer className="w-4 h-4" />
           </Button>
@@ -517,14 +647,14 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
       {showQuickSignup && (
         <Dialog open={showQuickSignup} onOpenChange={setShowQuickSignup}>
           <DialogContent className="sm:max-w-md bg-card border-border">
-            <QuickSignupExchange 
-              toId={business.id} 
-              toType="business" 
+            <QuickSignupExchange
+              toId={business.id}
+              toType="business"
               onSuccess={() => {
                 setShowQuickSignup(false);
                 // Also trigger saving the contact after signup
                 setTimeout(() => window.location.reload(), 1500);
-              }} 
+              }}
             />
           </DialogContent>
         </Dialog>

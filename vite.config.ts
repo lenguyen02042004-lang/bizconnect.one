@@ -11,7 +11,7 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
-    // @ts-ignore — UserConfig from @lovable.dev/vite-tanstack-config doesn't expose `test`,
+    // @ts-expect-error — UserConfig from @lovable.dev/vite-tanstack-config doesn't expose `test`,
     // but Vitest reads it correctly at runtime via vite.config.ts merge.
     test: {
       globals: true,

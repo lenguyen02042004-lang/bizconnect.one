@@ -38,12 +38,9 @@ export function QRScannerDialog({ onClose }: QRScannerDialogProps) {
         // Prefer back camera
         const backCamera = videoInputDevices.find(
           (d: any) =>
-            d.label.toLowerCase().includes("back") ||
-            d.label.toLowerCase().includes("environment")
+            d.label.toLowerCase().includes("back") || d.label.toLowerCase().includes("environment"),
         );
-        const deviceId = backCamera
-          ? backCamera.deviceId
-          : videoInputDevices[0].deviceId;
+        const deviceId = backCamera ? backCamera.deviceId : videoInputDevices[0].deviceId;
 
         if (videoRef.current && reader && isScanning) {
           await reader.decodeFromVideoDevice(
@@ -89,7 +86,7 @@ export function QRScannerDialog({ onClose }: QRScannerDialogProps) {
               if (err && !(err instanceof ZXing.NotFoundException)) {
                 console.error("QR Scan Error:", err);
               }
-            }
+            },
           );
           setLoading(false);
         }
@@ -111,17 +108,14 @@ export function QRScannerDialog({ onClose }: QRScannerDialogProps) {
     };
   }, [preview]);
 
-  const fetchAndShowPreview = async (
-    type: "business" | "personal",
-    slug: string
-  ) => {
+  const fetchAndShowPreview = async (type: "business" | "personal", slug: string) => {
     toast.loading("Đang tải thông tin...", { id: "scan-load" });
     try {
       if (type === "business") {
         const { data } = await supabase
           .from("businesses")
           .select(
-            "id, name, slug, logo_url, phone, email, website, address, province, industry_id, industries(name)"
+            "id, name, slug, logo_url, phone, email, website, address, province, industry_id, industries(name)",
           )
           .eq("slug", slug)
           .maybeSingle();
@@ -147,9 +141,7 @@ export function QRScannerDialog({ onClose }: QRScannerDialogProps) {
       } else {
         const { data } = await supabase
           .from("personal_profiles")
-          .select(
-            "id, full_name, slug, avatar_url, job_title, company_name, phone, email"
-          )
+          .select("id, full_name, slug, avatar_url, job_title, company_name, phone, email")
           .eq("slug", slug)
           .eq("is_public", true)
           .maybeSingle();
@@ -193,11 +185,7 @@ export function QRScannerDialog({ onClose }: QRScannerDialogProps) {
             }}
           />
         ) : (
-          <PostScanSheet
-            preview={preview}
-            onClose={onClose}
-            onSendCard={() => setShowSend(true)}
-          />
+          <PostScanSheet preview={preview} onClose={onClose} onSendCard={() => setShowSend(true)} />
         )}
       </>
     );
@@ -212,9 +200,7 @@ export function QRScannerDialog({ onClose }: QRScannerDialogProps) {
     >
       <DialogContent className="sm:max-w-md p-0 overflow-hidden bg-black border-border rounded-3xl">
         <div className="relative flex flex-col items-center justify-center p-6 min-h-[340px]">
-          <h3 className="text-xl font-bold font-display mb-1 text-white">
-            Quét mã QR
-          </h3>
+          <h3 className="text-xl font-bold font-display mb-1 text-white">Quét mã QR</h3>
           <p className="text-sm text-white/60 text-center mb-5">
             Đưa mã QR của danh thiếp doanh nghiệp hoặc cá nhân vào khung hình.
           </p>

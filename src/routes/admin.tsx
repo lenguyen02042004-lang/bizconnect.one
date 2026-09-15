@@ -36,7 +36,12 @@ function AdminPage() {
 
   const adminQ = useQuery({ queryKey: ["is-admin"], queryFn: () => checkAdmin() });
 
-  if (adminQ.isLoading) return <Shell><p>Đang kiểm tra quyền...</p></Shell>;
+  if (adminQ.isLoading)
+    return (
+      <Shell>
+        <p>Đang kiểm tra quyền...</p>
+      </Shell>
+    );
   if (!adminQ.data?.isAdmin)
     return (
       <Shell>
@@ -66,9 +71,5 @@ function AdminPage() {
 }
 
 function Shell({ children }: { children: React.ReactNode }) {
-  return (
-    <DashboardShell maxWidth="6xl">
-      {children}
-    </DashboardShell>
-  );
+  return <DashboardShell maxWidth="6xl">{children}</DashboardShell>;
 }

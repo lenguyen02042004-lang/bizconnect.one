@@ -7,7 +7,7 @@ const getInitialLanguage = () => {
   if (typeof window !== "undefined") {
     const stored = localStorage.getItem("lang");
     if (stored) return stored;
-    
+
     // Auto detect from browser
     const browserLang = navigator.language.toLowerCase();
     if (browserLang.startsWith("vi")) return "vi";

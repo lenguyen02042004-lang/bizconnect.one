@@ -21,14 +21,20 @@ export const getMyLeads = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<{ leads: Lead[] }> => {
     const { supabase, userId } = context;
-    const { data: bizs } = await supabase.from("businesses").select("id, name").eq("owner_id", userId);
+    const { data: bizs } = await supabase
+      .from("businesses")
+      .select("id, name")
+      .eq("owner_id", userId);
     if (!bizs?.length) return { leads: [] };
     const bizMap = new Map(bizs.map((b) => [b.id, b.name]));
 
     const { data: conns, error } = await supabase
       .from("connections")
       .select("id, created_at, source, business_id, requester_id")
-      .in("business_id", bizs.map((b) => b.id))
+      .in(
+        "business_id",
+        bizs.map((b) => b.id),
+      )
       .order("created_at", { ascending: false })
       .limit(1000);
     if (error) throw new Error(error.message);
@@ -38,7 +44,10 @@ export const getMyLeads = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const ids = Array.from(new Set(conns.map((c) => c.requester_id)));
     const [{ data: pps }, { data: profs }] = await Promise.all([
-      supabaseAdmin.from("personal_profiles").select("user_id, slug, full_name, job_title, company_name, phone, zalo, email, avatar_url").in("user_id", ids),
+      supabaseAdmin
+        .from("personal_profiles")
+        .select("user_id, slug, full_name, job_title, company_name, phone, zalo, email, avatar_url")
+        .in("user_id", ids),
       supabaseAdmin.from("profiles").select("id, display_name, email, avatar_url").in("id", ids),
     ]);
     const ppMap = new Map((pps ?? []).map((p) => [p.user_id, p]));

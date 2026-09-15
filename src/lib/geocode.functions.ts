@@ -29,7 +29,13 @@ export const geocodeAddress = createServerFn({ method: "POST" })
       lat: string;
       lon: string;
       display_name: string;
-      address?: { country_code?: string; state?: string; city?: string; town?: string; village?: string };
+      address?: {
+        country_code?: string;
+        state?: string;
+        city?: string;
+        town?: string;
+        village?: string;
+      };
     }>;
 
     return {
@@ -38,7 +44,8 @@ export const geocodeAddress = createServerFn({ method: "POST" })
         lng: parseFloat(r.lon),
         label: r.display_name,
         country_code: r.address?.country_code?.toUpperCase() ?? null,
-        province: r.address?.state ?? r.address?.city ?? r.address?.town ?? r.address?.village ?? null,
+        province:
+          r.address?.state ?? r.address?.city ?? r.address?.town ?? r.address?.village ?? null,
       })),
     };
   });

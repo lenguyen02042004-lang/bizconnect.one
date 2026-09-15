@@ -11,16 +11,18 @@ const uuidLike = z
 export const sendCardVisit = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
-    z.object({
-      from_business: uuidLike.optional(),
-      to_business: uuidLike.optional(),
-      from_user: uuidLike.optional(),
-      to_user: uuidLike.optional(),
-      subject: z.string().trim().min(1).max(200),
-      body: z.string().trim().min(1).max(2000),
-    }).refine((data) => data.from_business || data.from_user, { message: "Phải chọn người gửi" })
+    z
+      .object({
+        from_business: uuidLike.optional(),
+        to_business: uuidLike.optional(),
+        from_user: uuidLike.optional(),
+        to_user: uuidLike.optional(),
+        subject: z.string().trim().min(1).max(200),
+        body: z.string().trim().min(1).max(2000),
+      })
+      .refine((data) => data.from_business || data.from_user, { message: "Phải chọn người gửi" })
       .refine((data) => data.to_business || data.to_user, { message: "Phải chọn người nhận" })
-      .parse(input)
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase } = context;
@@ -45,35 +47,51 @@ export const getInbox = createServerFn({ method: "GET" })
     // The RLS policy guarantees we only see our own messages.
     const { data: messages, error } = await supabase
       .from("connect_messages")
-      .select("id, subject, body, created_at, read_at, from_business_id, to_business_id, from_user_id, to_user_id")
+      .select(
+        "id, subject, body, created_at, read_at, from_business_id, to_business_id, from_user_id, to_user_id",
+      )
       .order("created_at", { ascending: false })
       .limit(100);
     if (error) throw new Error(error.message);
 
-    const bIds = Array.from(new Set(messages?.flatMap((m) => [m.from_business_id, m.to_business_id]).filter(Boolean) as string[]));
-    const uIds = Array.from(new Set(messages?.flatMap((m) => [m.from_user_id, m.to_user_id]).filter(Boolean) as string[]));
+    const bIds = Array.from(
+      new Set(
+        messages
+          ?.flatMap((m) => [m.from_business_id, m.to_business_id])
+          .filter(Boolean) as string[],
+      ),
+    );
+    const uIds = Array.from(
+      new Set(messages?.flatMap((m) => [m.from_user_id, m.to_user_id]).filter(Boolean) as string[]),
+    );
 
-    const { data: bizes } = bIds.length ? await supabase
-      .from("businesses")
-      .select("id, name, logo_url, slug, phone, email, website, address, province, country_code")
-      .in("id", bIds) : { data: [] };
-      
-    const { data: users } = uIds.length ? await supabase
-      .from("personal_profiles")
-      .select("id, full_name, avatar_url, slug, job_title, company_name")
-      .in("id", uIds) : { data: [] };
+    const { data: bizes } = bIds.length
+      ? await supabase
+          .from("businesses")
+          .select(
+            "id, name, logo_url, slug, phone, email, website, address, province, country_code",
+          )
+          .in("id", bIds)
+      : { data: [] };
+
+    const { data: users } = uIds.length
+      ? await supabase
+          .from("personal_profiles")
+          .select("id, full_name, avatar_url, slug, job_title, company_name")
+          .in("id", uIds)
+      : { data: [] };
 
     const bMap = new Map((bizes ?? []).map((b) => [b.id, b]));
     const uMap = new Map((users ?? []).map((u) => [u.id, u]));
 
-    return { 
-      messages: (messages ?? []).map((m) => ({ 
-        ...m, 
-        from_business: m.from_business_id ? bMap.get(m.from_business_id) : null, 
+    return {
+      messages: (messages ?? []).map((m) => ({
+        ...m,
+        from_business: m.from_business_id ? bMap.get(m.from_business_id) : null,
         to_business: m.to_business_id ? bMap.get(m.to_business_id) : null,
         from_user: m.from_user_id ? uMap.get(m.from_user_id) : null,
         to_user: m.to_user_id ? uMap.get(m.to_user_id) : null,
-      })) 
+      })),
     };
   });
 
@@ -123,14 +141,12 @@ export const getMyQuota = createServerFn({ method: "GET" })
       const base = 200;
       const used = row?.used_count ?? 0;
       const bonus = row?.bonus_credits ?? 0;
-      const limit = base + (activeBlocks * 500);
+      const limit = base + activeBlocks * 500;
       return { used_count: used, bonus_credits: bonus, limit };
     }
 
     return quota as { used_count: number; bonus_credits: number; limit: number };
   });
-
-
 
 export const getMyBusinesses = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -161,11 +177,22 @@ export const getBusinessStats = createServerFn({ method: "GET" })
       throw new Error("Not authorized");
     }
 
-    const [{ count: sentCount }, { count: receivedCount }, { count: unreadCount }] = await Promise.all([
-      supabase.from("connect_messages").select("*", { count: "exact", head: true }).eq("from_business_id", businessId),
-      supabase.from("connect_messages").select("*", { count: "exact", head: true }).eq("to_business_id", businessId),
-      supabase.from("connect_messages").select("*", { count: "exact", head: true }).eq("to_business_id", businessId).is("read_at", null),
-    ]);
+    const [{ count: sentCount }, { count: receivedCount }, { count: unreadCount }] =
+      await Promise.all([
+        supabase
+          .from("connect_messages")
+          .select("*", { count: "exact", head: true })
+          .eq("from_business_id", businessId),
+        supabase
+          .from("connect_messages")
+          .select("*", { count: "exact", head: true })
+          .eq("to_business_id", businessId),
+        supabase
+          .from("connect_messages")
+          .select("*", { count: "exact", head: true })
+          .eq("to_business_id", businessId)
+          .is("read_at", null),
+      ]);
 
     // Recent history (last 50 connections, both directions)
     const { data: history } = await supabase
@@ -176,7 +203,11 @@ export const getBusinessStats = createServerFn({ method: "GET" })
       .limit(50);
 
     const partnerIds = Array.from(
-      new Set((history ?? []).map((m) => (m.from_business_id === businessId ? m.to_business_id : m.from_business_id)).filter((id): id is string => id !== null))
+      new Set(
+        (history ?? [])
+          .map((m) => (m.from_business_id === businessId ? m.to_business_id : m.from_business_id))
+          .filter((id): id is string => id !== null),
+      ),
     );
     const { data: partners } = partnerIds.length
       ? await supabase.from("businesses").select("id, name, slug, logo_url").in("id", partnerIds)
@@ -208,8 +239,12 @@ export const getBusinessStats = createServerFn({ method: "GET" })
 
     return {
       business: {
-        id: biz.id, name: biz.name, slug: biz.slug, logo_url: biz.logo_url,
-        views_count: biz.views_count, followers_count: biz.followers_count,
+        id: biz.id,
+        name: biz.name,
+        slug: biz.slug,
+        logo_url: biz.logo_url,
+        views_count: biz.views_count,
+        followers_count: biz.followers_count,
       },
       counts: {
         sent: sentCount ?? 0,

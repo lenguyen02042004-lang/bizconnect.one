@@ -75,7 +75,9 @@ export const Route = createFileRoute("/business/$slug")({
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="pt-32 text-center px-4">
-          <h1 className="font-display text-2xl font-bold mb-2">{t("businessCard.errorNotFound")}</h1>
+          <h1 className="font-display text-2xl font-bold mb-2">
+            {t("businessCard.errorNotFound")}
+          </h1>
           <p className="text-muted-foreground">{t("businessCard.errorNotFoundDesc")}</p>
         </div>
       </div>
@@ -91,13 +93,20 @@ function BusinessDetailPage() {
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Animated Mesh-like Background */}
       <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-rose-500/20 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 animate-pulse" />
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-pink-500/20 rounded-full blur-[100px] translate-x-1/2 translate-y-1/2 animate-pulse" style={{ animationDelay: '2s' }} />
-      
+      <div
+        className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-pink-500/20 rounded-full blur-[100px] translate-x-1/2 translate-y-1/2 animate-pulse"
+        style={{ animationDelay: "2s" }}
+      />
+
       <Navbar />
-      
+
       <main className="relative pt-24 pb-16 px-4 z-10">
         <div className="max-w-4xl mx-auto mb-4">
-          <Button variant="ghost" onClick={() => window.history.back()} className="gap-2 text-muted-foreground hover:text-foreground">
+          <Button
+            variant="ghost"
+            onClick={() => window.history.back()}
+            className="gap-2 text-muted-foreground hover:text-foreground"
+          >
             <ArrowLeft className="w-4 h-4" /> {t("businessCard.back")}
           </Button>
         </div>

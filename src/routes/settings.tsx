@@ -18,7 +18,13 @@ export const Route = createFileRoute("/settings")({
     const { data } = await supabase.auth.getSession();
     if (!data.session) throw redirect({ to: "/login" });
   },
-  head: () => ({ meta: [{ title: i18n.t("settings.titleMeta", { defaultValue: "Cài đặt tài khoản — BizConnect.One" }) }] }),
+  head: () => ({
+    meta: [
+      {
+        title: i18n.t("settings.titleMeta", { defaultValue: "Cài đặt tài khoản — BizConnect.One" }),
+      },
+    ],
+  }),
 });
 
 function SettingsPage() {
@@ -33,7 +39,11 @@ function SettingsPage() {
   useEffect(() => {
     if (!user) return;
     setEmail(user.email ?? "");
-    supabase.from("profiles").select("display_name, avatar_url, email").eq("id", user.id).single()
+    supabase
+      .from("profiles")
+      .select("display_name, avatar_url, email")
+      .eq("id", user.id)
+      .single()
       .then(({ data }) => {
         if (data) {
           setDisplayName(data.display_name ?? "");
@@ -43,15 +53,24 @@ function SettingsPage() {
   }, [user]);
 
   if (!user) {
-    return <DashboardShell maxWidth="4xl"><div className="py-16 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div></DashboardShell>;
+    return (
+      <DashboardShell maxWidth="4xl">
+        <div className="py-16 flex justify-center">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        </div>
+      </DashboardShell>
+    );
   }
 
   const saveProfile = async () => {
     setSaving(true);
-    const { error } = await supabase.from("profiles").update({
-      display_name: displayName.trim() || null,
-      avatar_url: avatarUrl,
-    }).eq("id", user.id);
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        display_name: displayName.trim() || null,
+        avatar_url: avatarUrl,
+      })
+      .eq("id", user.id);
     setSaving(false);
     if (error) toast.error(error.message);
     else toast.success(t("settings.profileUpdated"));
@@ -78,28 +97,42 @@ function SettingsPage() {
   };
 
   return (
-    <DashboardShell
-      maxWidth="4xl"
-      title={t("settings.title")}
-      subtitle={t("settings.subtitle")}
-    >
+    <DashboardShell maxWidth="4xl" title={t("settings.title")} subtitle={t("settings.subtitle")}>
       <div className="space-y-6">
         {/* Profile */}
         <div className="bg-card border border-border rounded-3xl p-6 shadow-card">
-          <h2 className="font-semibold flex items-center gap-2 mb-4"><User className="w-4 h-4 text-primary" /> {t("settings.profile")}</h2>
+          <h2 className="font-semibold flex items-center gap-2 mb-4">
+            <User className="w-4 h-4 text-primary" /> {t("settings.profile")}
+          </h2>
           <div className="grid sm:grid-cols-[160px_1fr] gap-5">
             <ImageUpload
-              bucket="avatars" userId={user.id}
-              value={avatarUrl} onChange={setAvatarUrl}
-              label={t("settings.avatar")} aspect="square"
+              bucket="avatars"
+              userId={user.id}
+              value={avatarUrl}
+              onChange={setAvatarUrl}
+              label={t("settings.avatar")}
+              aspect="square"
             />
             <div className="space-y-3">
               <div>
                 <Label htmlFor="dn">{t("settings.displayName")}</Label>
-                <Input id="dn" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder={t("settings.displayNamePlaceholder")} />
+                <Input
+                  id="dn"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder={t("settings.displayNamePlaceholder")}
+                />
               </div>
-              <Button onClick={saveProfile} disabled={saving} className="gap-2 bg-gradient-vivid text-white border-0 shadow-pink">
-                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              <Button
+                onClick={saveProfile}
+                disabled={saving}
+                className="gap-2 bg-gradient-vivid text-white border-0 shadow-pink"
+              >
+                {saving ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
                 {t("settings.saveChanges")}
               </Button>
             </div>
@@ -108,20 +141,33 @@ function SettingsPage() {
 
         {/* Email */}
         <div className="bg-card border border-border rounded-3xl p-6 shadow-card">
-          <h2 className="font-semibold flex items-center gap-2 mb-4"><Mail className="w-4 h-4 text-primary" /> {t("settings.loginEmail")}</h2>
+          <h2 className="font-semibold flex items-center gap-2 mb-4">
+            <Mail className="w-4 h-4 text-primary" /> {t("settings.loginEmail")}
+          </h2>
           <div className="flex gap-2">
             <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            <Button onClick={updateEmail} variant="outline" disabled={email === user.email}>{t("settings.updateBtn")}</Button>
+            <Button onClick={updateEmail} variant="outline" disabled={email === user.email}>
+              {t("settings.updateBtn")}
+            </Button>
           </div>
           <p className="text-xs text-muted-foreground mt-2">{t("settings.emailCheckNotice")}</p>
         </div>
 
         {/* Password */}
         <div className="bg-card border border-border rounded-3xl p-6 shadow-card">
-          <h2 className="font-semibold flex items-center gap-2 mb-4"><KeyRound className="w-4 h-4 text-primary" /> {t("settings.changePwd")}</h2>
+          <h2 className="font-semibold flex items-center gap-2 mb-4">
+            <KeyRound className="w-4 h-4 text-primary" /> {t("settings.changePwd")}
+          </h2>
           <div className="flex gap-2">
-            <Input type="password" placeholder={t("settings.newPwdPlaceholder")} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-            <Button onClick={updatePassword} variant="outline" disabled={!newPassword}>{t("settings.changeBtn")}</Button>
+            <Input
+              type="password"
+              placeholder={t("settings.newPwdPlaceholder")}
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+            <Button onClick={updatePassword} variant="outline" disabled={!newPassword}>
+              {t("settings.changeBtn")}
+            </Button>
           </div>
         </div>
       </div>

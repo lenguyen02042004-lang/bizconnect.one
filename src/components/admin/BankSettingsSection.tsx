@@ -14,10 +14,19 @@ export function BankSettingsSection() {
   useQuery({
     queryKey: ["admin-bank-settings"],
     queryFn: async () => {
-      const { data } = await supabase.from("app_settings").select("value").eq("key", "bank_info").single();
+      const { data } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "bank_info")
+        .single();
       if (data?.value) {
         const val: any = data.value;
-        setBankInfo({ name: val.bank_name || "", account: val.account_number || "", owner: val.account_owner || "", bin: val.bin || "" });
+        setBankInfo({
+          name: val.bank_name || "",
+          account: val.account_number || "",
+          owner: val.account_owner || "",
+          bin: val.bin || "",
+        });
       }
       setLoading(false);
       return data;
@@ -33,7 +42,9 @@ export function BankSettingsSection() {
         bin: bankInfo.bin,
         vndRate: 25000,
       };
-      const { error } = await supabase.from("app_settings").upsert({ key: "bank_info", value: payload });
+      const { error } = await supabase
+        .from("app_settings")
+        .upsert({ key: "bank_info", value: payload });
       if (error) throw error;
     },
     onSuccess: () => toast.success("Đã cập nhật thông tin thanh toán!"),
@@ -46,23 +57,41 @@ export function BankSettingsSection() {
         <CreditCard className="w-5 h-5 text-primary" />
         <h2 className="font-display text-xl font-semibold">Cấu hình Thanh toán (VietQR)</h2>
       </div>
-      {loading ? <p>Đang tải...</p> : (
+      {loading ? (
+        <p>Đang tải...</p>
+      ) : (
         <div className="grid sm:grid-cols-2 gap-4 max-w-2xl">
           <div>
             <Label className="mb-1 block">Tên Ngân hàng</Label>
-            <Input value={bankInfo.name} onChange={(e) => setBankInfo({ ...bankInfo, name: e.target.value })} placeholder="VD: Vietcombank" />
+            <Input
+              value={bankInfo.name}
+              onChange={(e) => setBankInfo({ ...bankInfo, name: e.target.value })}
+              placeholder="VD: Vietcombank"
+            />
           </div>
           <div>
             <Label className="mb-1 block">Mã Ngân hàng (BIN VietQR)</Label>
-            <Input value={bankInfo.bin} onChange={(e) => setBankInfo({ ...bankInfo, bin: e.target.value })} placeholder="VD: 970436" />
+            <Input
+              value={bankInfo.bin}
+              onChange={(e) => setBankInfo({ ...bankInfo, bin: e.target.value })}
+              placeholder="VD: 970436"
+            />
           </div>
           <div>
             <Label className="mb-1 block">Số Tài khoản</Label>
-            <Input value={bankInfo.account} onChange={(e) => setBankInfo({ ...bankInfo, account: e.target.value })} placeholder="123456789" />
+            <Input
+              value={bankInfo.account}
+              onChange={(e) => setBankInfo({ ...bankInfo, account: e.target.value })}
+              placeholder="123456789"
+            />
           </div>
           <div>
             <Label className="mb-1 block">Tên Chủ Tài khoản</Label>
-            <Input value={bankInfo.owner} onChange={(e) => setBankInfo({ ...bankInfo, owner: e.target.value })} placeholder="NGUYEN VAN A" />
+            <Input
+              value={bankInfo.owner}
+              onChange={(e) => setBankInfo({ ...bankInfo, owner: e.target.value })}
+              placeholder="NGUYEN VAN A"
+            />
           </div>
           <div className="sm:col-span-2 pt-2">
             <Button onClick={() => mut.mutate()} disabled={mut.isPending}>

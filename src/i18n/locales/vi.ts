@@ -10,7 +10,7 @@ export default {
     login: "Đăng nhập",
     signup: "Bắt đầu miễn phí",
     logout: "Đăng xuất",
-    personal: "Quản lý cá nhân"
+    personal: "Quản lý cá nhân",
   },
   common: {
     search: "Tìm doanh nghiệp...",
@@ -28,13 +28,15 @@ export default {
     tagline: "Bản đồ doanh nghiệp toàn cầu",
     heroTitlePrefix: "Bản đồ doanh nghiệp",
     heroTitleGradient: "toàn cầu",
-    heroSubtitle: "Kết nối, gửi danh thiếp online và mở rộng đối tác B2B trên hơn {{count}}+ quốc gia.",
+    heroSubtitle:
+      "Kết nối, gửi danh thiếp online và mở rộng đối tác B2B trên hơn {{count}}+ quốc gia.",
     exploreBtn: "Khám phá ngay",
     map2dBtn: "Bản đồ 2D",
     worldwideB2BMap: "Worldwide B2B Map",
     searchFilterTitle: "Tìm doanh nghiệp trên khắp",
     searchFilterGradient: "thế giới",
-    searchFilterDesc: "Lọc theo tên, ngành nghề và quốc gia. {{count}} doanh nghiệp đã được lập chỉ mục.",
+    searchFilterDesc:
+      "Lọc theo tên, ngành nghề và quốc gia. {{count}} doanh nghiệp đã được lập chỉ mục.",
     searchPlaceholder: "Tìm tên doanh nghiệp...",
     clearFilter: "Xoá bộ lọc",
     matchedBusinesses: "doanh nghiệp khớp bộ lọc.",
@@ -50,30 +52,32 @@ export default {
     loadingGlobe: "Đang tải quả địa cầu...",
   },
   industry: {
-    "technology": "Công nghệ thông tin",
-    "finance": "Tài chính - Ngân hàng",
+    technology: "Công nghệ thông tin",
+    finance: "Tài chính - Ngân hàng",
     "real-estate": "Bất động sản",
-    "manufacturing": "Sản xuất",
-    "retail": "Thương mại - Bán lẻ",
-    "hospitality": "Du lịch - Khách sạn",
-    "education": "Giáo dục",
-    "healthcare": "Y tế - Sức khỏe",
+    manufacturing: "Sản xuất",
+    retail: "Thương mại - Bán lẻ",
+    hospitality: "Du lịch - Khách sạn",
+    education: "Giáo dục",
+    healthcare: "Y tế - Sức khỏe",
     "food-beverage": "Thực phẩm & Đồ uống",
-    "logistics": "Logistics - Vận tải",
-    "agriculture": "Nông nghiệp",
-    "energy": "Năng lượng",
-    "marketing": "Truyền thông - Marketing",
-    "consulting": "Tư vấn - Pháp lý",
-    "construction": "Xây dựng",
-    "fashion": "Thời trang - Làm đẹp",
-    "entertainment": "Giải trí - Nghệ thuật",
-    "automotive": "Ô tô - Xe máy",
-    "other": "Khác"
+    logistics: "Logistics - Vận tải",
+    agriculture: "Nông nghiệp",
+    energy: "Năng lượng",
+    marketing: "Truyền thông - Marketing",
+    consulting: "Tư vấn - Pháp lý",
+    construction: "Xây dựng",
+    fashion: "Thời trang - Làm đẹp",
+    entertainment: "Giải trí - Nghệ thuật",
+    automotive: "Ô tô - Xe máy",
+    other: "Khác",
   },
   auth: {
     signupTitle: "Đăng ký doanh nghiệp miễn phí — BizConnect.One",
-    signupDesc: "Tạo tài khoản doanh nghiệp miễn phí trên BizConnect.One: thiết kế danh thiếp online, hiển thị trên bản đồ toàn cầu và kết nối với đối tác B2B quốc tế.",
-    signupOgDesc: "Tạo tài khoản doanh nghiệp miễn phí: danh thiếp online, hiển thị trên bản đồ toàn cầu và kết nối đối tác B2B quốc tế.",
+    signupDesc:
+      "Tạo tài khoản doanh nghiệp miễn phí trên BizConnect.One: thiết kế danh thiếp online, hiển thị trên bản đồ toàn cầu và kết nối với đối tác B2B quốc tế.",
+    signupOgDesc:
+      "Tạo tài khoản doanh nghiệp miễn phí: danh thiếp online, hiển thị trên bản đồ toàn cầu và kết nối đối tác B2B quốc tế.",
     signupSuccess: "Đăng ký thành công!",
     signupHeading: "Bắt đầu miễn phí",
     signupSubheading: "Chọn loại tài khoản và tham gia mạng lưới giao thương toàn cầu",
@@ -90,8 +94,10 @@ export default {
     alreadyHaveAccount: "Đã có tài khoản?",
     loginHere: "Đăng nhập",
     loginTitle: "Đăng nhập tài khoản doanh nghiệp — BizConnect.One",
-    loginDesc: "Đăng nhập vào BizConnect.One để quản lý danh thiếp doanh nghiệp, hộp thư kết nối và danh bạ đối tác B2B toàn cầu của bạn.",
-    loginOgDesc: "Đăng nhập để quản lý danh thiếp doanh nghiệp, hộp thư kết nối và danh bạ đối tác B2B toàn cầu.",
+    loginDesc:
+      "Đăng nhập vào BizConnect.One để quản lý danh thiếp doanh nghiệp, hộp thư kết nối và danh bạ đối tác B2B toàn cầu của bạn.",
+    loginOgDesc:
+      "Đăng nhập để quản lý danh thiếp doanh nghiệp, hộp thư kết nối và danh bạ đối tác B2B toàn cầu.",
     loginSuccess: "Đăng nhập thành công!",
     welcomeBack: "Chào mừng trở lại",
     loginSubheading: "Đăng nhập để quản lý doanh nghiệp của bạn",
@@ -115,11 +121,12 @@ export default {
     confirmPwd: "Xác nhận mật khẩu",
     updating: "Đang cập nhật...",
     updatePwd: "Cập nhật mật khẩu",
-    backToLogin: "← Quay lại đăng nhập"
+    backToLogin: "← Quay lại đăng nhập",
   },
   meta: {
     homeTitle: "BizConnect.One — Bản đồ doanh nghiệp toàn cầu",
-    homeDesc: "Mạng lưới kết nối B2B và bản đồ doanh nghiệp. Tạo danh thiếp công ty và mở rộng cơ hội kinh doanh toàn cầu."
+    homeDesc:
+      "Mạng lưới kết nối B2B và bản đồ doanh nghiệp. Tạo danh thiếp công ty và mở rộng cơ hội kinh doanh toàn cầu.",
   },
   settings: {
     title: "Cài đặt tài khoản",
@@ -143,7 +150,8 @@ export default {
   },
   pricing: {
     titleMeta: "Bảng giá gói thành viên — BizConnect.One",
-    descMeta: "Chọn gói phù hợp: miễn phí để bắt đầu, B2B Premium 150k/năm với 500 lượt gửi card chủ động, Icon Premium nổi bật trên bản đồ.",
+    descMeta:
+      "Chọn gói phù hợp: miễn phí để bắt đầu, B2B Premium 150k/năm với 500 lượt gửi card chủ động, Icon Premium nổi bật trên bản đồ.",
     ogTitle: "Bảng giá — BizConnect.One",
     loginToUpgrade: "Vui lòng đăng nhập để nâng cấp",
     uploadSuccess: "Đã tải biên lai lên thành công",
@@ -154,7 +162,8 @@ export default {
     headerTag: "Bảng giá đơn giản, minh bạch",
     headerTitle: "Bắt đầu chỉ với",
     headerPrice: "150k/năm",
-    headerDesc: "Không phí ẩn · Không ràng buộc dài hạn · Thanh toán chuyển khoản, duyệt nhanh trong 24h",
+    headerDesc:
+      "Không phí ẩn · Không ràng buộc dài hạn · Thanh toán chuyển khoản, duyệt nhanh trong 24h",
     bizAccount: "Tài khoản Doanh nghiệp",
     personalAccount: "Tài khoản Cá nhân",
     forever: "vĩnh viễn",
@@ -184,7 +193,7 @@ export default {
         f2: "Nhận kết nối từ người khác",
         f3: "Quét QR Code tại sự kiện",
         f4: "Trang cá nhân + Mã QR",
-        cta: "Đăng ký miễn phí"
+        cta: "Đăng ký miễn phí",
       },
       bizFree: {
         name: "Doanh nghiệp Miễn phí",
@@ -194,7 +203,7 @@ export default {
         f3: "Hiển thị trên bản đồ toàn cầu",
         f4: "Trang chi tiết + Mã QR",
         f5: "Lọc & tìm kiếm",
-        cta: "Bắt đầu miễn phí"
+        cta: "Bắt đầu miễn phí",
       },
       bizBlock500: {
         name: "Block B2B 500",
@@ -207,7 +216,7 @@ export default {
         f5: "Tương tác qua Hộp thư nội bộ",
         f6: "Hỗ trợ kỹ thuật ưu tiên",
         cta: "Mua",
-        period: "/năm"
+        period: "/năm",
       },
       bizIconPremium: {
         name: "Icon Premium",
@@ -217,15 +226,15 @@ export default {
         f3: "Thứ hạng cao hơn trong tìm kiếm",
         f4: "Huy hiệu Premium",
         cta: "Nâng cấp",
-        period: "/năm"
-      }
+        period: "/năm",
+      },
     },
     addons: {
       contactBlock: {
         name: "Mở rộng danh bạ +500 liên hệ",
-        desc: "Thời hạn 1 năm."
-      }
-    }
+        desc: "Thời hạn 1 năm.",
+      },
+    },
   },
   me: {
     title: "Danh thiếp cá nhân",
@@ -260,7 +269,7 @@ export default {
     errName: "Vui lòng nhập họ tên",
     errSave: "Không lưu được",
     successSave: "Đã lưu danh thiếp cá nhân",
-    successCopy: "Đã sao chép liên kết"
+    successCopy: "Đã sao chép liên kết",
   },
   dashboard: {
     title: "Xin chào, {{name}} 👋",
@@ -286,7 +295,8 @@ export default {
     share: "Chia sẻ",
     copied: "Đã sao chép liên kết",
     upgradeTitle: "🚀 Mua thêm Block Giao thương (Block 500) — <1>150k/năm</1>",
-    upgradeDesc: "Tài khoản Free chỉ có 200 lượt gửi/năm. Mua thêm block 500 để mở rộng ngay lập tức giới hạn gửi và lưu danh bạ.",
+    upgradeDesc:
+      "Tài khoản Free chỉ có 200 lượt gửi/năm. Mua thêm block 500 để mở rộng ngay lập tức giới hạn gửi và lưu danh bạ.",
     upgradeBtn: "Nâng cấp ngay",
     yourBiz: "Doanh nghiệp của bạn",
     addBiz: "Thêm mới",
@@ -296,7 +306,7 @@ export default {
     statusPublic: "Công khai",
     statusDraft: "Bản nháp",
     edit: "Sửa",
-    view: "Xem"
+    view: "Xem",
   },
   publicCard: {
     phone: "Điện thoại",
@@ -311,11 +321,11 @@ export default {
     saveContact: "Lưu vào danh bạ",
     saving: "Đang lưu...",
     saved: "Đã lưu vào danh bạ",
-    saveSuccess: "Đã lưu \"{{name}}\" vào danh bạ!",
+    saveSuccess: 'Đã lưu "{{name}}" vào danh bạ!',
     saveError: "Lỗi khi lưu danh bạ",
     sendCard: "Gửi danh thiếp của tôi",
     print: "In thẻ",
-    share: "Chia sẻ"
+    share: "Chia sẻ",
   },
   businessCard: {
     views: "{{count}} lượt xem",
@@ -348,6 +358,6 @@ export default {
     errorLoad: "Không tải được doanh nghiệp",
     errorNotFound: "Không tìm thấy doanh nghiệp",
     errorNotFoundDesc: "Link có thể đã đổi hoặc doanh nghiệp chưa xuất bản.",
-    back: "Quay lại"
-  }
+    back: "Quay lại",
+  },
 };

@@ -7,7 +7,13 @@ import { MapView } from "@/components/MapView";
 import { BusinessCard } from "@/components/BusinessCard";
 import { FollowButton } from "@/components/FollowButton";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { getExploreBusinesses, getGlobalLists } from "@/lib/business-public.functions";
 import { formatCount } from "@/lib/format";
@@ -48,7 +54,10 @@ async function shareBusiness(b: BusinessProfile) {
   const url = `${window.location.origin}/business/${b.slug}`;
   const shareData = { title: b.name, text: b.short_intro || b.name, url };
   try {
-    if (navigator.share && (typeof navigator.canShare === "function" ? navigator.canShare(shareData) : true)) {
+    if (
+      navigator.share &&
+      (typeof navigator.canShare === "function" ? navigator.canShare(shareData) : true)
+    ) {
       await navigator.share(shareData);
       return;
     }
@@ -69,11 +78,11 @@ export const Route = createFileRoute("/country/$slug")({
     // Accept both SEO slug and legacy ISO code for backward compatibility.
     const listRes = await getGlobalLists();
     const country = listRes.countries.find(
-      (c) => c.code.toLowerCase() === key || c.name.toLowerCase().replace(/\s+/g, '-') === key,
+      (c) => c.code.toLowerCase() === key || c.name.toLowerCase().replace(/\s+/g, "-") === key,
     );
     if (!country) throw notFound();
     const bizesRes = await getExploreBusinesses();
-    const inCountry = bizesRes.businesses.filter(b => b.country_code === country.code);
+    const inCountry = bizesRes.businesses.filter((b) => b.country_code === country.code);
     return { country, inCountry, industries: listRes.industries, countries: listRes.countries };
   },
   head: ({ loaderData }) => {
@@ -110,14 +119,17 @@ function CountryNotFound() {
       <Navbar />
       <div className="pt-24 max-w-xl mx-auto text-center px-4">
         <h1 className="text-2xl font-bold mb-2">Không tìm thấy quốc gia</h1>
-        <p className="text-muted-foreground mb-4">
-          Quốc gia "{slug}" không có trong danh sách.
-        </p>
+        <p className="text-muted-foreground mb-4">Quốc gia "{slug}" không có trong danh sách.</p>
         <div className="flex items-center justify-center gap-4">
-          <Link to="/countries" className="text-primary hover:underline inline-flex items-center gap-1">
+          <Link
+            to="/countries"
+            className="text-primary hover:underline inline-flex items-center gap-1"
+          >
             <ArrowLeft className="w-4 h-4" /> Danh sách quốc gia
           </Link>
-          <Link to="/explore" className="text-primary hover:underline">Khám phá bản đồ</Link>
+          <Link to="/explore" className="text-primary hover:underline">
+            Khám phá bản đồ
+          </Link>
         </div>
       </div>
     </div>
@@ -137,8 +149,7 @@ function CountryPage() {
     () =>
       inCountry.filter((b) => {
         if (industry !== "all" && b.industry_slug !== industry) return false;
-        if (search && !b.name.toLowerCase().includes(search.toLowerCase()))
-          return false;
+        if (search && !b.name.toLowerCase().includes(search.toLowerCase())) return false;
         return true;
       }),
     [inCountry, industry, search],
@@ -153,7 +164,9 @@ function CountryPage() {
   const availableIndustries = industries.filter((i: any) => industryCounts.has(i.slug));
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  useEffect(() => { if (page > totalPages) setPage(1); }, [page, totalPages]);
+  useEffect(() => {
+    if (page > totalPages) setPage(1);
+  }, [page, totalPages]);
   const pageItems = useMemo(
     () => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
     [filtered, page],
@@ -179,10 +192,17 @@ function CountryPage() {
         {/* Header */}
         <header className="bg-card border-b border-border">
           <div className="max-w-7xl mx-auto px-4 py-8">
-            <nav aria-label="Breadcrumb" className="flex items-center flex-wrap gap-1.5 text-sm text-muted-foreground mb-3">
-              <Link to="/" className="hover:text-foreground">Trang chủ</Link>
+            <nav
+              aria-label="Breadcrumb"
+              className="flex items-center flex-wrap gap-1.5 text-sm text-muted-foreground mb-3"
+            >
+              <Link to="/" className="hover:text-foreground">
+                Trang chủ
+              </Link>
               <span>/</span>
-              <Link to="/countries" className="hover:text-foreground">Quốc gia</Link>
+              <Link to="/countries" className="hover:text-foreground">
+                Quốc gia
+              </Link>
               <span>/</span>
               <span className="text-foreground font-medium">{country.name}</span>
             </nav>
@@ -232,22 +252,31 @@ function CountryPage() {
                 <Input
                   placeholder="Tìm doanh nghiệp..."
                   value={search}
-                  onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
                   className="pl-9"
                 />
               </div>
-              <Select value={industry} onValueChange={(v) => { setIndustry(v); setPage(1); }}>
+              <Select
+                value={industry}
+                onValueChange={(v) => {
+                  setIndustry(v);
+                  setPage(1);
+                }}
+              >
                 <SelectTrigger className="sm:w-[200px]">
                   <SelectValue placeholder="Ngành nghề" />
                 </SelectTrigger>
                 <SelectContent>
-                <SelectItem value="all">Tất cả ngành nghề</SelectItem>
-                {industries.map((ind) => (
-                  <SelectItem key={ind.slug} value={ind.slug}>
-                    {ind.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
+                  <SelectItem value="all">Tất cả ngành nghề</SelectItem>
+                  {industries.map((ind) => (
+                    <SelectItem key={ind.slug} value={ind.slug}>
+                      {ind.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
               <div className="inline-flex rounded-md border border-border overflow-hidden">
                 <button
@@ -277,9 +306,12 @@ function CountryPage() {
               <>
                 <div className="flex items-center justify-between mb-3 text-xs text-muted-foreground">
                   <span>
-                    Hiển thị {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} / {filtered.length}
+                    Hiển thị {(page - 1) * PAGE_SIZE + 1}–
+                    {Math.min(page * PAGE_SIZE, filtered.length)} / {filtered.length}
                   </span>
-                  <span>Trang {page} / {totalPages}</span>
+                  <span>
+                    Trang {page} / {totalPages}
+                  </span>
                 </div>
 
                 {view === "grid" ? (
@@ -292,7 +324,9 @@ function CountryPage() {
                           onClick={() => setSelected(b)}
                           role="button"
                           tabIndex={0}
-                          onKeyDown={(e) => { if (e.key === "Enter") setSelected(b); }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") setSelected(b);
+                          }}
                           className="group relative rounded-2xl bg-card border border-border/40 hover:border-primary/40 hover:shadow-soft transition-smooth cursor-pointer overflow-hidden flex flex-col"
                         >
                           {/* Banner */}
@@ -308,7 +342,10 @@ function CountryPage() {
                               <div className="w-full h-full bg-gradient-to-br from-primary/30 to-accent/30" />
                             )}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                            <div className="absolute top-2 right-2 flex gap-1.5" onClick={(e) => e.stopPropagation()}>
+                            <div
+                              className="absolute top-2 right-2 flex gap-1.5"
+                              onClick={(e) => e.stopPropagation()}
+                            >
                               <button
                                 type="button"
                                 onClick={() => shareBusiness(b)}
@@ -324,24 +361,41 @@ function CountryPage() {
                           {/* Body */}
                           <div className="px-4 pt-0 pb-4 flex-1 flex flex-col">
                             <div className="flex items-start gap-3 -mt-7">
-                              <div className={`shrink-0 rounded-2xl bg-white p-1 shadow-md ${b.icon_tier === "premium" ? "ring-premium" : ""}`}>
-                                <img src={b.logo_url} alt={`Logo ${b.name}`} loading="lazy" decoding="async" className="w-14 h-14 rounded-xl object-cover" />
+                              <div
+                                className={`shrink-0 rounded-2xl bg-white p-1 shadow-md ${b.icon_tier === "premium" ? "ring-premium" : ""}`}
+                              >
+                                <img
+                                  src={b.logo_url}
+                                  alt={`Logo ${b.name}`}
+                                  loading="lazy"
+                                  decoding="async"
+                                  className="w-14 h-14 rounded-xl object-cover"
+                                />
                               </div>
                               <div className="min-w-0 flex-1 pt-8">
-                                <h3 className="font-semibold text-sm leading-tight line-clamp-2">{b.name}</h3>
-                                <p className="text-xs text-muted-foreground truncate mt-0.5">{b.industry}</p>
+                                <h3 className="font-semibold text-sm leading-tight line-clamp-2">
+                                  {b.name}
+                                </h3>
+                                <p className="text-xs text-muted-foreground truncate mt-0.5">
+                                  {b.industry}
+                                </p>
                               </div>
                             </div>
 
                             {b.short_intro && (
-                              <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{b.short_intro}</p>
+                              <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
+                                {b.short_intro}
+                              </p>
                             )}
 
                             {/* Gallery — quick 5 */}
                             {thumbs.length > 0 && (
                               <div className="mt-3 grid grid-cols-5 gap-1">
                                 {thumbs.map((src, i) => (
-                                  <div key={i} className="relative aspect-square rounded-md overflow-hidden bg-muted">
+                                  <div
+                                    key={i}
+                                    className="relative aspect-square rounded-md overflow-hidden bg-muted"
+                                  >
                                     <img
                                       src={src}
                                       alt={`${b.name} — ảnh ${i + 1}`}
@@ -350,7 +404,7 @@ function CountryPage() {
                                     />
                                     {i === 4 && (b.gallery?.length ?? 0) > 5 && (
                                       <div className="absolute inset-0 bg-black/55 text-white text-[11px] font-medium flex items-center justify-center">
-                                        +{(b.gallery!.length - 5)}
+                                        +{b.gallery!.length - 5}
                                       </div>
                                     )}
                                   </div>
@@ -380,20 +434,39 @@ function CountryPage() {
                         onClick={() => setSelected(b)}
                         role="button"
                         tabIndex={0}
-                        onKeyDown={(e) => { if (e.key === "Enter") setSelected(b); }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") setSelected(b);
+                        }}
                         className="p-3 rounded-2xl bg-card hover:bg-accent transition-smooth border border-border/40 hover:border-primary/40 hover:shadow-soft flex gap-3 items-center cursor-pointer"
                       >
-                        <div className={b.icon_tier === "premium" ? "ring-premium flex-shrink-0" : "flex-shrink-0"}>
-                          <img src={b.logo_url} alt={`Logo ${b.name}`} loading="lazy" decoding="async" className="w-12 h-12 rounded-full bg-white object-cover" />
+                        <div
+                          className={
+                            b.icon_tier === "premium"
+                              ? "ring-premium flex-shrink-0"
+                              : "flex-shrink-0"
+                          }
+                        >
+                          <img
+                            src={b.logo_url}
+                            alt={`Logo ${b.name}`}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-12 h-12 rounded-full bg-white object-cover"
+                          />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-sm truncate">{b.name}</p>
-                          <p className="text-xs text-muted-foreground truncate">{b.industry} · {b.province}</p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {b.industry} · {b.province}
+                          </p>
                           <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
                             <Eye className="w-3 h-3" /> {formatCount(b.views_count)}
                           </p>
                         </div>
-                        <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                        <div
+                          className="flex items-center gap-1 shrink-0"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <button
                             type="button"
                             onClick={() => shareBusiness(b)}
@@ -421,7 +494,9 @@ function CountryPage() {
                     </Button>
                     {pageNumbers.map((n, i) =>
                       n === "…" ? (
-                        <span key={`e${i}`} className="px-2 text-muted-foreground text-sm">…</span>
+                        <span key={`e${i}`} className="px-2 text-muted-foreground text-sm">
+                          …
+                        </span>
                       ) : (
                         <Button
                           key={n}
@@ -458,17 +533,21 @@ function CountryPage() {
         <section className="max-w-7xl mx-auto px-4 pb-16">
           <h2 className="font-display text-xl font-bold mb-4">Khám phá quốc gia khác</h2>
           <div className="flex flex-wrap gap-2">
-            {countries.filter((c: any) => c.code !== country.code).map((c: any) => (
-              <Link
-                key={c.code}
-                to="/country/$slug"
-                params={{ slug: c.code.toLowerCase() }}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-card hover:bg-accent border border-border/50 text-sm transition-smooth"
-              >
-                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{c.code}</span>
-                {c.name}
-              </Link>
-            ))}
+            {countries
+              .filter((c: any) => c.code !== country.code)
+              .map((c: any) => (
+                <Link
+                  key={c.code}
+                  to="/country/$slug"
+                  params={{ slug: c.code.toLowerCase() }}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-card hover:bg-accent border border-border/50 text-sm transition-smooth"
+                >
+                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
+                    {c.code}
+                  </span>
+                  {c.name}
+                </Link>
+              ))}
           </div>
         </section>
       </div>

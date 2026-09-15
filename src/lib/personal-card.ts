@@ -31,7 +31,9 @@ export function slugifyName(name: string): string {
 }
 
 export async function getMyPersonalProfile(): Promise<PersonalProfile | null> {
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return null;
   const { data } = await supabase
     .from("personal_profiles")
@@ -55,7 +57,9 @@ export type PersonalCardInput = {
 };
 
 export async function upsertMyPersonalProfile(input: PersonalCardInput) {
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return { ok: false as const, reason: "auth" as const };
 
   const existing = await getMyPersonalProfile();

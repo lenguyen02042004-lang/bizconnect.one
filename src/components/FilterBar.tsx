@@ -1,4 +1,10 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "react-i18next";
@@ -14,7 +20,16 @@ interface Props {
   onSearch: (v: string) => void;
 }
 
-export function FilterBar({ countries, industries, country, industry, search, onCountry, onIndustry, onSearch }: Props) {
+export function FilterBar({
+  countries,
+  industries,
+  country,
+  industry,
+  search,
+  onCountry,
+  onIndustry,
+  onSearch,
+}: Props) {
   const { t } = useTranslation();
   return (
     <div className="glass rounded-2xl p-3 flex flex-col sm:flex-row gap-2 shadow-card">
@@ -28,13 +43,17 @@ export function FilterBar({ countries, industries, country, industry, search, on
         />
       </div>
       <Select value={country} onValueChange={onCountry}>
-        <SelectTrigger className="sm:w-[180px] bg-background/70"><SelectValue placeholder={t("common.country")} /></SelectTrigger>
+        <SelectTrigger className="sm:w-[180px] bg-background/70">
+          <SelectValue placeholder={t("common.country")} />
+        </SelectTrigger>
         <SelectContent className="max-h-72">
           <SelectItem value="all">{t("common.allCountries")}</SelectItem>
           {countries.map((c) => (
             <SelectItem key={c.code} value={c.code}>
               <span className="inline-flex items-center gap-2">
-                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{c.code}</span>
+                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
+                  {c.code}
+                </span>
                 {c.name}
               </span>
             </SelectItem>
@@ -42,11 +61,15 @@ export function FilterBar({ countries, industries, country, industry, search, on
         </SelectContent>
       </Select>
       <Select value={industry} onValueChange={onIndustry}>
-        <SelectTrigger className="sm:w-[200px] bg-background/70"><SelectValue placeholder={t("common.industry")} /></SelectTrigger>
+        <SelectTrigger className="sm:w-[200px] bg-background/70">
+          <SelectValue placeholder={t("common.industry")} />
+        </SelectTrigger>
         <SelectContent className="max-h-72">
           <SelectItem value="all">{t("common.allIndustries")}</SelectItem>
           {industries.map((i) => (
-            <SelectItem key={i.slug} value={i.slug}>{t(`industry.${i.slug}`, { defaultValue: i.name })}</SelectItem>
+            <SelectItem key={i.slug} value={i.slug}>
+              {t(`industry.${i.slug}`, { defaultValue: i.name })}
+            </SelectItem>
           ))}
         </SelectContent>
       </Select>

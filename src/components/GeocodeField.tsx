@@ -7,14 +7,28 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
 interface Props {
-  value: { address: string; lat: number | null; lng: number | null; province: string | null; country_code: string | null };
+  value: {
+    address: string;
+    lat: number | null;
+    lng: number | null;
+    province: string | null;
+    country_code: string | null;
+  };
   onChange: (v: Props["value"]) => void;
 }
 
 export function GeocodeField({ value, onChange }: Props) {
   const geocode = useServerFn(geocodeAddress);
   const [query, setQuery] = useState(value.address);
-  const [results, setResults] = useState<Array<{ lat: number; lng: number; label: string; country_code: string | null; province: string | null }>>([]);
+  const [results, setResults] = useState<
+    Array<{
+      lat: number;
+      lng: number;
+      label: string;
+      country_code: string | null;
+      province: string | null;
+    }>
+  >([]);
   const [busy, setBusy] = useState(false);
 
   const search = async () => {
@@ -31,7 +45,7 @@ export function GeocodeField({ value, onChange }: Props) {
     }
   };
 
-  const pick = (r: typeof results[number]) => {
+  const pick = (r: (typeof results)[number]) => {
     onChange({
       address: query,
       lat: r.lat,

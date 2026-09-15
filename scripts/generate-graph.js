@@ -4,8 +4,8 @@ import fs from "fs";
 try {
   console.log("Generating DOT graph using dependency-cruiser...");
   const dotGraph = execSync(
-    "npx depcruise src --include-only \"^src\" -c .dependency-cruiser.cjs --output-type dot",
-    { encoding: "utf8" }
+    'npx depcruise src --include-only "^src" -c .dependency-cruiser.cjs --output-type dot',
+    { encoding: "utf8" },
   );
 
   const htmlContent = `
@@ -27,7 +27,7 @@ try {
   <div class="title"><h2>Codebase Graph (D3-Graphviz)</h2></div>
   <div id="graph"></div>
   <script>
-    const dotSrc = \`${dotGraph.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`;
+    const dotSrc = \`${dotGraph.replace(/\\/g, "\\\\").replace(/`/g, "\\`").replace(/\$/g, "\\$")}\`;
     d3.select("#graph")
       .graphviz()
       .zoomScaleExtent([0.1, 10])

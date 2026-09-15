@@ -4,7 +4,9 @@ import type { BusinessProfile } from "@/types/business";
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function saveBusinessContact(b: BusinessProfile) {
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return { ok: false, reason: "auth" as const };
 
   // Skip DB for non-uuid demo ids
@@ -34,7 +36,9 @@ export async function saveBusinessContact(b: BusinessProfile) {
 
 export async function isContactSaved(businessId: string): Promise<boolean> {
   if (!UUID_RE.test(businessId)) return false;
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return false;
   const { data } = await supabase
     .from("saved_contacts")

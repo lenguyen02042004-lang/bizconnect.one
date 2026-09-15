@@ -37,17 +37,32 @@ export function useAuth() {
       });
       subscription = data.subscription;
 
-      supabase.auth.getSession().then(({ data: { session: s } }) => {
-        setSession(s);
-        setUser(s?.user ?? null);
-        if (s?.user) fetchAccountType(s.user.id).then(() => { if (active) setLoading(false); });
-        else if (active) { setAccountType(null); setLoading(false); }
-      }).catch(() => {
-        if (active) { setAccountType(null); setLoading(false); }
-      });
+      supabase.auth
+        .getSession()
+        .then(({ data: { session: s } }) => {
+          setSession(s);
+          setUser(s?.user ?? null);
+          if (s?.user)
+            fetchAccountType(s.user.id).then(() => {
+              if (active) setLoading(false);
+            });
+          else if (active) {
+            setAccountType(null);
+            setLoading(false);
+          }
+        })
+        .catch(() => {
+          if (active) {
+            setAccountType(null);
+            setLoading(false);
+          }
+        });
     } catch (err) {
       console.warn("[useAuth] Supabase not initialized, running unauthenticated:", err);
-      if (active) { setAccountType(null); setLoading(false); }
+      if (active) {
+        setAccountType(null);
+        setLoading(false);
+      }
     }
 
     return () => {

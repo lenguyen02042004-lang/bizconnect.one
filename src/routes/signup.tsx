@@ -14,15 +14,35 @@ export const Route = createFileRoute("/signup")({
   component: SignupPage,
   head: () => ({
     meta: [
-      { title: i18n.t("auth.signupTitle", { defaultValue: "Đăng ký doanh nghiệp miễn phí — BizConnect.One" }) },
-      { name: "description", content: i18n.t("auth.signupDesc", { defaultValue: "Tạo tài khoản doanh nghiệp miễn phí trên BizConnect.One: thiết kế danh thiếp online, hiển thị trên bản đồ toàn cầu và kết nối với đối tác B2B quốc tế." }) },
-      { property: "og:title", content: i18n.t("auth.signupTitle", { defaultValue: "Đăng ký doanh nghiệp miễn phí — BizConnect.One" }) },
-      { property: "og:description", content: i18n.t("auth.signupOgDesc", { defaultValue: "Tạo tài khoản doanh nghiệp miễn phí: danh thiếp online, hiển thị trên bản đồ toàn cầu và kết nối đối tác B2B quốc tế." }) },
+      {
+        title: i18n.t("auth.signupTitle", {
+          defaultValue: "Đăng ký doanh nghiệp miễn phí — BizConnect.One",
+        }),
+      },
+      {
+        name: "description",
+        content: i18n.t("auth.signupDesc", {
+          defaultValue:
+            "Tạo tài khoản doanh nghiệp miễn phí trên BizConnect.One: thiết kế danh thiếp online, hiển thị trên bản đồ toàn cầu và kết nối với đối tác B2B quốc tế.",
+        }),
+      },
+      {
+        property: "og:title",
+        content: i18n.t("auth.signupTitle", {
+          defaultValue: "Đăng ký doanh nghiệp miễn phí — BizConnect.One",
+        }),
+      },
+      {
+        property: "og:description",
+        content: i18n.t("auth.signupOgDesc", {
+          defaultValue:
+            "Tạo tài khoản doanh nghiệp miễn phí: danh thiếp online, hiển thị trên bản đồ toàn cầu và kết nối đối tác B2B quốc tế.",
+        }),
+      },
       { property: "og:url", content: "https://earth-biz-link.lovable.app/signup" },
     ],
     links: [{ rel: "canonical", href: "https://earth-biz-link.lovable.app/signup" }],
   }),
-
 });
 
 function SignupPage() {
@@ -38,7 +58,8 @@ function SignupPage() {
     e.preventDefault();
     setLoading(true);
     const { error } = await supabase.auth.signUp({
-      email, password,
+      email,
+      password,
       options: {
         data: { display_name: name, account_type: accountType },
       },
@@ -66,7 +87,9 @@ function SignupPage() {
                 type="button"
                 onClick={() => setAccountType("personal")}
                 className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-lg transition-all ${
-                  accountType === "personal" ? "bg-background shadow text-foreground" : "text-muted-foreground hover:text-foreground"
+                  accountType === "personal"
+                    ? "bg-background shadow text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <User className="w-4 h-4" /> {t("auth.personal")}
@@ -75,7 +98,9 @@ function SignupPage() {
                 type="button"
                 onClick={() => setAccountType("business")}
                 className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-lg transition-all ${
-                  accountType === "business" ? "bg-background shadow text-foreground" : "text-muted-foreground hover:text-foreground"
+                  accountType === "business"
+                    ? "bg-background shadow text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <Building2 className="w-4 h-4" /> {t("auth.business")}
@@ -84,23 +109,51 @@ function SignupPage() {
             <form onSubmit={handleSignup} className="space-y-4">
               <div>
                 <Label htmlFor="name">{t("auth.fullName")}</Label>
-                <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} placeholder={t("auth.namePlaceholder")} />
+                <Input
+                  id="name"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={t("auth.namePlaceholder")}
+                />
               </div>
               <div>
                 <Label htmlFor="email">{t("auth.email")}</Label>
-                <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("auth.emailPlaceholder")} />
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={t("auth.emailPlaceholder")}
+                />
               </div>
               <div>
                 <Label htmlFor="password">{t("auth.password")}</Label>
-                <Input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  minLength={6}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
                 <p className="text-xs text-muted-foreground mt-1">{t("auth.passwordHint")}</p>
               </div>
-              <Button type="submit" disabled={loading} className="w-full h-11 bg-gradient-vivid hover:opacity-90 text-white border-0 shadow-pink gap-2">
-                <Sparkles className="w-4 h-4" /> {loading ? t("auth.creatingAccount") : t("auth.signupFree")}
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full h-11 bg-gradient-vivid hover:opacity-90 text-white border-0 shadow-pink gap-2"
+              >
+                <Sparkles className="w-4 h-4" />{" "}
+                {loading ? t("auth.creatingAccount") : t("auth.signupFree")}
               </Button>
             </form>
             <p className="text-center text-sm text-muted-foreground mt-5">
-              {t("auth.alreadyHaveAccount")} <Link to="/login" className="text-primary font-medium hover:underline">{t("auth.loginHere")}</Link>
+              {t("auth.alreadyHaveAccount")}{" "}
+              <Link to="/login" className="text-primary font-medium hover:underline">
+                {t("auth.loginHere")}
+              </Link>
             </p>
           </div>
         </div>

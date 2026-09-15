@@ -1,5 +1,16 @@
 import { useState } from "react";
-import { X, BookmarkPlus, Send, ExternalLink, CheckCircle2, Loader2, Globe, Phone, Mail, MapPin } from "lucide-react";
+import {
+  X,
+  BookmarkPlus,
+  Send,
+  ExternalLink,
+  CheckCircle2,
+  Loader2,
+  Globe,
+  Phone,
+  Mail,
+  MapPin,
+} from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,9 +50,7 @@ export function PostScanSheet({ preview, onClose, onSendCard }: PostScanSheetPro
   const [showQuickSignup, setShowQuickSignup] = useState(false);
 
   const profileUrl =
-    preview.type === "business"
-      ? `/business/${preview.slug}`
-      : `/p/${preview.slug}`;
+    preview.type === "business" ? `/business/${preview.slug}` : `/p/${preview.slug}`;
 
   const displayName = preview.name;
   const subtitle =
@@ -66,9 +75,7 @@ export function PostScanSheet({ preview, onClose, onSendCard }: PostScanSheetPro
         email: preview.email ?? null,
         website: preview.type === "business" ? (preview.website ?? null) : null,
         logo_url:
-          preview.type === "business"
-            ? (preview.logo_url ?? null)
-            : (preview.avatar_url ?? null),
+          preview.type === "business" ? (preview.logo_url ?? null) : (preview.avatar_url ?? null),
         note: null,
       };
 
@@ -77,14 +84,10 @@ export function PostScanSheet({ preview, onClose, onSendCard }: PostScanSheetPro
           ? { ...base, business_id: preview.id }
           : { ...base, personal_profile_id: preview.id };
 
-      const { error } = await supabase
-        .from("saved_contacts")
-        .upsert(payload, {
-          onConflict:
-            preview.type === "business"
-              ? "user_id,business_id"
-              : "user_id,personal_profile_id",
-        });
+      const { error } = await supabase.from("saved_contacts").upsert(payload, {
+        onConflict:
+          preview.type === "business" ? "user_id,business_id" : "user_id,personal_profile_id",
+      });
 
       if (error) throw error;
       setSaved(true);
@@ -99,10 +102,7 @@ export function PostScanSheet({ preview, onClose, onSendCard }: PostScanSheetPro
   return (
     <>
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1300]"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1300]" onClick={onClose} />
 
       {/* Sheet */}
       <div className="fixed bottom-0 left-0 right-0 z-[1400] animate-in slide-in-from-bottom-full duration-300">
@@ -155,13 +155,9 @@ export function PostScanSheet({ preview, onClose, onSendCard }: PostScanSheetPro
 
               {/* Info */}
               <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-base leading-tight mb-0.5 truncate">
-                  {displayName}
-                </h3>
+                <h3 className="font-bold text-base leading-tight mb-0.5 truncate">{displayName}</h3>
                 {subtitle && (
-                  <p className="text-sm text-primary font-medium mb-2 truncate">
-                    {subtitle}
-                  </p>
+                  <p className="text-sm text-primary font-medium mb-2 truncate">{subtitle}</p>
                 )}
                 <div className="space-y-0.5">
                   {preview.phone && (
@@ -187,9 +183,7 @@ export function PostScanSheet({ preview, onClose, onSendCard }: PostScanSheetPro
                   {(preview.address || preview.province) && (
                     <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                       <MapPin className="w-3 h-3 text-primary" />
-                      {[preview.address, preview.province]
-                        .filter(Boolean)
-                        .join(", ")}
+                      {[preview.address, preview.province].filter(Boolean).join(", ")}
                     </p>
                   )}
                 </div>
@@ -232,11 +226,12 @@ export function PostScanSheet({ preview, onClose, onSendCard }: PostScanSheetPro
               )}
 
               {/* View full profile */}
-              <Link to={profileUrl as any} onClick={onClose} className={user && onSendCard ? "" : "col-span-2"}>
-                <Button
-                  variant="outline"
-                  className="w-full h-11 gap-2 text-sm rounded-xl"
-                >
+              <Link
+                to={profileUrl as any}
+                onClick={onClose}
+                className={user && onSendCard ? "" : "col-span-2"}
+              >
+                <Button variant="outline" className="w-full h-11 gap-2 text-sm rounded-xl">
                   <ExternalLink className="w-4 h-4" /> Xem đầy đủ
                 </Button>
               </Link>
@@ -257,13 +252,13 @@ export function PostScanSheet({ preview, onClose, onSendCard }: PostScanSheetPro
       {showQuickSignup && (
         <Dialog open={showQuickSignup} onOpenChange={setShowQuickSignup}>
           <DialogContent className="sm:max-w-md bg-card border-border z-[1500]">
-            <QuickSignupExchange 
-              toId={preview.id} 
-              toType={preview.type} 
+            <QuickSignupExchange
+              toId={preview.id}
+              toType={preview.type}
               onSuccess={() => {
                 setShowQuickSignup(false);
                 setTimeout(() => window.location.reload(), 1500);
-              }} 
+              }}
             />
           </DialogContent>
         </Dialog>

@@ -5,89 +5,21 @@ import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import type { BusinessProfile } from "@/types/business";
 
 // Country centroid coordinates for fallback when business has no lat/lng
-const COUNTRY_CENTROIDS: Record<string, [number, number]> = {
-  VN: [14.058, 108.277],
-  CN: [35.861, 104.195],
-  US: [37.090, -95.712],
-  JP: [36.204, 138.252],
-  KR: [35.907, 127.766],
-  DE: [51.165, 10.451],
-  FR: [46.227, 2.213],
-  GB: [55.378, -3.435],
-  TH: [15.870, 100.992],
-  SG: [1.352, 103.819],
-  MY: [4.210, 101.975],
-  ID: [-0.789, 113.921],
-  IN: [20.593, 78.962],
-  AU: [-25.274, 133.775],
-  CA: [56.130, -106.346],
-  BR: [-14.235, -51.925],
-  MX: [23.634, -102.552],
-  IT: [41.871, 12.567],
-  ES: [40.463, -3.749],
-  RU: [61.524, 105.318],
-  TR: [38.963, 35.243],
-  SA: [23.885, 45.079],
-  AE: [23.424, 53.847],
-  ZA: [-30.559, 22.937],
-  NG: [9.081, 8.675],
-  EG: [26.820, 30.802],
-  AR: [-38.416, -63.616],
-  PH: [12.879, 121.774],
-  PK: [30.375, 69.345],
-  BD: [23.684, 90.356],
-  TW: [23.697, 120.960],
-  HK: [22.396, 114.109],
-  NL: [52.132, 5.291],
-  SE: [60.128, 18.643],
-  NO: [60.472, 8.468],
-  DK: [56.263, 9.501],
-  FI: [61.924, 25.748],
-  PL: [51.919, 19.145],
-  CH: [46.818, 8.227],
-  AT: [47.516, 14.550],
-  BE: [50.503, 4.469],
-  PT: [39.399, -8.224],
-  GR: [39.074, 21.824],
-  CZ: [49.817, 15.472],
-  HU: [47.162, 19.503],
-  RO: [45.943, 24.966],
-  UA: [48.379, 31.165],
-  IL: [31.046, 34.851],
-  QA: [25.354, 51.183],
-  KW: [29.311, 47.481],
-  BH: [26.066, 50.557],
-  OM: [21.512, 55.922],
-  MM: [19.153, 96.057],
-  KH: [12.565, 104.990],
-  LA: [19.857, 102.495],
-  NZ: [-40.900, 174.885],
-  CL: [-35.675, -71.542],
-  CO: [4.570, -74.297],
-  PE: [-9.189, -75.015],
-  EC: [-1.831, -78.183],
-  UZ: [41.377, 64.585],
-  KZ: [48.019, 66.923],
-};
+
 
 function getMarkerPosition(b: BusinessProfile): [number, number] | null {
   const lat = b.lat;
   const lng = b.lng;
 
   // Has valid real coordinates (not zero)
-  if (lat !== null && lat !== undefined && lng !== null && lng !== undefined &&
-      !(lat === 0 && lng === 0)) {
+  if (
+    lat !== null &&
+    lat !== undefined &&
+    lng !== null &&
+    lng !== undefined &&
+    !(lat === 0 && lng === 0)
+  ) {
     return [lat, lng];
-  }
-
-  // Fallback: use country centroid with small random jitter so markers don't stack exactly
-  const countryCode = b.country_code?.toUpperCase();
-  if (countryCode && COUNTRY_CENTROIDS[countryCode]) {
-    const [clat, clng] = COUNTRY_CENTROIDS[countryCode];
-    // Jitter ±1.5° so markers from same country spread out slightly
-    const jitterLat = (Math.random() - 0.5) * 3;
-    const jitterLng = (Math.random() - 0.5) * 3;
-    return [clat + jitterLat, clng + jitterLng];
   }
 
   // No usable position — skip this marker
@@ -133,7 +65,7 @@ export function MapView({ onSelect, businesses = [] }: Props) {
               attribution:
                 'Tiles &copy; <a href="https://www.esri.com/">Esri</a> &mdash; Source: Esri, DeLorme, NAVTEQ',
               maxZoom: 19,
-            }
+            },
           );
 
           let osmFallbackApplied = false;
@@ -157,7 +89,9 @@ export function MapView({ onSelect, businesses = [] }: Props) {
             if (mapRef.current) mapRef.current.invalidateSize();
           });
           resizeObserver.observe(ref.current!);
-          setTimeout(() => { if (mapRef.current) mapRef.current.invalidateSize(); }, 300);
+          setTimeout(() => {
+            if (mapRef.current) mapRef.current.invalidateSize();
+          }, 300);
           (mapRef.current as any)._resizeObserver = resizeObserver;
 
           // Initialize Marker Cluster Group
@@ -215,7 +149,11 @@ export function MapView({ onSelect, businesses = [] }: Props) {
 
           const marker = L.marker(pos, { icon });
           marker.on("click", () => onSelect(b));
-          marker.bindTooltip(b.name, { direction: "top", offset: [0, -(size / 2 + 4)], className: "biz-tooltip" });
+          marker.bindTooltip(b.name, {
+            direction: "top",
+            offset: [0, -(size / 2 + 4)],
+            className: "biz-tooltip",
+          });
           clusterGroup.addLayer(marker);
         });
       } catch (error) {
@@ -223,7 +161,9 @@ export function MapView({ onSelect, businesses = [] }: Props) {
       }
     })();
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [businesses, onSelect]);
 
   // Cleanup on unmount

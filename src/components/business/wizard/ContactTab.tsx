@@ -4,7 +4,10 @@ import { Input } from "@/components/ui/input";
 import { BusinessFormValues } from "./schema";
 
 export function ContactTab() {
-  const { register, formState: { errors } } = useFormContext<BusinessFormValues>();
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<BusinessFormValues>();
 
   return (
     <div className="space-y-4">

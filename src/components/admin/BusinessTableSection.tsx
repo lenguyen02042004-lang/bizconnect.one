@@ -5,7 +5,11 @@ import { useServerFn } from "@tanstack/react-start";
 import { adminListBusinesses } from "@/lib/admin.functions";
 import { Users, ExternalLink, Pencil } from "lucide-react";
 
-export function BusinessTableSection({ listFn }: { listFn: ReturnType<typeof useServerFn<typeof adminListBusinesses>> }) {
+export function BusinessTableSection({
+  listFn,
+}: {
+  listFn: ReturnType<typeof useServerFn<typeof adminListBusinesses>>;
+}) {
   const q = useQuery({ queryKey: ["admin-businesses"], queryFn: () => listFn() });
   const list = q.data?.businesses ?? [];
   const [filter, setFilter] = useState("");
@@ -18,7 +22,9 @@ export function BusinessTableSection({ listFn }: { listFn: ReturnType<typeof use
       <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
         <div className="flex items-center gap-2">
           <Users className="w-5 h-5 text-primary" />
-          <h2 className="font-display text-xl font-semibold">Tất cả doanh nghiệp ({list.length})</h2>
+          <h2 className="font-display text-xl font-semibold">
+            Tất cả doanh nghiệp ({list.length})
+          </h2>
         </div>
         <input
           value={filter}
@@ -51,7 +57,9 @@ export function BusinessTableSection({ listFn }: { listFn: ReturnType<typeof use
                   <td className="p-2 font-medium">{b.name}</td>
                   <td className="p-2 font-mono text-muted-foreground">{b.slug}</td>
                   <td className="p-2">
-                    <span className={`px-2 py-0.5 rounded text-[10px] ${b.status === "public" ? "bg-green-500/15 text-green-700" : "bg-muted text-muted-foreground"}`}>
+                    <span
+                      className={`px-2 py-0.5 rounded text-[10px] ${b.status === "public" ? "bg-green-500/15 text-green-700" : "bg-muted text-muted-foreground"}`}
+                    >
                       {b.status}
                     </span>
                   </td>
@@ -60,17 +68,32 @@ export function BusinessTableSection({ listFn }: { listFn: ReturnType<typeof use
                   <td className="p-2">{b.views_count}</td>
                   <td className="p-2">{b.followers_count}</td>
                   <td className="p-2 flex gap-1">
-                    <Link to="/business/$slug" params={{ slug: b.slug }} target="_blank" className="inline-flex items-center px-2 py-1 rounded hover:bg-accent" title="Xem">
+                    <Link
+                      to="/business/$slug"
+                      params={{ slug: b.slug }}
+                      target="_blank"
+                      className="inline-flex items-center px-2 py-1 rounded hover:bg-accent"
+                      title="Xem"
+                    >
                       <ExternalLink className="w-3.5 h-3.5" />
                     </Link>
-                    <Link to="/business/edit" search={{ id: b.id }} className="inline-flex items-center px-2 py-1 rounded hover:bg-accent" title="Sửa">
+                    <Link
+                      to="/business/edit"
+                      search={{ id: b.id }}
+                      className="inline-flex items-center px-2 py-1 rounded hover:bg-accent"
+                      title="Sửa"
+                    >
                       <Pencil className="w-3.5 h-3.5" />
                     </Link>
                   </td>
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr><td colSpan={8} className="p-4 text-center text-muted-foreground">Không có dữ liệu</td></tr>
+                <tr>
+                  <td colSpan={8} className="p-4 text-center text-muted-foreground">
+                    Không có dữ liệu
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>

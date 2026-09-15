@@ -1,17 +1,16 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
 function slugify(text) {
-  return text.toString().toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w\-]+/g, '')
-    .replace(/\-\-+/g, '-')
-    .replace(/^-+/, '')
-    .replace(/-+$/, '');
+  return text
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^\w\-]+/g, "")
+    .replace(/\-\-+/g, "-")
+    .replace(/^-+/, "")
+    .replace(/-+$/, "");
 }
 
 const GLOBAL_INDUSTRIES = [
@@ -68,21 +67,24 @@ const COUNTRIES = [
   { code: "AE", name: "UAE", flag: "🇦🇪" },
   { code: "SA", name: "Ả Rập Saudi", flag: "🇸🇦" },
   { code: "ZA", name: "Nam Phi", flag: "🇿🇦" },
-  { code: "RU", name: "Nga", flag: "🇷🇺" }
+  { code: "RU", name: "Nga", flag: "🇷🇺" },
 ];
 
 (async () => {
   try {
     console.log("Seeding Industries...");
-    const { error: indError } = await supabase.from('industries').upsert(GLOBAL_INDUSTRIES, { onConflict: 'slug' });
+    const { error: indError } = await supabase
+      .from("industries")
+      .upsert(GLOBAL_INDUSTRIES, { onConflict: "slug" });
     if (indError) throw indError;
     console.log("✅ Industries seeded successfully.");
 
     console.log("Seeding Countries...");
-    const { error: ctrError } = await supabase.from('countries').upsert(COUNTRIES, { onConflict: 'code' });
+    const { error: ctrError } = await supabase
+      .from("countries")
+      .upsert(COUNTRIES, { onConflict: "code" });
     if (ctrError) throw ctrError;
     console.log("✅ Countries seeded successfully.");
-    
   } catch (err) {
     console.error("Seeding failed:", err.message);
   }

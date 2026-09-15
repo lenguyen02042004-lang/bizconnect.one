@@ -1,7 +1,16 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { Navbar } from "@/components/Navbar";
 import {
-  LayoutDashboard, Inbox, BookOpen, Heart, BarChart3, Pencil, Settings as SettingsIcon, Shield, IdCard, UserPlus,
+  LayoutDashboard,
+  Inbox,
+  BookOpen,
+  Heart,
+  BarChart3,
+  Pencil,
+  Settings as SettingsIcon,
+  Shield,
+  IdCard,
+  UserPlus,
 } from "lucide-react";
 import { useEffect, useState, type ComponentType } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,7 +19,17 @@ import { useAuth } from "@/hooks/use-auth";
 export const DEMO_OWNER_PREFIX = "00000000-0000-0000-0000-0000000000";
 
 type TabDef = {
-  to: "/dashboard" | "/inbox" | "/contacts" | "/following" | "/business/stats" | "/business/edit" | "/me" | "/leads" | "/settings" | "/admin";
+  to:
+    | "/dashboard"
+    | "/inbox"
+    | "/contacts"
+    | "/following"
+    | "/business/stats"
+    | "/business/edit"
+    | "/me"
+    | "/leads"
+    | "/settings"
+    | "/admin";
   label: string;
   icon: ComponentType<{ className?: string }>;
   match: (path: string) => boolean;
@@ -20,16 +39,87 @@ type TabDef = {
 };
 
 const TABS: TabDef[] = [
-  { to: "/dashboard", label: "Tổng quan", icon: LayoutDashboard, match: (p) => p === "/dashboard", group: "main", allowType: "business" },
-  { to: "/inbox", label: "Hộp thư", icon: Inbox, match: (p) => p.startsWith("/inbox"), group: "main", allowType: "both" },
-  { to: "/contacts", label: "Danh bạ", icon: BookOpen, match: (p) => p.startsWith("/contacts"), group: "main", allowType: "both" },
-  { to: "/following", label: "Đang theo dõi", icon: Heart, match: (p) => p.startsWith("/following"), group: "main", allowType: "both" },
-  { to: "/business/stats", label: "Thống kê", icon: BarChart3, match: (p) => p.startsWith("/business/stats"), group: "main", allowType: "business" },
-  { to: "/business/edit", label: "Chỉnh sửa DN", icon: Pencil, match: (p) => p.startsWith("/business/edit"), group: "main", allowType: "business" },
-  { to: "/leads", label: "Khách tiềm năng", icon: UserPlus, match: (p) => p.startsWith("/leads"), group: "main", allowType: "business" },
-  { to: "/me", label: "Hồ sơ cá nhân", icon: IdCard, match: (p) => p.startsWith("/me"), group: "main", allowType: "personal" },
-  { to: "/settings", label: "Cài đặt", icon: SettingsIcon, match: (p) => p.startsWith("/settings"), group: "system", allowType: "both" },
-  { to: "/admin", label: "Quản trị", icon: Shield, match: (p) => p.startsWith("/admin"), adminOnly: true, group: "system", allowType: "both" },
+  {
+    to: "/dashboard",
+    label: "Tổng quan",
+    icon: LayoutDashboard,
+    match: (p) => p === "/dashboard",
+    group: "main",
+    allowType: "business",
+  },
+  {
+    to: "/inbox",
+    label: "Hộp thư",
+    icon: Inbox,
+    match: (p) => p.startsWith("/inbox"),
+    group: "main",
+    allowType: "both",
+  },
+  {
+    to: "/contacts",
+    label: "Danh bạ",
+    icon: BookOpen,
+    match: (p) => p.startsWith("/contacts"),
+    group: "main",
+    allowType: "both",
+  },
+  {
+    to: "/following",
+    label: "Đang theo dõi",
+    icon: Heart,
+    match: (p) => p.startsWith("/following"),
+    group: "main",
+    allowType: "both",
+  },
+  {
+    to: "/business/stats",
+    label: "Thống kê",
+    icon: BarChart3,
+    match: (p) => p.startsWith("/business/stats"),
+    group: "main",
+    allowType: "business",
+  },
+  {
+    to: "/business/edit",
+    label: "Chỉnh sửa DN",
+    icon: Pencil,
+    match: (p) => p.startsWith("/business/edit"),
+    group: "main",
+    allowType: "business",
+  },
+  {
+    to: "/leads",
+    label: "Khách tiềm năng",
+    icon: UserPlus,
+    match: (p) => p.startsWith("/leads"),
+    group: "main",
+    allowType: "business",
+  },
+  {
+    to: "/me",
+    label: "Hồ sơ cá nhân",
+    icon: IdCard,
+    match: (p) => p.startsWith("/me"),
+    group: "main",
+    allowType: "personal",
+  },
+  {
+    to: "/settings",
+    label: "Cài đặt",
+    icon: SettingsIcon,
+    match: (p) => p.startsWith("/settings"),
+    group: "system",
+    allowType: "both",
+  },
+  {
+    to: "/admin",
+    label: "Quản trị",
+    icon: Shield,
+    match: (p) => p.startsWith("/admin"),
+    adminOnly: true,
+    group: "system",
+    allowType: "both",
+  },
 ];
 
 interface Props {
@@ -45,18 +135,30 @@ const WIDTH_CLS: Record<NonNullable<Props["maxWidth"]>, string> = {
   "5xl": "max-w-5xl",
   "6xl": "max-w-6xl",
   "7xl": "max-w-7xl",
-  "full": "max-w-none",
+  full: "max-w-none",
 };
 
 function useIsAdmin() {
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   useEffect(() => {
-    if (!user) { setIsAdmin(false); return; }
+    if (!user) {
+      setIsAdmin(false);
+      return;
+    }
     let cancelled = false;
-    supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin").maybeSingle()
-      .then(({ data }) => { if (!cancelled) setIsAdmin(!!data); });
-    return () => { cancelled = true; };
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!cancelled) setIsAdmin(!!data);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
   return isAdmin;
 }
@@ -67,7 +169,7 @@ export function DashboardShell({ title, subtitle, actions, children, maxWidth = 
   const widthCls = WIDTH_CLS[maxWidth];
   const { accountType } = useAuth();
   const isAdmin = useIsAdmin();
-  
+
   const visible = TABS.filter((t) => {
     if (t.adminOnly && !isAdmin) return false;
     if (t.allowType !== "both" && t.allowType !== accountType) return false;
@@ -111,7 +213,9 @@ export function DashboardShell({ title, subtitle, actions, children, maxWidth = 
           {systemTabs.length > 0 && (
             <>
               <div className="px-3 mt-5 mb-2">
-                <p className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Hệ thống</p>
+                <p className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">
+                  Hệ thống
+                </p>
               </div>
               <nav className="flex flex-col gap-0.5">{systemTabs.map(renderLink)}</nav>
             </>
@@ -131,7 +235,9 @@ export function DashboardShell({ title, subtitle, actions, children, maxWidth = 
                     key={t.to}
                     to={t.to}
                     className={`relative inline-flex items-center gap-1.5 px-3 py-3 text-sm whitespace-nowrap transition-smooth ${
-                      active ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground"
+                      active
+                        ? "text-primary font-semibold"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -149,7 +255,9 @@ export function DashboardShell({ title, subtitle, actions, children, maxWidth = 
             {(title || actions) && (
               <header className="flex flex-wrap justify-between items-end gap-3 mb-6">
                 <div>
-                  {title && <h1 className="text-2xl sm:text-3xl font-display font-bold">{title}</h1>}
+                  {title && (
+                    <h1 className="text-2xl sm:text-3xl font-display font-bold">{title}</h1>
+                  )}
                   {subtitle && <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>}
                 </div>
                 {actions && <div className="flex flex-wrap gap-2">{actions}</div>}

@@ -4,18 +4,18 @@ import { supabaseAdmin } from "../src/integrations/supabase/client.server";
 async function run() {
   console.log("Fetching users...");
   const { data: users, error: userErr } = await supabaseAdmin.auth.admin.listUsers();
-  
+
   if (userErr) {
     console.error("Error fetching users:", userErr);
     return;
   }
-  
+
   if (!users || users.users.length === 0) {
     console.log("No users found to assign as owner. Creating a test user...");
     const { data: newUser, error: createErr } = await supabaseAdmin.auth.admin.createUser({
       email: "test.owner@bizconnect.local",
       password: "password123",
-      email_confirm: true
+      email_confirm: true,
     });
     if (createErr) {
       console.error("Failed to create test user", createErr);
@@ -23,7 +23,7 @@ async function run() {
     }
     users.users = [newUser.user];
   }
-  
+
   const owner_id = users.users[0].id;
   console.log("Using owner_id:", owner_id);
 
@@ -33,7 +33,7 @@ async function run() {
 
   for (const b of DEMO_BUSINESSES) {
     const industry_id = indMap.get(b.industry_slug) || null;
-    
+
     const { error } = await supabaseAdmin.from("businesses").upsert({
       id: b.id,
       slug: b.slug,
@@ -54,9 +54,9 @@ async function run() {
       website: b.website,
       icon_tier: b.icon_tier,
       views_count: b.views_count,
-      industry_id
+      industry_id,
     });
-    
+
     if (error) {
       console.error(`Error inserting ${b.name}:`, error.message);
     } else {

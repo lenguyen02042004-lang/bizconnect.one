@@ -76,26 +76,69 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover" },
+      {
+        name: "viewport",
+        content:
+          "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover",
+      },
       { name: "referrer", content: "strict-origin-when-cross-origin" },
-      { title: i18n.t("meta.homeTitle", { defaultValue: "BizConnect.One — Bản đồ doanh nghiệp toàn cầu" }) },
-      { name: "description", content: i18n.t("meta.homeDesc", { defaultValue: "Kết nối doanh nghiệp toàn cầu qua bản đồ tương tác 3D. Quảng bá thương hiệu, mở rộng giao thương quốc tế chỉ từ $5/năm." }) },
+      {
+        title: i18n.t("meta.homeTitle", {
+          defaultValue: "BizConnect.One — Bản đồ doanh nghiệp toàn cầu",
+        }),
+      },
+      {
+        name: "description",
+        content: i18n.t("meta.homeDesc", {
+          defaultValue:
+            "Kết nối doanh nghiệp toàn cầu qua bản đồ tương tác 3D. Quảng bá thương hiệu, mở rộng giao thương quốc tế chỉ từ $5/năm.",
+        }),
+      },
       { name: "theme-color", content: "#c8102e" },
       { property: "og:type", content: "website" },
-      { property: "og:title", content: i18n.t("meta.homeTitle", { defaultValue: "BizConnect.One — Bản đồ doanh nghiệp toàn cầu" }) },
-      { property: "og:description", content: i18n.t("meta.homeDesc", { defaultValue: "Kết nối doanh nghiệp toàn cầu qua bản đồ tương tác 3D. Quảng bá thương hiệu, mở rộng giao thương quốc tế chỉ từ $5/năm." }) },
+      {
+        property: "og:title",
+        content: i18n.t("meta.homeTitle", {
+          defaultValue: "BizConnect.One — Bản đồ doanh nghiệp toàn cầu",
+        }),
+      },
+      {
+        property: "og:description",
+        content: i18n.t("meta.homeDesc", {
+          defaultValue:
+            "Kết nối doanh nghiệp toàn cầu qua bản đồ tương tác 3D. Quảng bá thương hiệu, mở rộng giao thương quốc tế chỉ từ $5/năm.",
+        }),
+      },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: i18n.t("meta.homeTitle", { defaultValue: "BizConnect.One — Bản đồ doanh nghiệp toàn cầu" }) },
-      { name: "twitter:description", content: i18n.t("meta.homeDesc", { defaultValue: "Kết nối doanh nghiệp toàn cầu qua bản đồ tương tác 3D. Quảng bá thương hiệu, mở rộng giao thương quốc tế chỉ từ $5/năm." }) },
+      {
+        name: "twitter:title",
+        content: i18n.t("meta.homeTitle", {
+          defaultValue: "BizConnect.One — Bản đồ doanh nghiệp toàn cầu",
+        }),
+      },
+      {
+        name: "twitter:description",
+        content: i18n.t("meta.homeDesc", {
+          defaultValue:
+            "Kết nối doanh nghiệp toàn cầu qua bản đồ tương tác 3D. Quảng bá thương hiệu, mở rộng giao thương quốc tế chỉ từ $5/năm.",
+        }),
+      },
       { property: "og:site_name", content: "BizConnect.One" },
-
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "stylesheet", href: "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css", integrity: "sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=", crossOrigin: "" },
+      {
+        rel: "stylesheet",
+        href: "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
+        integrity: "sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=",
+        crossOrigin: "",
+      },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap",
+      },
     ],
     scripts: [
       {
@@ -120,8 +163,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
               publisher: { "@id": "https://earth-biz-link.lovable.app/#org" },
               potentialAction: {
                 "@type": "SearchAction",
-                target:
-                  "https://earth-biz-link.lovable.app/explore?q={search_term_string}",
+                target: "https://earth-biz-link.lovable.app/explore?q={search_term_string}",
                 "query-input": "required name=search_term_string",
               },
             },

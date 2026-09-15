@@ -13,7 +13,11 @@ export function InboxBell() {
 
   // Load my business ids + initial unread count
   useEffect(() => {
-    if (!user) { setUnread(0); setBizIds([]); return; }
+    if (!user) {
+      setUnread(0);
+      setBizIds([]);
+      return;
+    }
     let cancelled = false;
     (async () => {
       const { data: bizes } = await supabase
@@ -23,7 +27,10 @@ export function InboxBell() {
       if (cancelled) return;
       const ids = (bizes ?? []).map((b) => b.id);
       setBizIds(ids);
-      if (ids.length === 0) { setUnread(0); return; }
+      if (ids.length === 0) {
+        setUnread(0);
+        return;
+      }
       const { count } = await supabase
         .from("connect_messages")
         .select("*", { count: "exact", head: true })
@@ -31,7 +38,9 @@ export function InboxBell() {
         .is("read_at", null);
       if (!cancelled) setUnread(count ?? 0);
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   // Realtime subscription
@@ -44,7 +53,11 @@ export function InboxBell() {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "connect_messages" },
         (payload) => {
-          const row = payload.new as { to_business_id: string; subject?: string; from_business_id?: string };
+          const row = payload.new as {
+            to_business_id: string;
+            subject?: string;
+            from_business_id?: string;
+          };
           if (!idSet.has(row.to_business_id)) return;
           setUnread((u) => u + 1);
           toast("📩 Lời ngỏ giao thương mới", {
@@ -65,7 +78,9 @@ export function InboxBell() {
         },
       )
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user, bizIds]);
 
   if (!user) return null;

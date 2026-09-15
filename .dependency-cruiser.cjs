@@ -3,10 +3,10 @@ module.exports = {
   options: {
     tsPreCompilationDeps: true,
     tsConfig: {
-      fileName: 'tsconfig.json',
+      fileName: "tsconfig.json",
     },
     doNotFollow: {
-      path: 'node_modules',
+      path: "node_modules",
     },
   },
 };

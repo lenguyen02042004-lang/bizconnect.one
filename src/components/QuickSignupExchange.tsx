@@ -31,7 +31,7 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
     setLoading(true);
     const password = "123456";
     const displayName = name || email.split("@")[0];
-    
+
     // 1. Sign up user
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
@@ -39,8 +39,8 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
       options: {
         data: {
           display_name: displayName,
-        }
-      }
+        },
+      },
     });
 
     if (authError || !authData.user) {
@@ -53,10 +53,13 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
     const slug = slugifyName(displayName) + "-" + Math.floor(Math.random() * 1000);
 
     // 2. Update auth profile
-    await supabase.from("profiles").update({ 
-      display_name: displayName,
-      account_type: accountType as any 
-    }).eq("id", userId);
+    await supabase
+      .from("profiles")
+      .update({
+        display_name: displayName,
+        account_type: accountType as any,
+      })
+      .eq("id", userId);
 
     let createdBusinessId: string | null = null;
 
@@ -71,15 +74,19 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
         job_title: "Thành viên mới",
       });
     } else {
-      const { data: bData } = await supabase.from("businesses").insert({
-        owner_id: userId,
-        name: displayName,
-        slug,
-        email,
-        phone: phone || null,
-        status: "public",
-      }).select("id").single();
-      
+      const { data: bData } = await supabase
+        .from("businesses")
+        .insert({
+          owner_id: userId,
+          name: displayName,
+          slug,
+          email,
+          phone: phone || null,
+          status: "public",
+        })
+        .select("id")
+        .single();
+
       if (bData) createdBusinessId = bData.id;
     }
 
@@ -108,13 +115,15 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
     <div className="space-y-4">
       <div className="text-center mb-4">
         <h3 className="font-display text-xl font-bold mb-1">Tạo danh thiếp nhanh</h3>
-        <p className="text-xs text-muted-foreground">Chọn loại danh thiếp và nhập thông tin để kết nối.</p>
+        <p className="text-xs text-muted-foreground">
+          Chọn loại danh thiếp và nhập thông tin để kết nối.
+        </p>
       </div>
-      
+
       <form onSubmit={handleSubmit} className="space-y-4">
-        <RadioGroup 
-          defaultValue="personal" 
-          value={accountType} 
+        <RadioGroup
+          defaultValue="personal"
+          value={accountType}
           onValueChange={(v) => setAccountType(v as "personal" | "business")}
           className="grid grid-cols-2 gap-3 mb-2"
         >
@@ -141,25 +150,29 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
         </RadioGroup>
 
         <div className="space-y-3">
-          <Input 
-            type="email" 
-            placeholder="Email (bắt buộc)" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            required 
+          <Input
+            type="email"
+            placeholder="Email (bắt buộc)"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
             disabled={loading}
           />
-          <Input 
-            placeholder={accountType === "business" ? "Tên doanh nghiệp (không bắt buộc)" : "Họ và tên (không bắt buộc)"} 
-            value={name} 
-            onChange={(e) => setName(e.target.value)} 
+          <Input
+            placeholder={
+              accountType === "business"
+                ? "Tên doanh nghiệp (không bắt buộc)"
+                : "Họ và tên (không bắt buộc)"
+            }
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             disabled={loading}
           />
-          <Input 
-            type="tel" 
-            placeholder="Số điện thoại (không bắt buộc)" 
-            value={phone} 
-            onChange={(e) => setPhone(e.target.value)} 
+          <Input
+            type="tel"
+            placeholder="Số điện thoại (không bắt buộc)"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
             disabled={loading}
           />
         </div>
@@ -167,7 +180,11 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
         <p className="text-[11px] text-muted-foreground italic text-center">
           * Mật khẩu mặc định là <b>123456</b>, bạn có thể đổi lại sau.
         </p>
-        <Button type="submit" className="w-full bg-gradient-vivid text-white border-0 mt-2" disabled={loading}>
+        <Button
+          type="submit"
+          className="w-full bg-gradient-vivid text-white border-0 mt-2"
+          disabled={loading}
+        >
           {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
           Kết nối ngay
         </Button>

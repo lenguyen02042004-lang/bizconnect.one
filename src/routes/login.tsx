@@ -14,15 +14,35 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
   head: () => ({
     meta: [
-      { title: i18n.t("auth.loginTitle", { defaultValue: "Đăng nhập tài khoản doanh nghiệp — BizConnect.One" }) },
-      { name: "description", content: i18n.t("auth.loginDesc", { defaultValue: "Đăng nhập vào BizConnect.One để quản lý danh thiếp doanh nghiệp, hộp thư kết nối và danh bạ đối tác B2B toàn cầu của bạn." }) },
-      { property: "og:title", content: i18n.t("auth.loginTitle", { defaultValue: "Đăng nhập tài khoản doanh nghiệp — BizConnect.One" }) },
-      { property: "og:description", content: i18n.t("auth.loginOgDesc", { defaultValue: "Đăng nhập để quản lý danh thiếp doanh nghiệp, hộp thư kết nối và danh bạ đối tác B2B toàn cầu." }) },
+      {
+        title: i18n.t("auth.loginTitle", {
+          defaultValue: "Đăng nhập tài khoản doanh nghiệp — BizConnect.One",
+        }),
+      },
+      {
+        name: "description",
+        content: i18n.t("auth.loginDesc", {
+          defaultValue:
+            "Đăng nhập vào BizConnect.One để quản lý danh thiếp doanh nghiệp, hộp thư kết nối và danh bạ đối tác B2B toàn cầu của bạn.",
+        }),
+      },
+      {
+        property: "og:title",
+        content: i18n.t("auth.loginTitle", {
+          defaultValue: "Đăng nhập tài khoản doanh nghiệp — BizConnect.One",
+        }),
+      },
+      {
+        property: "og:description",
+        content: i18n.t("auth.loginOgDesc", {
+          defaultValue:
+            "Đăng nhập để quản lý danh thiếp doanh nghiệp, hộp thư kết nối và danh bạ đối tác B2B toàn cầu.",
+        }),
+      },
       { property: "og:url", content: "https://earth-biz-link.lovable.app/login" },
     ],
     links: [{ rel: "canonical", href: "https://earth-biz-link.lovable.app/login" }],
   }),
-
 });
 
 function LoginPage() {
@@ -47,7 +67,7 @@ function LoginPage() {
           .select("account_type")
           .eq("id", data.user.id)
           .single();
-        
+
         setLoading(false);
         toast.success(t("auth.loginSuccess"));
         navigate({ to: profile?.account_type === "personal" ? "/me" : "/dashboard" });
@@ -72,22 +92,45 @@ function LoginPage() {
             <form onSubmit={handleEmailLogin} className="space-y-4">
               <div>
                 <Label htmlFor="email">{t("auth.email")}</Label>
-                <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("auth.emailPlaceholder")} />
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={t("auth.emailPlaceholder")}
+                />
               </div>
               <div>
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">{t("auth.password")}</Label>
-                  <Link to="/reset-password" className="text-xs text-primary hover:underline">{t("auth.forgotPassword")}</Link>
+                  <Link to="/reset-password" className="text-xs text-primary hover:underline">
+                    {t("auth.forgotPassword")}
+                  </Link>
                 </div>
-                <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
               </div>
-              <Button type="submit" disabled={loading} className="w-full h-11 bg-gradient-vivid hover:opacity-90 text-white border-0 shadow-pink gap-2">
-                <Sparkles className="w-4 h-4" /> {loading ? t("auth.loggingIn") : t("auth.loginBtn")}
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full h-11 bg-gradient-vivid hover:opacity-90 text-white border-0 shadow-pink gap-2"
+              >
+                <Sparkles className="w-4 h-4" />{" "}
+                {loading ? t("auth.loggingIn") : t("auth.loginBtn")}
               </Button>
             </form>
 
             <p className="text-center text-sm text-muted-foreground mt-5">
-              {t("auth.noAccount")} <Link to="/signup" className="text-primary font-medium hover:underline">{t("auth.signupFreeLink")}</Link>
+              {t("auth.noAccount")}{" "}
+              <Link to="/signup" className="text-primary font-medium hover:underline">
+                {t("auth.signupFreeLink")}
+              </Link>
             </p>
           </div>
         </div>

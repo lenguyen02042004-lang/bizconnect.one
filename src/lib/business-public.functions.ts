@@ -22,11 +22,15 @@ export const getBusinessBySlug = createServerFn({ method: "GET" })
 
     const [{ data: socials }, { data: gallery }] = await Promise.all([
       supabase.from("business_socials").select("platform, url").eq("business_id", biz.id),
-      supabase.from("business_gallery").select("image_url").eq("business_id", biz.id).order("order_index"),
+      supabase
+        .from("business_gallery")
+        .select("image_url")
+        .eq("business_id", biz.id)
+        .order("order_index"),
     ]);
 
-    const industry = (biz as any).industries?.name ?? "Doanh nghiệp";
-    const industry_slug = (biz as any).industries?.slug ?? "other";
+    const industry = (biz as any).industries?.name ?? "";
+    const industry_slug = (biz as any).industries?.slug ?? "";
     const country_name = (biz as any).countries?.name ?? biz.country_code ?? "";
 
     return {
@@ -38,7 +42,9 @@ export const getBusinessBySlug = createServerFn({ method: "GET" })
         banner_url: biz.banner_url ?? "",
         short_intro: biz.short_intro ?? "",
         description: (biz as any).description ?? "",
-        certifications: Array.isArray((biz as any).certifications) ? (biz as any).certifications : [],
+        certifications: Array.isArray((biz as any).certifications)
+          ? (biz as any).certifications
+          : [],
         address: biz.address ?? "",
         country_code: biz.country_code ?? "",
         country_name,
@@ -58,45 +64,46 @@ export const getBusinessBySlug = createServerFn({ method: "GET" })
     };
   });
 
-export const getExploreBusinesses = createServerFn({ method: "GET" })
-  .handler(async () => {
-    const { supabase } = await import("@/integrations/supabase/client");
-    const { data: bizes, error } = await supabase
-      .from("businesses")
-      .select("id, name, slug, logo_url, country_code, lat, lng, views_count, icon_tier, status, short_intro, website, industries(name, slug), countries(name)")
-      .eq("status", "public")
-      .limit(1000);
-    
-    if (error) throw new Error(error.message);
+export const getExploreBusinesses = createServerFn({ method: "GET" }).handler(async () => {
+  const { supabase } = await import("@/integrations/supabase/client");
+  const { data: bizes, error } = await supabase
+    .from("businesses")
+    .select(
+      "id, name, slug, logo_url, country_code, lat, lng, views_count, icon_tier, status, short_intro, website, industries(name, slug), countries(name)",
+    )
+    .eq("status", "public")
+    .limit(1000);
 
-    return {
-      businesses: (bizes ?? []).map((biz) => ({
-        id: biz.id,
-        name: biz.name,
-        slug: biz.slug,
-        logo_url: biz.logo_url ?? "",
-        country_code: biz.country_code ?? "",
-        country_name: (biz as any).countries?.name ?? biz.country_code ?? "",
-        industry: (biz as any).industries?.name ?? "Doanh nghiệp",
-        industry_slug: (biz as any).industries?.slug ?? "other",
-        lat: biz.lat ?? null,
-        lng: biz.lng ?? null,
-        views_count: biz.views_count ?? 0,
-        icon_tier: (biz.icon_tier as "standard" | "premium") ?? "standard",
-        short_intro: biz.short_intro ?? "",
-        description: "",
-        certifications: [],
-        address: "",
-        province: "",
-        phone: "",
-        email: "",
-        website: biz.website ?? "",
-        banner_url: "",
-        socials: {},
-        gallery: []
-      })),
-    };
-  });
+  if (error) throw new Error(error.message);
+
+  return {
+    businesses: (bizes ?? []).map((biz) => ({
+      id: biz.id,
+      name: biz.name,
+      slug: biz.slug,
+      logo_url: biz.logo_url ?? "",
+      country_code: biz.country_code ?? "",
+      country_name: (biz as any).countries?.name ?? biz.country_code ?? "",
+      industry: (biz as any).industries?.name ?? "",
+      industry_slug: (biz as any).industries?.slug ?? "",
+      lat: biz.lat ?? null,
+      lng: biz.lng ?? null,
+      views_count: biz.views_count ?? 0,
+      icon_tier: (biz.icon_tier as "standard" | "premium") ?? "standard",
+      short_intro: biz.short_intro ?? "",
+      description: "",
+      certifications: [],
+      address: "",
+      province: "",
+      phone: "",
+      email: "",
+      website: biz.website ?? "",
+      banner_url: "",
+      socials: {},
+      gallery: [],
+    })),
+  };
+});
 
 export const getGlobalLists = createServerFn({ method: "GET" }).handler(async () => {
   const { supabase } = await import("@/integrations/supabase/client");

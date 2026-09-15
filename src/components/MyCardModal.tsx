@@ -1,6 +1,18 @@
 import { useState, useEffect } from "react";
 import QRCode from "qrcode";
-import { X, Share2, Download, Printer, Sun, Moon, Globe, Phone, Mail, Briefcase, MapPin } from "lucide-react";
+import {
+  X,
+  Share2,
+  Download,
+  Printer,
+  Sun,
+  Moon,
+  Globe,
+  Phone,
+  Mail,
+  Briefcase,
+  MapPin,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from "sonner";
@@ -101,8 +113,7 @@ export function MyCardModal({ card, isOpen, onClose }: MyCardModalProps) {
   };
 
   const isDark = theme === "dark";
-  const displayName =
-    card.type === "business" ? card.name : card.full_name;
+  const displayName = card.type === "business" ? card.name : card.full_name;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -120,11 +131,7 @@ export function MyCardModal({ card, isOpen, onClose }: MyCardModalProps) {
               onClick={() => setTheme(isDark ? "light" : "dark")}
               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-accent hover:bg-accent/80 transition-colors text-xs font-medium"
             >
-              {isDark ? (
-                <Sun className="w-3.5 h-3.5" />
-              ) : (
-                <Moon className="w-3.5 h-3.5" />
-              )}
+              {isDark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
               {isDark ? "Sáng" : "Tối"}
             </button>
             <button
@@ -140,9 +147,7 @@ export function MyCardModal({ card, isOpen, onClose }: MyCardModalProps) {
         <div
           id="my-card-print-area"
           className={`relative overflow-hidden transition-all duration-500 ${
-            isDark
-              ? "bg-gradient-to-br from-[#1a0a14] via-[#2d1022] to-[#0f0812]"
-              : "bg-white"
+            isDark ? "bg-gradient-to-br from-[#1a0a14] via-[#2d1022] to-[#0f0812]" : "bg-white"
           }`}
         >
           {/* Decorative glow – dark mode only */}
@@ -181,9 +186,7 @@ export function MyCardModal({ card, isOpen, onClose }: MyCardModalProps) {
               ) : (
                 <div
                   className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold shadow-lg ${
-                    isDark
-                      ? "bg-primary/20 text-primary"
-                      : "bg-primary/10 text-primary"
+                    isDark ? "bg-primary/20 text-primary" : "bg-primary/10 text-primary"
                   }`}
                 >
                   {displayName.charAt(0).toUpperCase()}
@@ -206,33 +209,20 @@ export function MyCardModal({ card, isOpen, onClose }: MyCardModalProps) {
                 {card.industry}
               </p>
             )}
-            {card.type === "personal" &&
-              (card.job_title || card.company_name) && (
-                <p
-                  className={`text-sm mb-0.5 ${
-                    isDark ? "text-white/70" : "text-gray-600"
-                  }`}
-                >
-                  {[card.job_title, card.company_name]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </p>
-              )}
+            {card.type === "personal" && (card.job_title || card.company_name) && (
+              <p className={`text-sm mb-0.5 ${isDark ? "text-white/70" : "text-gray-600"}`}>
+                {[card.job_title, card.company_name].filter(Boolean).join(" · ")}
+              </p>
+            )}
 
             {/* QR Code */}
             <div
               className={`my-4 p-3 rounded-2xl shadow-md ${
-                isDark
-                  ? "bg-white/5 ring-1 ring-white/10"
-                  : "bg-gray-50 ring-1 ring-gray-200"
+                isDark ? "bg-white/5 ring-1 ring-white/10" : "bg-gray-50 ring-1 ring-gray-200"
               }`}
             >
               {qrUrl ? (
-                <img
-                  src={qrUrl}
-                  alt="QR Code"
-                  className="w-44 h-44 object-contain rounded-xl"
-                />
+                <img src={qrUrl} alt="QR Code" className="w-44 h-44 object-contain rounded-xl" />
               ) : (
                 <div className="w-44 h-44 flex items-center justify-center">
                   <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
@@ -273,26 +263,19 @@ export function MyCardModal({ card, isOpen, onClose }: MyCardModalProps) {
                   }`}
                 >
                   <Globe className="w-3.5 h-3.5 text-primary flex-shrink-0" />
-                  <span className="truncate">
-                    {card.website.replace(/^https?:\/\//, "")}
-                  </span>
+                  <span className="truncate">{card.website.replace(/^https?:\/\//, "")}</span>
                 </div>
               )}
-              {card.type === "business" &&
-                (card.address || card.province) && (
-                  <div
-                    className={`flex items-center gap-2.5 ${
-                      isDark ? "text-white/80" : "text-gray-700"
-                    }`}
-                  >
-                    <MapPin className="w-3.5 h-3.5 text-primary flex-shrink-0" />
-                    <span>
-                      {[card.address, card.province]
-                        .filter(Boolean)
-                        .join(", ")}
-                    </span>
-                  </div>
-                )}
+              {card.type === "business" && (card.address || card.province) && (
+                <div
+                  className={`flex items-center gap-2.5 ${
+                    isDark ? "text-white/80" : "text-gray-700"
+                  }`}
+                >
+                  <MapPin className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                  <span>{[card.address, card.province].filter(Boolean).join(", ")}</span>
+                </div>
+              )}
               {card.type === "personal" && card.company_name && (
                 <div
                   className={`flex items-center gap-2.5 ${
@@ -318,12 +301,7 @@ export function MyCardModal({ card, isOpen, onClose }: MyCardModalProps) {
 
         {/* Action buttons */}
         <div className="flex gap-2 p-3 bg-card border border-t-0 border-border rounded-b-2xl">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1 gap-1.5 h-10"
-            onClick={handleShare}
-          >
+          <Button variant="outline" size="sm" className="flex-1 gap-1.5 h-10" onClick={handleShare}>
             <Share2 className="w-3.5 h-3.5" /> Chia sẻ
           </Button>
           <Button

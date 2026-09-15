@@ -12,7 +12,9 @@ export const getPersonalBySlug = createServerFn({ method: "GET" })
 
     const { data: row, error } = await supabaseAdmin
       .from("personal_profiles")
-      .select("id, user_id, slug, full_name, job_title, company_name, phone, zalo, email, avatar_url, facebook_url, linkedin_url, is_public")
+      .select(
+        "id, user_id, slug, full_name, job_title, company_name, phone, zalo, email, avatar_url, facebook_url, linkedin_url, is_public",
+      )
       .eq("slug", data.slug)
       .maybeSingle();
 

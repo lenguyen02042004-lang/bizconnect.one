@@ -15,42 +15,45 @@ interface SitemapEntry {
 export const Route = createFileRoute("/sitemap.xml")({
   loader: async () => {
     try {
-        const entries: SitemapEntry[] = [
-          { loc: "/", changefreq: "daily", priority: 1.0 },
-          { loc: "/explore", changefreq: "daily", priority: 0.9 },
-          { loc: "/pricing", changefreq: "weekly", priority: 0.7 },
-          { loc: "/support", changefreq: "monthly", priority: 0.5 },
-          { loc: "/login", changefreq: "monthly", priority: 0.4 },
-          { loc: "/countries", changefreq: "weekly", priority: 0.8 },
-        ];
+      const entries: SitemapEntry[] = [
+        { loc: "/", changefreq: "daily", priority: 1.0 },
+        { loc: "/explore", changefreq: "daily", priority: 0.9 },
+        { loc: "/pricing", changefreq: "weekly", priority: 0.7 },
+        { loc: "/support", changefreq: "monthly", priority: 0.5 },
+        { loc: "/login", changefreq: "monthly", priority: 0.4 },
+        { loc: "/countries", changefreq: "weekly", priority: 0.8 },
+      ];
 
-        for (const country of COUNTRY_LIST) {
-          entries.push({
-            loc: `/country/${country.slug}`,
-            changefreq: "weekly",
-            priority: 0.7,
-          });
-        }
+      for (const country of COUNTRY_LIST) {
+        entries.push({
+          loc: `/country/${country.slug}`,
+          changefreq: "weekly",
+          priority: 0.7,
+        });
+      }
 
-        let businessSlugs: string[] = [];
-        try {
-          const { data: bizes } = await supabase.from('businesses').select('slug').eq('status', 'public');
-          if (bizes) businessSlugs = bizes.map(b => b.slug);
-        } catch (e) {
-          console.error('Failed to fetch businesses for sitemap', e);
-        }
+      let businessSlugs: string[] = [];
+      try {
+        const { data: bizes } = await supabase
+          .from("businesses")
+          .select("slug")
+          .eq("status", "public");
+        if (bizes) businessSlugs = bizes.map((b) => b.slug);
+      } catch (e) {
+        console.error("Failed to fetch businesses for sitemap", e);
+      }
 
-        for (const slug of businessSlugs) {
-          entries.push({
-            loc: `/business/${slug}`,
-            changefreq: "daily",
-            priority: 0.8,
-          });
-        }
+      for (const slug of businessSlugs) {
+        entries.push({
+          loc: `/business/${slug}`,
+          changefreq: "daily",
+          priority: 0.8,
+        });
+      }
 
-        const today = new Date().toISOString().split("T")[0];
-        
-        const xml = `<?xml version="1.0" encoding="UTF-8"?>
+      const today = new Date().toISOString().split("T")[0];
+
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>
           <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
             ${entries
               .map(
@@ -66,15 +69,15 @@ export const Route = createFileRoute("/sitemap.xml")({
               .join("")}
           </urlset>`;
 
-        return new Response(xml.trim(), {
-          headers: {
-            "Content-Type": "application/xml",
-            "Cache-Control": "public, max-age=3600",
-          },
-        });
+      return new Response(xml.trim(), {
+        headers: {
+          "Content-Type": "application/xml",
+          "Cache-Control": "public, max-age=3600",
+        },
+      });
     } catch (error) {
-        console.error("Sitemap generation error:", error);
-        return new Response("Internal Server Error", { status: 500 });
+      console.error("Sitemap generation error:", error);
+      return new Response("Internal Server Error", { status: 500 });
     }
   },
 });

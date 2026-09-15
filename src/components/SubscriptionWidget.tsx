@@ -4,14 +4,25 @@ import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { getMySubscriptions } from "@/lib/admin.functions";
 import {
-  CreditCard, Crown, Sparkles, BookOpen, AlertTriangle, CheckCircle2, Clock,
+  CreditCard,
+  Crown,
+  Sparkles,
+  BookOpen,
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
 } from "lucide-react";
 
-const SUB_LABELS: Record<string, { label: string; icon: React.ComponentType<any>; color: string }> = {
-  b2b_premium: { label: "B2B Premium", icon: Sparkles, color: "from-rose-500 to-pink-600" },
-  icon_premium: { label: "Icon Premium", icon: Crown, color: "from-amber-500 to-orange-500" },
-  contact_block_addon: { label: "Mở rộng danh bạ (+500)", icon: BookOpen, color: "from-blue-500 to-cyan-500" },
-};
+const SUB_LABELS: Record<string, { label: string; icon: React.ComponentType<any>; color: string }> =
+  {
+    b2b_premium: { label: "B2B Premium", icon: Sparkles, color: "from-rose-500 to-pink-600" },
+    icon_premium: { label: "Icon Premium", icon: Crown, color: "from-amber-500 to-orange-500" },
+    contact_block_addon: {
+      label: "Mở rộng danh bạ (+500)",
+      icon: BookOpen,
+      color: "from-blue-500 to-cyan-500",
+    },
+  };
 
 function daysLeft(dateStr: string | null): number | null {
   if (!dateStr) return null;
@@ -25,15 +36,19 @@ export function SubscriptionWidget() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getFn().then(setData).catch(() => {}).finally(() => setLoading(false));
+    getFn()
+      .then(setData)
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return (
-    <div className="rounded-2xl border border-border bg-card p-5 animate-pulse">
-      <div className="h-4 w-40 bg-muted rounded mb-3" />
-      <div className="h-3 w-60 bg-muted/60 rounded" />
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="rounded-2xl border border-border bg-card p-5 animate-pulse">
+        <div className="h-4 w-40 bg-muted rounded mb-3" />
+        <div className="h-3 w-60 bg-muted/60 rounded" />
+      </div>
+    );
 
   const activeSubs = (data?.subscriptions ?? []).filter((s) => {
     if (s.status !== "active") return false;
@@ -61,7 +76,8 @@ export function SubscriptionWidget() {
         <div className="rounded-xl bg-muted/50 p-4 text-center">
           <p className="text-sm font-medium mb-1">📦 Đang dùng gói Miễn phí</p>
           <p className="text-xs text-muted-foreground mb-3">
-            200 lượt gửi danh thiếp/năm · Lưu tối đa {wallet ? wallet.max_saved_allowed : 200} liên hệ
+            200 lượt gửi danh thiếp/năm · Lưu tối đa {wallet ? wallet.max_saved_allowed : 200} liên
+            hệ
           </p>
           <Link to="/pricing">
             <Button size="sm" className="bg-gradient-vivid text-white border-0 gap-1.5">
@@ -72,11 +88,18 @@ export function SubscriptionWidget() {
       ) : (
         <div className="space-y-2">
           {activeSubs.map((s) => {
-            const info = SUB_LABELS[s.sub_type] ?? { label: s.sub_type, icon: CreditCard, color: "from-gray-500 to-slate-500" };
+            const info = SUB_LABELS[s.sub_type] ?? {
+              label: s.sub_type,
+              icon: CreditCard,
+              color: "from-gray-500 to-slate-500",
+            };
             const days = daysLeft(s.current_period_end);
             const urgent = days !== null && days <= 30;
             return (
-              <div key={s.id} className={`rounded-xl p-3 flex items-center gap-3 bg-gradient-to-r ${info.color} text-white`}>
+              <div
+                key={s.id}
+                className={`rounded-xl p-3 flex items-center gap-3 bg-gradient-to-r ${info.color} text-white`}
+              >
                 <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
                   <info.icon className="w-4 h-4" />
                 </div>
@@ -86,8 +109,14 @@ export function SubscriptionWidget() {
                     <p className="text-xs text-white/80 truncate">📍 {s.businesses.name}</p>
                   )}
                   {s.current_period_end && (
-                    <p className={`text-xs flex items-center gap-1 mt-0.5 ${urgent ? "text-yellow-200 font-semibold" : "text-white/70"}`}>
-                      {urgent ? <AlertTriangle className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
+                    <p
+                      className={`text-xs flex items-center gap-1 mt-0.5 ${urgent ? "text-yellow-200 font-semibold" : "text-white/70"}`}
+                    >
+                      {urgent ? (
+                        <AlertTriangle className="w-3 h-3" />
+                      ) : (
+                        <Clock className="w-3 h-3" />
+                      )}
                       Hết hạn: {new Date(s.current_period_end).toLocaleDateString("vi-VN")}
                       {days !== null && ` (còn ${days} ngày)`}
                     </p>
@@ -103,7 +132,9 @@ export function SubscriptionWidget() {
       {/* Wallet / Contact limits */}
       {wallet && (
         <div className="rounded-xl bg-muted/50 p-3 space-y-2">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Ví Danh bạ</p>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Ví Danh bạ
+          </p>
           <div className="flex items-center justify-between">
             <span className="text-sm">Đã lưu</span>
             <span className="font-semibold text-sm">
@@ -113,12 +144,15 @@ export function SubscriptionWidget() {
           <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
             <div
               className="h-2 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 transition-all"
-              style={{ width: `${Math.min(100, (wallet.current_saved_count / wallet.max_saved_allowed) * 100)}%` }}
+              style={{
+                width: `${Math.min(100, (wallet.current_saved_count / wallet.max_saved_allowed) * 100)}%`,
+              }}
             />
           </div>
           {wallet.blocks_purchased > 0 && (
             <p className="text-xs text-muted-foreground">
-              ✅ {wallet.blocks_purchased} gói mở rộng đã mua (+{wallet.blocks_purchased * 500} danh bạ)
+              ✅ {wallet.blocks_purchased} gói mở rộng đã mua (+{wallet.blocks_purchased * 500} danh
+              bạ)
             </p>
           )}
           {wallet.current_saved_count >= wallet.max_saved_allowed * 0.8 && (

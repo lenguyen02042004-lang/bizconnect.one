@@ -27,17 +27,37 @@ export function Navbar() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-          <Link to="/" activeProps={{ className: "text-primary" }} className="hover:text-primary transition-smooth" suppressHydrationWarning>
+          <Link
+            to="/"
+            activeProps={{ className: "text-primary" }}
+            className="hover:text-primary transition-smooth"
+            suppressHydrationWarning
+          >
             {t("nav.map")}
           </Link>
-          <Link to="/explore" activeProps={{ className: "text-primary" }} className="hover:text-primary transition-smooth" suppressHydrationWarning>
+          <Link
+            to="/explore"
+            activeProps={{ className: "text-primary" }}
+            className="hover:text-primary transition-smooth"
+            suppressHydrationWarning
+          >
             {t("nav.explore")}
           </Link>
-          <Link to="/countries" activeProps={{ className: "text-primary" }} className="hover:text-primary transition-smooth" suppressHydrationWarning>
+          <Link
+            to="/countries"
+            activeProps={{ className: "text-primary" }}
+            className="hover:text-primary transition-smooth"
+            suppressHydrationWarning
+          >
             {t("nav.countries")}
           </Link>
 
-          <Link to="/pricing" activeProps={{ className: "text-primary" }} className="hover:text-primary transition-smooth" suppressHydrationWarning>
+          <Link
+            to="/pricing"
+            activeProps={{ className: "text-primary" }}
+            className="hover:text-primary transition-smooth"
+            suppressHydrationWarning
+          >
             {t("nav.pricing")}
           </Link>
         </nav>
@@ -68,7 +88,10 @@ export function Navbar() {
             <>
               <Link to="/login">
                 <Button variant="ghost" size="sm" className="gap-1.5 px-2 sm:px-3">
-                  <LogIn className="w-4 h-4" /> <span className="hidden sm:inline" suppressHydrationWarning>{t("nav.login")}</span>
+                  <LogIn className="w-4 h-4" />{" "}
+                  <span className="hidden sm:inline" suppressHydrationWarning>
+                    {t("nav.login")}
+                  </span>
                 </Button>
               </Link>
               <Link to="/signup">
@@ -76,7 +99,10 @@ export function Navbar() {
                   size="sm"
                   className="gap-1.5 px-2 sm:px-3 bg-gradient-vivid hover:opacity-90 text-white border-0 shadow-pink"
                 >
-                  <Sparkles className="w-4 h-4" /> <span className="hidden sm:inline" suppressHydrationWarning>{t("nav.signup")}</span>
+                  <Sparkles className="w-4 h-4" />{" "}
+                  <span className="hidden sm:inline" suppressHydrationWarning>
+                    {t("nav.signup")}
+                  </span>
                 </Button>
               </Link>
             </>

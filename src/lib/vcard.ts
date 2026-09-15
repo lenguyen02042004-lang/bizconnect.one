@@ -1,7 +1,11 @@
 import { BusinessProfile } from "@/types/business";
 
 function esc(v: string) {
-  return (v ?? "").replace(/\\/g, "\\\\").replace(/,/g, "\\,").replace(/;/g, "\\;").replace(/\n/g, "\\n");
+  return (v ?? "")
+    .replace(/\\/g, "\\\\")
+    .replace(/,/g, "\\,")
+    .replace(/;/g, "\\;")
+    .replace(/\n/g, "\\n");
 }
 
 export function buildVCard(b: BusinessProfile, profileUrl?: string): string {

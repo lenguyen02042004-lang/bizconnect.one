@@ -17,11 +17,14 @@ export const Route = createFileRoute("/following")({
   head: () => ({
     meta: [
       { title: "Doanh nghiệp tôi theo dõi — BizConnect.One" },
-      { name: "description", content: "Quản lý danh sách doanh nghiệp bạn đang theo dõi trên BizConnect.One — cập nhật hoạt động, tin tức và liên hệ nhanh." },
+      {
+        name: "description",
+        content:
+          "Quản lý danh sách doanh nghiệp bạn đang theo dõi trên BizConnect.One — cập nhật hoạt động, tin tức và liên hệ nhanh.",
+      },
       { name: "robots", content: "noindex" },
     ],
   }),
-
 });
 
 type FollowedBiz = {
@@ -48,19 +51,26 @@ function FollowingPage() {
 
   const load = async () => {
     setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { navigate({ to: "/login" }); return; }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      navigate({ to: "/login" });
+      return;
+    }
 
     const { data, error } = await supabase
       .from("follows")
-      .select(`
+      .select(
+        `
         id, created_at,
         business:businesses!inner (
           id, slug, name, logo_url, short_intro,
           country_code, province, views_count, followers_count,
           icon_tier, status
         )
-      `)
+      `,
+      )
       .eq("follower_id", user.id)
       .order("created_at", { ascending: false });
 
@@ -81,15 +91,16 @@ function FollowingPage() {
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const handleUnfollow = async (biz: FollowedBiz) => {
     setUnfollowing(biz.id);
     // Optimistic
     const prev = items;
     setItems((arr) => arr.filter((x) => x.id !== biz.id));
-    const { error } = await supabase
-      .from("follows").delete().eq("id", biz.followId);
+    const { error } = await supabase.from("follows").delete().eq("id", biz.followId);
     if (error) {
       setItems(prev);
       toast.error(error.message);
@@ -106,8 +117,6 @@ function FollowingPage() {
       maxWidth="5xl"
     >
       <>
-
-
         {loading ? (
           <div className="flex justify-center py-16">
             <Loader2 className="w-6 h-6 animate-spin text-primary" />
@@ -151,11 +160,16 @@ function FollowingPage() {
                       </Badge>
                     )}
                     {b.status === "draft" && (
-                      <Badge variant="outline" className="h-5 px-1.5 text-[10px]">Bản nháp</Badge>
+                      <Badge variant="outline" className="h-5 px-1.5 text-[10px]">
+                        Bản nháp
+                      </Badge>
                     )}
                   </div>
-                  <Link to="/business/$slug" params={{ slug: b.slug }}
-                        className="font-semibold text-sm truncate block hover:text-primary transition-smooth mt-0.5">
+                  <Link
+                    to="/business/$slug"
+                    params={{ slug: b.slug }}
+                    className="font-semibold text-sm truncate block hover:text-primary transition-smooth mt-0.5"
+                  >
                     {b.name}
                   </Link>
                   {b.short_intro && (
@@ -165,11 +179,19 @@ function FollowingPage() {
                     {(b.province || b.country_code) && (
                       <span className="flex items-center gap-1 truncate">
                         <MapPin className="w-3 h-3 shrink-0" />
-                        <span className="truncate">{[b.province, b.country_code].filter(Boolean).join(", ")}</span>
+                        <span className="truncate">
+                          {[b.province, b.country_code].filter(Boolean).join(", ")}
+                        </span>
                       </span>
                     )}
-                    <span className="flex items-center gap-1"><Eye className="w-3 h-3" />{formatCount(b.views_count)}</span>
-                    <span className="flex items-center gap-1"><Heart className="w-3 h-3" />{formatCount(b.followers_count)}</span>
+                    <span className="flex items-center gap-1">
+                      <Eye className="w-3 h-3" />
+                      {formatCount(b.views_count)}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Heart className="w-3 h-3" />
+                      {formatCount(b.followers_count)}
+                    </span>
                   </div>
                   <div className="flex gap-1.5 mt-2.5">
                     <Link to="/business/$slug" params={{ slug: b.slug }} className="flex-1">

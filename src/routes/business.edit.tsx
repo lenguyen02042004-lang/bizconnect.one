@@ -10,8 +10,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import {
-  Save, Sparkles, Loader2, ArrowLeft, ArrowRight,
-  Building2, MapPin as MapPinIcon, Phone, Link2, Images, Award, FileText, CheckCircle2,
+  Save,
+  Sparkles,
+  Loader2,
+  ArrowLeft,
+  ArrowRight,
+  Building2,
+  MapPin as MapPinIcon,
+  Phone,
+  Link2,
+  Images,
+  Award,
+  FileText,
+  CheckCircle2,
 } from "lucide-react";
 import { slugify } from "@/lib/upload";
 
@@ -67,19 +78,39 @@ function EditBusinessPage() {
   const methods = useForm<BusinessFormValues>({
     resolver: zodResolver(businessFormSchema) as any,
     defaultValues: {
-      id: null, name: "", slug: "", short_intro: "", description: "", industry_id: null,
-      logo_url: null, banner_url: null, address: "", province: null, country_code: null,
-      lat: null, lng: null, phone: "", email: "", website: "", status: "draft",
-      socials: {}, gallery: [], certifications: [],
-    }
+      id: null,
+      name: "",
+      slug: "",
+      short_intro: "",
+      description: "",
+      industry_id: null,
+      logo_url: null,
+      banner_url: null,
+      address: "",
+      province: null,
+      country_code: null,
+      lat: null,
+      lng: null,
+      phone: "",
+      email: "",
+      website: "",
+      status: "draft",
+      socials: {},
+      gallery: [],
+      certifications: [],
+    },
   });
 
   const { watch, reset, getValues } = methods;
 
   useEffect(() => {
-    supabase.from("industries").select("id, name, slug").order("name").then(({ data }) => {
-      if (data && data.length > 0) setIndustries(data);
-    });
+    supabase
+      .from("industries")
+      .select("id, name, slug")
+      .order("name")
+      .then(({ data }) => {
+        if (data && data.length > 0) setIndustries(data);
+      });
   }, []);
 
   // Initialization
@@ -88,7 +119,11 @@ function EditBusinessPage() {
     (async () => {
       if (!id) {
         // If no ID, check if they already have a business
-        const { data: existing } = await supabase.from("businesses").select("id").eq("owner_id", user.id).limit(1);
+        const { data: existing } = await supabase
+          .from("businesses")
+          .select("id")
+          .eq("owner_id", user.id)
+          .limit(1);
         if (existing && existing.length > 0) {
           navigate({ to: "/business/edit", search: { id: existing[0].id }, replace: true });
           return;
@@ -98,7 +133,11 @@ function EditBusinessPage() {
       }
 
       setLoading(true);
-      const { data: biz, error } = await supabase.from("businesses").select("*").eq("id", id).maybeSingle();
+      const { data: biz, error } = await supabase
+        .from("businesses")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
       if (error || !biz) {
         toast.error("Không tìm thấy doanh nghiệp hoặc bạn không có quyền");
         navigate({ to: "/dashboard" });
@@ -106,24 +145,35 @@ function EditBusinessPage() {
       }
       const [{ data: socials }, { data: gallery }] = await Promise.all([
         supabase.from("business_socials").select("platform, url").eq("business_id", id),
-        supabase.from("business_gallery").select("image_url").eq("business_id", id).order("order_index"),
+        supabase
+          .from("business_gallery")
+          .select("image_url")
+          .eq("business_id", id)
+          .order("order_index"),
       ]);
-      
+
       reset({
         id: biz.id,
-        name: biz.name, slug: biz.slug,
+        name: biz.name,
+        slug: biz.slug,
         short_intro: biz.short_intro ?? "",
         description: biz.description ?? "",
         industry_id: biz.industry_id,
-        logo_url: biz.logo_url, banner_url: biz.banner_url,
-        address: biz.address ?? "", province: biz.province, country_code: biz.country_code,
-        lat: biz.lat, lng: biz.lng,
-        phone: biz.phone ?? "", email: biz.email ?? "", website: biz.website ?? "",
+        logo_url: biz.logo_url,
+        banner_url: biz.banner_url,
+        address: biz.address ?? "",
+        province: biz.province,
+        country_code: biz.country_code,
+        lat: biz.lat,
+        lng: biz.lng,
+        phone: biz.phone ?? "",
+        email: biz.email ?? "",
+        website: biz.website ?? "",
         status: biz.status as "draft" | "public",
         socials: Object.fromEntries((socials ?? []).map((s) => [s.platform, s.url])),
         gallery: (gallery ?? []).map((g) => g.image_url),
-        certifications: Array.isArray(biz.certifications) 
-          ? (biz.certifications as BusinessFormValues["certifications"]) 
+        certifications: Array.isArray(biz.certifications)
+          ? (biz.certifications as BusinessFormValues["certifications"])
           : [],
       });
       setOwnerId(biz.owner_id);
@@ -133,7 +183,7 @@ function EditBusinessPage() {
 
   const save = async (publish: boolean, isAutoSave = false) => {
     const currentValues = getValues();
-    if (!currentValues.name.trim()) return; 
+    if (!currentValues.name.trim()) return;
 
     if (isAutoSave) setIsAutoSaving(true);
     else setSaving(true);
@@ -145,11 +195,20 @@ function EditBusinessPage() {
       short_intro: currentValues.short_intro || null,
       description: currentValues.description || null,
       certifications: currentValues.certifications,
-      industry_id: currentValues.industry_id && !currentValues.industry_id.startsWith("local-") ? currentValues.industry_id : null,
-      logo_url: currentValues.logo_url, banner_url: currentValues.banner_url,
-      address: currentValues.address || null, province: currentValues.province, country_code: currentValues.country_code,
-      lat: currentValues.lat, lng: currentValues.lng,
-      phone: currentValues.phone || null, email: currentValues.email || null, website: currentValues.website || null,
+      industry_id:
+        currentValues.industry_id && !currentValues.industry_id.startsWith("local-")
+          ? currentValues.industry_id
+          : null,
+      logo_url: currentValues.logo_url,
+      banner_url: currentValues.banner_url,
+      address: currentValues.address || null,
+      province: currentValues.province,
+      country_code: currentValues.country_code,
+      lat: currentValues.lat,
+      lng: currentValues.lng,
+      phone: currentValues.phone || null,
+      email: currentValues.email || null,
+      website: currentValues.website || null,
       status: publish ? "public" : currentValues.status,
     };
 
@@ -157,10 +216,24 @@ function EditBusinessPage() {
     let isNew = false;
     if (bizId) {
       const { error } = await supabase.from("businesses").update(payload).eq("id", bizId);
-      if (error) { if (!isAutoSave) toast.error(error.message); setSaving(false); setIsAutoSaving(false); return; }
+      if (error) {
+        if (!isAutoSave) toast.error(error.message);
+        setSaving(false);
+        setIsAutoSaving(false);
+        return;
+      }
     } else {
-      const { data, error } = await supabase.from("businesses").insert(payload).select("id").single();
-      if (error) { if (!isAutoSave) toast.error(error.message); setSaving(false); setIsAutoSaving(false); return; }
+      const { data, error } = await supabase
+        .from("businesses")
+        .insert(payload)
+        .select("id")
+        .single();
+      if (error) {
+        if (!isAutoSave) toast.error(error.message);
+        setSaving(false);
+        setIsAutoSaving(false);
+        return;
+      }
       bizId = data.id;
       isNew = true;
     }
@@ -174,7 +247,11 @@ function EditBusinessPage() {
     await supabase.from("business_gallery").delete().eq("business_id", bizId);
     if (currentValues.gallery.length) {
       await supabase.from("business_gallery").insert(
-        currentValues.gallery.map((image_url, order_index) => ({ business_id: bizId!, image_url, order_index })),
+        currentValues.gallery.map((image_url, order_index) => ({
+          business_id: bizId!,
+          image_url,
+          order_index,
+        })),
       );
     }
 
@@ -185,7 +262,7 @@ function EditBusinessPage() {
       reset({ ...currentValues, id: bizId });
       navigate({ search: { id: bizId } as any, replace: true });
     }
-    
+
     if (!isAutoSave) {
       toast.success(publish ? "Đã xuất bản!" : "Đã lưu bản nháp");
       if (publish) navigate({ to: "/dashboard" });
@@ -205,11 +282,12 @@ function EditBusinessPage() {
     return () => subscription.unsubscribe();
   }, [watch, loading, user, save]);
 
-
   if (!user || loading) {
     return (
       <DashboardShell maxWidth="5xl">
-        <div className="py-16 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
+        <div className="py-16 flex justify-center">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        </div>
       </DashboardShell>
     );
   }
@@ -224,14 +302,38 @@ function EditBusinessPage() {
       actions={
         <div className="flex items-center gap-2">
           {isAutoSaving && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground mr-2" />}
-          <Badge variant={currentStatus === "public" ? "default" : "secondary"} className={currentStatus === "public" ? "bg-primary" : ""}>
+          <Badge
+            variant={currentStatus === "public" ? "default" : "secondary"}
+            className={currentStatus === "public" ? "bg-primary" : ""}
+          >
             {currentStatus === "public" ? "Công khai" : "Bản nháp"}
           </Badge>
-          <Button variant="outline" onClick={() => save(false)} disabled={saving} size="sm" className="gap-1.5">
-            {saving && !isAutoSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Lưu nháp
+          <Button
+            variant="outline"
+            onClick={() => save(false)}
+            disabled={saving}
+            size="sm"
+            className="gap-1.5"
+          >
+            {saving && !isAutoSaving ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Save className="w-4 h-4" />
+            )}{" "}
+            Lưu nháp
           </Button>
-          <Button onClick={() => save(true)} disabled={saving} size="sm" className="gap-1.5 bg-gradient-vivid text-white border-0 shadow-pink">
-            {saving && !isAutoSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} Xuất bản
+          <Button
+            onClick={() => save(true)}
+            disabled={saving}
+            size="sm"
+            className="gap-1.5 bg-gradient-vivid text-white border-0 shadow-pink"
+          >
+            {saving && !isAutoSaving ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Sparkles className="w-4 h-4" />
+            )}{" "}
+            Xuất bản
           </Button>
         </div>
       }
@@ -245,9 +347,14 @@ function EditBusinessPage() {
               {TABS.map((t, i) => {
                 const Icon = t.icon;
                 return (
-                  <TabsTrigger key={t.key} value={t.key} className="gap-1.5 data-[state=active]:bg-card data-[state=active]:shadow-sm">
+                  <TabsTrigger
+                    key={t.key}
+                    value={t.key}
+                    className="gap-1.5 data-[state=active]:bg-card data-[state=active]:shadow-sm"
+                  >
                     <span className="text-[10px] font-mono opacity-60">{i + 1}.</span>
-                    <Icon className="w-3.5 h-3.5" /> <span className="text-xs sm:text-sm">{t.label}</span>
+                    <Icon className="w-3.5 h-3.5" />{" "}
+                    <span className="text-xs sm:text-sm">{t.label}</span>
                   </TabsTrigger>
                 );
               })}
@@ -280,7 +387,8 @@ function EditBusinessPage() {
               </TabsContent>
 
               <StepNav
-                tab={tab} setTab={setTab}
+                tab={tab}
+                setTab={setTab}
                 onPublish={() => save(true)}
                 onSaveDraft={() => save(false)}
                 saving={saving}
@@ -299,11 +407,17 @@ function ProgressBar({ tab, setTab }: { tab: string; setTab: (v: string) => void
   return (
     <div className="mb-4">
       <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
-        <span>Bước <span className="font-semibold text-foreground">{idx + 1}</span> / {TABS.length} · {TABS[idx]?.label}</span>
+        <span>
+          Bước <span className="font-semibold text-foreground">{idx + 1}</span> / {TABS.length} ·{" "}
+          {TABS[idx]?.label}
+        </span>
         <span className="tabular-nums">{pct}%</span>
       </div>
       <div className="h-2 rounded-full bg-muted overflow-hidden">
-        <div className="h-full bg-gradient-vivid transition-all duration-300" style={{ width: `${pct}%` }} />
+        <div
+          className="h-full bg-gradient-vivid transition-all duration-300"
+          style={{ width: `${pct}%` }}
+        />
       </div>
       <div className="hidden md:flex items-center justify-between mt-2 gap-1">
         {TABS.map((t, i) => (
@@ -321,8 +435,18 @@ function ProgressBar({ tab, setTab }: { tab: string; setTab: (v: string) => void
 }
 
 function StepNav({
-  tab, setTab, onPublish, onSaveDraft, saving,
-}: { tab: string; setTab: (v: string) => void; onPublish: () => void; onSaveDraft: () => void; saving: boolean }) {
+  tab,
+  setTab,
+  onPublish,
+  onSaveDraft,
+  saving,
+}: {
+  tab: string;
+  setTab: (v: string) => void;
+  onPublish: () => void;
+  onSaveDraft: () => void;
+  saving: boolean;
+}) {
   const idx = TABS.findIndex((t) => t.key === tab);
   const prev = idx > 0 ? TABS[idx - 1] : null;
   const next = idx < TABS.length - 1 ? TABS[idx + 1] : null;
@@ -331,7 +455,10 @@ function StepNav({
   return (
     <div className="mt-6 pt-5 border-t border-border flex items-center justify-between gap-3 flex-wrap">
       <Button
-        type="button" variant="outline" size="sm" className="gap-1.5"
+        type="button"
+        variant="outline"
+        size="sm"
+        className="gap-1.5"
         disabled={!prev}
         onClick={() => prev && setTab(prev.key)}
       >
@@ -339,7 +466,14 @@ function StepNav({
       </Button>
 
       <div className="flex items-center gap-2">
-        <Button type="button" variant="ghost" size="sm" onClick={onSaveDraft} disabled={saving} className="gap-1.5">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={onSaveDraft}
+          disabled={saving}
+          className="gap-1.5"
+        >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           <span className="hidden sm:inline">Lưu nháp & tiếp tục sau</span>
           <span className="sm:hidden">Lưu nháp</span>
@@ -350,12 +484,21 @@ function StepNav({
       </div>
 
       {isLast ? (
-        <Button type="button" size="sm" onClick={onPublish} disabled={saving} className="gap-1.5 bg-gradient-vivid text-white border-0 shadow-pink">
-          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} Xuất bản
+        <Button
+          type="button"
+          size="sm"
+          onClick={onPublish}
+          disabled={saving}
+          className="gap-1.5 bg-gradient-vivid text-white border-0 shadow-pink"
+        >
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}{" "}
+          Xuất bản
         </Button>
       ) : (
         <Button
-          type="button" size="sm" className="gap-1.5"
+          type="button"
+          size="sm"
+          className="gap-1.5"
           onClick={() => next && setTab(next.key)}
         >
           {next?.label} <ArrowRight className="w-4 h-4" />

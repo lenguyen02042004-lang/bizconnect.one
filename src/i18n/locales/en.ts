@@ -10,7 +10,7 @@ export default {
     login: "Sign in",
     signup: "Start free",
     logout: "Sign out",
-    personal: "Personal"
+    personal: "Personal",
   },
   common: {
     search: "Search businesses...",
@@ -28,7 +28,8 @@ export default {
     tagline: "Global business map",
     heroTitlePrefix: "Global Business",
     heroTitleGradient: "Map",
-    heroSubtitle: "Connect, send online business cards, and expand B2B partners across {{count}}+ countries.",
+    heroSubtitle:
+      "Connect, send online business cards, and expand B2B partners across {{count}}+ countries.",
     exploreBtn: "Explore now",
     map2dBtn: "2D Map",
     worldwideB2BMap: "Worldwide B2B Map",
@@ -50,30 +51,32 @@ export default {
     loadingGlobe: "Loading globe...",
   },
   industry: {
-    "technology": "Information Technology",
-    "finance": "Finance & Banking",
+    technology: "Information Technology",
+    finance: "Finance & Banking",
     "real-estate": "Real Estate",
-    "manufacturing": "Manufacturing",
-    "retail": "Retail & Commerce",
-    "hospitality": "Hospitality & Tourism",
-    "education": "Education",
-    "healthcare": "Healthcare",
+    manufacturing: "Manufacturing",
+    retail: "Retail & Commerce",
+    hospitality: "Hospitality & Tourism",
+    education: "Education",
+    healthcare: "Healthcare",
     "food-beverage": "Food & Beverage",
-    "logistics": "Logistics & Transport",
-    "agriculture": "Agriculture",
-    "energy": "Energy",
-    "marketing": "Marketing & Media",
-    "consulting": "Consulting & Legal",
-    "construction": "Construction",
-    "fashion": "Fashion & Beauty",
-    "entertainment": "Entertainment & Arts",
-    "automotive": "Automotive",
-    "other": "Other"
+    logistics: "Logistics & Transport",
+    agriculture: "Agriculture",
+    energy: "Energy",
+    marketing: "Marketing & Media",
+    consulting: "Consulting & Legal",
+    construction: "Construction",
+    fashion: "Fashion & Beauty",
+    entertainment: "Entertainment & Arts",
+    automotive: "Automotive",
+    other: "Other",
   },
   auth: {
     signupTitle: "Free Business Registration — BizConnect.One",
-    signupDesc: "Create a free business account on BizConnect.One: design an online business card, appear on the global map, and connect with international B2B partners.",
-    signupOgDesc: "Create a free business account: online business card, appear on the global map, and connect with international B2B partners.",
+    signupDesc:
+      "Create a free business account on BizConnect.One: design an online business card, appear on the global map, and connect with international B2B partners.",
+    signupOgDesc:
+      "Create a free business account: online business card, appear on the global map, and connect with international B2B partners.",
     signupSuccess: "Registration successful!",
     signupHeading: "Start for free",
     signupSubheading: "Choose an account type and join the global trade network",
@@ -90,8 +93,10 @@ export default {
     alreadyHaveAccount: "Already have an account?",
     loginHere: "Sign in",
     loginTitle: "Business Login — BizConnect.One",
-    loginDesc: "Log in to BizConnect.One to manage your business card, connections inbox, and global B2B partner directory.",
-    loginOgDesc: "Log in to manage your business card, connections inbox, and global B2B partner directory.",
+    loginDesc:
+      "Log in to BizConnect.One to manage your business card, connections inbox, and global B2B partner directory.",
+    loginOgDesc:
+      "Log in to manage your business card, connections inbox, and global B2B partner directory.",
     loginSuccess: "Login successful!",
     welcomeBack: "Welcome back",
     loginSubheading: "Log in to manage your business",
@@ -115,11 +120,12 @@ export default {
     confirmPwd: "Confirm Password",
     updating: "Updating...",
     updatePwd: "Update Password",
-    backToLogin: "← Back to Login"
+    backToLogin: "← Back to Login",
   },
   meta: {
     homeTitle: "BizConnect.One — Global Business Map",
-    homeDesc: "B2B connection network and business map. Create company business cards and expand global business opportunities."
+    homeDesc:
+      "B2B connection network and business map. Create company business cards and expand global business opportunities.",
   },
   settings: {
     title: "Account Settings",
@@ -143,7 +149,8 @@ export default {
   },
   pricing: {
     titleMeta: "Membership Pricing — BizConnect.One",
-    descMeta: "Choose the right plan: free to start, B2B Premium 150k/year with 500 proactive card sends, Icon Premium stands out on the map.",
+    descMeta:
+      "Choose the right plan: free to start, B2B Premium 150k/year with 500 proactive card sends, Icon Premium stands out on the map.",
     ogTitle: "Pricing — BizConnect.One",
     loginToUpgrade: "Please login to upgrade",
     uploadSuccess: "Receipt uploaded successfully",
@@ -154,7 +161,8 @@ export default {
     headerTag: "Simple, transparent pricing",
     headerTitle: "Start for just",
     headerPrice: "150k/year",
-    headerDesc: "No hidden fees · No long-term commitments · Bank transfer payment, approved within 24h",
+    headerDesc:
+      "No hidden fees · No long-term commitments · Bank transfer payment, approved within 24h",
     bizAccount: "Business Account",
     personalAccount: "Personal Account",
     forever: "forever",
@@ -184,7 +192,7 @@ export default {
         f2: "Receive connections from others",
         f3: "Scan QR on site",
         f4: "Personal page + QR code",
-        cta: "Sign up for free"
+        cta: "Sign up for free",
       },
       bizFree: {
         name: "Business Free",
@@ -194,7 +202,7 @@ export default {
         f3: "Display on global map",
         f4: "Detail page + QR code",
         f5: "Filter & search",
-        cta: "Start for free"
+        cta: "Start for free",
       },
       bizBlock500: {
         name: "B2B Block 500",
@@ -207,7 +215,7 @@ export default {
         f5: "Interact via internal Inbox",
         f6: "Priority technical support",
         cta: "Buy",
-        period: "/year"
+        period: "/year",
       },
       bizIconPremium: {
         name: "Icon Premium",
@@ -217,15 +225,15 @@ export default {
         f3: "Higher ranking in search",
         f4: "Premium badge",
         cta: "Upgrade",
-        period: "/year"
-      }
+        period: "/year",
+      },
     },
     addons: {
       contactBlock: {
         name: "Expand Contacts +500",
-        desc: "1 year duration."
-      }
-    }
+        desc: "1 year duration.",
+      },
+    },
   },
   me: {
     title: "Personal Card",
@@ -260,7 +268,7 @@ export default {
     errName: "Please enter full name",
     errSave: "Failed to save",
     successSave: "Personal card saved",
-    successCopy: "Link copied"
+    successCopy: "Link copied",
   },
   dashboard: {
     title: "Hello, {{name}} 👋",
@@ -286,7 +294,8 @@ export default {
     share: "Share",
     copied: "Link copied to clipboard",
     upgradeTitle: "🚀 Get a Trade Block (500 limit) — <1>150k/year</1>",
-    upgradeDesc: "Free accounts are limited to 200 sends/year. Buy a 500 block to instantly expand your sending and contact storage limits.",
+    upgradeDesc:
+      "Free accounts are limited to 200 sends/year. Buy a 500 block to instantly expand your sending and contact storage limits.",
     upgradeBtn: "Upgrade Now",
     yourBiz: "Your Businesses",
     addBiz: "Add New",
@@ -296,7 +305,7 @@ export default {
     statusPublic: "Public",
     statusDraft: "Draft",
     edit: "Edit",
-    view: "View"
+    view: "View",
   },
   publicCard: {
     phone: "Phone",
@@ -311,11 +320,11 @@ export default {
     saveContact: "Save Contact",
     saving: "Saving...",
     saved: "Saved to contacts",
-    saveSuccess: "Saved \"{{name}}\" to contacts!",
+    saveSuccess: 'Saved "{{name}}" to contacts!',
     saveError: "Error saving contact",
     sendCard: "Send my card",
     print: "Print card",
-    share: "Share"
+    share: "Share",
   },
   businessCard: {
     views: "{{count}} views",
@@ -348,6 +357,6 @@ export default {
     errorLoad: "Failed to load business",
     errorNotFound: "Business not found",
     errorNotFoundDesc: "The link might have changed or the business is not published.",
-    back: "Back"
-  }
+    back: "Back",
+  },
 };

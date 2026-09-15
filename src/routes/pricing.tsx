@@ -22,9 +22,22 @@ export const Route = createFileRoute("/pricing")({
   component: PricingPage,
   head: () => ({
     meta: [
-      { title: i18n.t("pricing.titleMeta", { defaultValue: "Bảng giá gói thành viên — BizConnect.One" }) },
-      { name: "description", content: i18n.t("pricing.descMeta", { defaultValue: "Chọn gói phù hợp: miễn phí để bắt đầu, B2B Premium $5/năm với 500 lượt gửi card chủ động, Icon Premium nổi bật trên bản đồ." }) },
-      { property: "og:title", content: i18n.t("pricing.ogTitle", { defaultValue: "Bảng giá — BizConnect.One" }) },
+      {
+        title: i18n.t("pricing.titleMeta", {
+          defaultValue: "Bảng giá gói thành viên — BizConnect.One",
+        }),
+      },
+      {
+        name: "description",
+        content: i18n.t("pricing.descMeta", {
+          defaultValue:
+            "Chọn gói phù hợp: miễn phí để bắt đầu, B2B Premium $5/năm với 500 lượt gửi card chủ động, Icon Premium nổi bật trên bản đồ.",
+        }),
+      },
+      {
+        property: "og:title",
+        content: i18n.t("pricing.ogTitle", { defaultValue: "Bảng giá — BizConnect.One" }),
+      },
     ],
     links: [{ rel: "canonical", href: "https://earth-biz-link.lovable.app/pricing" }],
   }),
@@ -33,10 +46,10 @@ export const Route = createFileRoute("/pricing")({
 // ─── Bank config (update these with real info) ───────────────────────────────
 const BANK = {
   name: "Vietcombank (VCB)",
-  account: "1234567890",             // TODO: replace with real account number
-  owner: "CTY TNHH BIZCONNECT ONE",  // TODO: replace with real account name
-  bin: "970436",                     // Vietcombank BIN for VietQR
-  vndRate: 1,                        // Direct VND payment
+  account: "1234567890", // TODO: replace with real account number
+  owner: "CTY TNHH BIZCONNECT ONE", // TODO: replace with real account name
+  bin: "970436", // Vietcombank BIN for VietQR
+  vndRate: 1, // Direct VND payment
 };
 
 // Generate VietQR URL (https://vietqr.io/danh-sach-api/create-qr/)
@@ -72,15 +85,29 @@ function PricingPage() {
       setUserEmail(data.user?.email ?? "");
     });
     // Fetch bank info from settings (uses any-typed query)
-    supabase.from("app_settings").select("value").eq("key", "bank_info").single().then(({ data }) => {
-      if (data?.value) setBankInfo({ ...BANK, ...(data.value as Record<string, any>) });
-    });
+    supabase
+      .from("app_settings")
+      .select("value")
+      .eq("key", "bank_info")
+      .single()
+      .then(({ data }) => {
+        if (data?.value) setBankInfo({ ...BANK, ...(data.value as Record<string, any>) });
+      });
   }, []);
 
   const openPayment = async (planTarget: PaymentTarget) => {
-    if (planTarget.price === 0) { navigate({ to: "/signup" }); return; }
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { toast.error(t("pricing.loginToUpgrade")); navigate({ to: "/login" }); return; }
+    if (planTarget.price === 0) {
+      navigate({ to: "/signup" });
+      return;
+    }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error(t("pricing.loginToUpgrade"));
+      navigate({ to: "/login" });
+      return;
+    }
     setTarget(planTarget);
     setReceiptUrl(null);
     setQrLoaded(false);
@@ -90,25 +117,38 @@ function PricingPage() {
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
     setIsUploading(true);
     try {
       const url = await uploadPublicFile("receipts", file, user.id);
       setReceiptUrl(url);
       toast.success(t("pricing.uploadSuccess"));
-    } catch { toast.error(t("pricing.uploadError")); }
-    finally { setIsUploading(false); }
+    } catch {
+      toast.error(t("pricing.uploadError"));
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleSubmit = async () => {
-    if (!receiptUrl || !target) { toast.error(t("pricing.requireReceipt")); return; }
-    const { data: { user } } = await supabase.auth.getUser();
+    if (!receiptUrl || !target) {
+      toast.error(t("pricing.requireReceipt"));
+      return;
+    }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
     setSubmitting(true);
     try {
       const { data: businesses } = await supabase
-        .from("businesses").select("id").eq("owner_id", user.id).limit(1);
+        .from("businesses")
+        .select("id")
+        .eq("owner_id", user.id)
+        .limit(1);
       const businessId = businesses?.[0]?.id ?? null;
 
       const planId = target.subType ?? "membership";
@@ -127,12 +167,12 @@ function PricingPage() {
       navigate({ to: "/dashboard" });
     } catch (err: any) {
       toast.error(err.message ?? t("pricing.generalError"));
-    } finally { setSubmitting(false); }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const paymentContent = target
-    ? `BIZCONNECT ${target.name} ${userEmail}`.substring(0, 50)
-    : "";
+  const paymentContent = target ? `BIZCONNECT ${target.name} ${userEmail}`.substring(0, 50) : "";
   const qrSrc = target ? vietQrUrl(target.price, paymentContent, bankInfo) : "";
 
   // ─── Plan definitions (using t) ─────────────────────────────────────────────────────────
@@ -157,7 +197,13 @@ function PricingPage() {
   ];
 
   const PERSONAL_ADDONS = [
-    { id: "contact_block_addon", name: t("pricing.addons.contactBlock.name"), price: 150000, desc: t("pricing.addons.contactBlock.desc"), block: true },
+    {
+      id: "contact_block_addon",
+      name: t("pricing.addons.contactBlock.name"),
+      price: 150000,
+      desc: t("pricing.addons.contactBlock.desc"),
+      block: true,
+    },
   ];
 
   const BUSINESS_PLANS = [
@@ -225,18 +271,16 @@ function PricingPage() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
-
         {/* Header */}
         <div className="text-center mb-14 animate-fade-up">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent text-accent-foreground text-xs font-medium mb-4">
             <Sparkles className="w-3 h-3 text-primary" /> {t("pricing.headerTag")}
           </div>
           <h1 className="text-4xl sm:text-5xl font-display font-bold mb-3">
-            {t("pricing.headerTitle")} <span className="text-gradient">{t("pricing.headerPrice")}</span>
+            {t("pricing.headerTitle")}{" "}
+            <span className="text-gradient">{t("pricing.headerPrice")}</span>
           </h1>
-          <p className="text-muted-foreground max-w-xl mx-auto mb-8">
-            {t("pricing.headerDesc")}
-          </p>
+          <p className="text-muted-foreground max-w-xl mx-auto mb-8">{t("pricing.headerDesc")}</p>
         </div>
 
         {/* ── Tài khoản Doanh nghiệp ── */}
@@ -264,20 +308,36 @@ function PricingPage() {
                   <h3 className="text-lg font-bold">{plan.name}</h3>
                 </div>
                 <div className="mb-3">
-                  <span className="text-4xl font-bold">{plan.price === 0 ? "0đ" : (plan.price / 1000) + "k"}</span>
-                  <span className={plan.featured ? "opacity-80" : "text-muted-foreground"}>{plan.period}</span>
+                  <span className="text-4xl font-bold">
+                    {plan.price === 0 ? "0đ" : plan.price / 1000 + "k"}
+                  </span>
+                  <span className={plan.featured ? "opacity-80" : "text-muted-foreground"}>
+                    {plan.period}
+                  </span>
                 </div>
-                <p className={`text-sm mb-5 ${plan.featured ? "opacity-90" : "text-muted-foreground"}`}>{plan.description}</p>
+                <p
+                  className={`text-sm mb-5 ${plan.featured ? "opacity-90" : "text-muted-foreground"}`}
+                >
+                  {plan.description}
+                </p>
                 <ul className="space-y-2.5 mb-6 text-sm">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-start gap-2">
-                      <Check className={`w-4 h-4 mt-0.5 flex-shrink-0 ${plan.featured ? "text-white" : "text-primary"}`} />
+                      <Check
+                        className={`w-4 h-4 mt-0.5 flex-shrink-0 ${plan.featured ? "text-white" : "text-primary"}`}
+                      />
                       <span>{f}</span>
                     </li>
                   ))}
                 </ul>
                 <Button
-                  onClick={() => openPayment({ name: plan.name, price: plan.price, subType: plan.subType as PaymentTarget["subType"] })}
+                  onClick={() =>
+                    openPayment({
+                      name: plan.name,
+                      price: plan.price,
+                      subType: plan.subType as PaymentTarget["subType"],
+                    })
+                  }
                   disabled={plan.disabled}
                   className={`w-full ${
                     plan.featured
@@ -294,17 +354,35 @@ function PricingPage() {
           {/* Biz Add-ons */}
           {BUSINESS_ADDONS.length > 0 && (
             <div className="bg-card border border-border rounded-2xl p-5">
-              <h3 className="font-bold mb-3 text-sm text-muted-foreground uppercase tracking-wide">{t("pricing.bizAddons")}</h3>
+              <h3 className="font-bold mb-3 text-sm text-muted-foreground uppercase tracking-wide">
+                {t("pricing.bizAddons")}
+              </h3>
               <div className="space-y-3">
                 {BUSINESS_ADDONS.map((a) => (
-                  <div key={a.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/50">
+                  <div
+                    key={a.id}
+                    className="flex items-center justify-between p-3 rounded-xl bg-muted/50"
+                  >
                     <div>
                       <p className="font-medium text-sm">{a.name}</p>
                       <p className="text-xs text-muted-foreground">{a.desc}</p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <p className="text-lg font-bold">{a.price === 0 ? "0đ" : (a.price / 1000) + "k"}</p>
-                      <Button size="sm" onClick={() => openPayment({ name: a.name, price: a.price, subType: a.id as PaymentTarget["subType"], isAddon: true })} className="gap-1 bg-gradient-vivid text-white border-0">
+                      <p className="text-lg font-bold">
+                        {a.price === 0 ? "0đ" : a.price / 1000 + "k"}
+                      </p>
+                      <Button
+                        size="sm"
+                        onClick={() =>
+                          openPayment({
+                            name: a.name,
+                            price: a.price,
+                            subType: a.id as PaymentTarget["subType"],
+                            isAddon: true,
+                          })
+                        }
+                        className="gap-1 bg-gradient-vivid text-white border-0"
+                      >
                         <Plus className="w-3.5 h-3.5" /> {t("pricing.buyBtn")}
                       </Button>
                     </div>
@@ -322,10 +400,15 @@ function PricingPage() {
           </h2>
           <div className="grid md:grid-cols-2 gap-5 mb-6">
             {PERSONAL_PLANS.map((plan) => (
-              <div key={plan.id} className="bg-card border border-border shadow-card rounded-3xl p-6">
+              <div
+                key={plan.id}
+                className="bg-card border border-border shadow-card rounded-3xl p-6"
+              >
                 <h3 className="text-lg font-bold mb-2">{plan.name}</h3>
                 <div className="mb-3">
-                  <span className="text-4xl font-bold">{plan.price === 0 ? "0đ" : (plan.price / 1000) + "k"}</span>
+                  <span className="text-4xl font-bold">
+                    {plan.price === 0 ? "0đ" : plan.price / 1000 + "k"}
+                  </span>
                   <span className="text-muted-foreground"> {t("pricing.forever")}</span>
                 </div>
                 <p className="text-sm text-muted-foreground mb-5">{plan.description}</p>
@@ -347,16 +430,34 @@ function PricingPage() {
 
             {/* Personal add-on */}
             <div className="bg-card border border-border rounded-3xl p-6 flex flex-col justify-center">
-              <h3 className="font-bold mb-3 text-sm text-muted-foreground uppercase tracking-wide">{t("pricing.personalAddons")}</h3>
+              <h3 className="font-bold mb-3 text-sm text-muted-foreground uppercase tracking-wide">
+                {t("pricing.personalAddons")}
+              </h3>
               {PERSONAL_ADDONS.map((a) => (
-                <div key={a.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/50">
+                <div
+                  key={a.id}
+                  className="flex items-center justify-between p-3 rounded-xl bg-muted/50"
+                >
                   <div>
                     <p className="font-medium text-sm">{a.name}</p>
                     <p className="text-xs text-muted-foreground">{a.desc}</p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <p className="text-lg font-bold">{a.price === 0 ? "0đ" : (a.price / 1000) + "k"}</p>
-                    <Button size="sm" onClick={() => openPayment({ name: a.name, price: a.price, subType: a.id as PaymentTarget["subType"], isAddon: true })} className="gap-1 bg-gradient-vivid text-white border-0">
+                    <p className="text-lg font-bold">
+                      {a.price === 0 ? "0đ" : a.price / 1000 + "k"}
+                    </p>
+                    <Button
+                      size="sm"
+                      onClick={() =>
+                        openPayment({
+                          name: a.name,
+                          price: a.price,
+                          subType: a.id as PaymentTarget["subType"],
+                          isAddon: true,
+                        })
+                      }
+                      className="gap-1 bg-gradient-vivid text-white border-0"
+                    >
                       <Plus className="w-3.5 h-3.5" /> {t("pricing.buyBtn")}
                     </Button>
                   </div>
@@ -374,10 +475,13 @@ function PricingPage() {
             <DialogHeader>
               <div className="flex items-center gap-2 mb-1">
                 <QrCode className="w-5 h-5" />
-                <DialogTitle className="text-white text-lg">{t("pricing.paymentTransfer")}</DialogTitle>
+                <DialogTitle className="text-white text-lg">
+                  {t("pricing.paymentTransfer")}
+                </DialogTitle>
               </div>
               <DialogDescription className="text-white/80 text-sm">
-                {t("pricing.plan")}: <strong>{target?.name}</strong> — <strong>{((target?.price ?? 0) * BANK.vndRate).toLocaleString("vi-VN")} VNĐ</strong>
+                {t("pricing.plan")}: <strong>{target?.name}</strong> —{" "}
+                <strong>{((target?.price ?? 0) * BANK.vndRate).toLocaleString("vi-VN")} VNĐ</strong>
               </DialogDescription>
             </DialogHeader>
           </div>
@@ -419,23 +523,34 @@ function PricingPage() {
 
             {/* Upload receipt */}
             <div>
-              <Label className="text-sm font-semibold mb-2 block">{t("pricing.uploadReceipt")}</Label>
+              <Label className="text-sm font-semibold mb-2 block">
+                {t("pricing.uploadReceipt")}
+              </Label>
               <div
                 className="border-2 border-dashed border-border rounded-xl p-4 text-center cursor-pointer hover:border-primary/50 transition-smooth"
                 onClick={() => fileRef.current?.click()}
               >
                 {receiptUrl ? (
                   <div className="relative inline-block">
-                    <img src={receiptUrl} alt="Biên lai" className="h-24 object-contain rounded-lg mx-auto" />
+                    <img
+                      src={receiptUrl}
+                      alt="Biên lai"
+                      className="h-24 object-contain rounded-lg mx-auto"
+                    />
                     <button
-                      onClick={(e) => { e.stopPropagation(); setReceiptUrl(null); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setReceiptUrl(null);
+                      }}
                       className="absolute -top-2 -right-2 bg-destructive text-white rounded-full p-0.5"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 ) : isUploading ? (
-                  <div className="py-4"><Loader2 className="w-6 h-6 animate-spin text-primary mx-auto" /></div>
+                  <div className="py-4">
+                    <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto" />
+                  </div>
                 ) : (
                   <div className="py-4 text-muted-foreground text-sm">
                     <Upload className="w-6 h-6 mx-auto mb-2 opacity-50" />
@@ -443,12 +558,23 @@ function PricingPage() {
                   </div>
                 )}
               </div>
-              <Input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
+              <Input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleUpload}
+              />
             </div>
 
             {/* Actions */}
             <div className="flex gap-3 pt-1">
-              <Button variant="outline" className="flex-1" onClick={() => setShowModal(false)} disabled={submitting}>
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setShowModal(false)}
+                disabled={submitting}
+              >
                 {t("pricing.cancel")}
               </Button>
               <Button
@@ -456,7 +582,13 @@ function PricingPage() {
                 onClick={handleSubmit}
                 disabled={!receiptUrl || submitting || isUploading}
               >
-                {submitting ? <><Loader2 className="w-4 h-4 animate-spin mr-2" /> {t("pricing.sending")}</> : t("pricing.confirmPayment")}
+                {submitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" /> {t("pricing.sending")}
+                  </>
+                ) : (
+                  t("pricing.confirmPayment")
+                )}
               </Button>
             </div>
           </div>
@@ -466,15 +598,35 @@ function PricingPage() {
   );
 }
 
-function InfoRow({ label, value, copyable, highlight }: { label: string; value: string; copyable?: boolean; highlight?: boolean }) {
+function InfoRow({
+  label,
+  value,
+  copyable,
+  highlight,
+}: {
+  label: string;
+  value: string;
+  copyable?: boolean;
+  highlight?: boolean;
+}) {
   const { t } = useTranslation();
-  const copy = () => { navigator.clipboard.writeText(value); toast.success(`${t("pricing.copied")} ${label}`); };
+  const copy = () => {
+    navigator.clipboard.writeText(value);
+    toast.success(`${t("pricing.copied")} ${label}`);
+  };
   return (
-    <div className={`rounded-lg px-3 py-1.5 flex items-center justify-between gap-2 ${highlight ? "bg-primary/10 border border-primary/20" : "bg-muted/40"}`}>
+    <div
+      className={`rounded-lg px-3 py-1.5 flex items-center justify-between gap-2 ${highlight ? "bg-primary/10 border border-primary/20" : "bg-muted/40"}`}
+    >
       <span className="text-muted-foreground text-xs flex-shrink-0">{label}</span>
-      <span className={`font-semibold text-right truncate ${highlight ? "text-primary" : ""}`}>{value}</span>
+      <span className={`font-semibold text-right truncate ${highlight ? "text-primary" : ""}`}>
+        {value}
+      </span>
       {copyable && (
-        <button onClick={copy} className="flex-shrink-0 text-muted-foreground hover:text-primary transition-colors">
+        <button
+          onClick={copy}
+          className="flex-shrink-0 text-muted-foreground hover:text-primary transition-colors"
+        >
           <Copy className="w-3.5 h-3.5" />
         </button>
       )}

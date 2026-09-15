@@ -14,7 +14,10 @@ interface PrintableQRModalProps {
 
 export function PrintableQRModal({ business, qrUrl, isOpen, onClose }: PrintableQRModalProps) {
   const isLocal = typeof window !== "undefined" && window.location.origin.includes("localhost");
-  const profileUrl = typeof window !== "undefined" ? `${isLocal ? "https://bizconnect.one" : window.location.origin}/business/${business.slug}` : "";
+  const profileUrl =
+    typeof window !== "undefined"
+      ? `${isLocal ? "https://bizconnect.one" : window.location.origin}/business/${business.slug}`
+      : "";
 
   const handleShare = async () => {
     try {
@@ -39,7 +42,11 @@ export function PrintableQRModal({ business, qrUrl, isOpen, onClose }: Printable
       const element = document.getElementById("print-area");
       if (!element) return;
       toast.info("Đang tạo ảnh...");
-      const dataUrl = await toPng(element, { backgroundColor: '#ffffff', pixelRatio: 2, style: { transform: 'scale(1)', transformOrigin: 'top left' } });
+      const dataUrl = await toPng(element, {
+        backgroundColor: "#ffffff",
+        pixelRatio: 2,
+        style: { transform: "scale(1)", transformOrigin: "top left" },
+      });
       const link = document.createElement("a");
       link.href = dataUrl;
       link.download = `card_${business.slug}.png`;
@@ -59,7 +66,7 @@ export function PrintableQRModal({ business, qrUrl, isOpen, onClose }: Printable
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent 
+      <DialogContent
         className="max-w-sm sm:max-w-md bg-white border-gray-200 text-black p-0 overflow-y-auto max-h-[95dvh] shadow-2xl printable-modal"
         style={{ zIndex: 1100 }}
       >
@@ -74,22 +81,38 @@ export function PrintableQRModal({ business, qrUrl, isOpen, onClose }: Printable
           </DialogClose>
         </div>
 
-        <div id="print-area" className="p-4 sm:p-6 pb-6 flex flex-col items-center text-center print-area bg-white">
+        <div
+          id="print-area"
+          className="p-4 sm:p-6 pb-6 flex flex-col items-center text-center print-area bg-white"
+        >
           <div className="w-full flex justify-center mb-3">
             {business.logo_url && (
-              <img src={`https://wsrv.nl/?url=${encodeURIComponent(business.logo_url)}`} alt="Logo" className="h-12 sm:h-14 object-contain" crossOrigin="anonymous" />
-            )}
-          </div>
-          
-          <div className="bg-white border border-gray-200 rounded-3xl p-3 shadow-sm mb-4 w-44 h-44 sm:w-48 sm:h-48 flex items-center justify-center print-qr-container">
-            {qrUrl ? (
-              <img src={qrUrl} alt={`QR Code ${business.name}`} className="w-full h-full object-contain rounded-2xl" />
-            ) : (
-              <div className="w-full h-full bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400">Loading...</div>
+              <img
+                src={`https://wsrv.nl/?url=${encodeURIComponent(business.logo_url)}`}
+                alt="Logo"
+                className="h-12 sm:h-14 object-contain"
+                crossOrigin="anonymous"
+              />
             )}
           </div>
 
-          <h2 className="text-xl sm:text-2xl font-bold mb-1.5 text-wrap w-full px-2 text-black">{business.name}</h2>
+          <div className="bg-white border border-gray-200 rounded-3xl p-3 shadow-sm mb-4 w-44 h-44 sm:w-48 sm:h-48 flex items-center justify-center print-qr-container">
+            {qrUrl ? (
+              <img
+                src={qrUrl}
+                alt={`QR Code ${business.name}`}
+                className="w-full h-full object-contain rounded-2xl"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400">
+                Loading...
+              </div>
+            )}
+          </div>
+
+          <h2 className="text-xl sm:text-2xl font-bold mb-1.5 text-wrap w-full px-2 text-black">
+            {business.name}
+          </h2>
           <p className="text-[#c8102e] text-xs font-bold tracking-widest uppercase mb-3 text-wrap w-full px-2">
             {business.industry || "BUSINESS"}
           </p>
@@ -98,7 +121,9 @@ export function PrintableQRModal({ business, qrUrl, isOpen, onClose }: Printable
             {(business.address || business.province) && (
               <p className="flex flex-col gap-0.5">
                 <span className="text-xs font-semibold text-gray-400 uppercase">Địa chỉ</span>
-                <span className="text-black text-wrap">{[business.address, business.province].filter(Boolean).join(", ")}</span>
+                <span className="text-black text-wrap">
+                  {[business.address, business.province].filter(Boolean).join(", ")}
+                </span>
               </p>
             )}
             {business.phone && (
@@ -110,20 +135,33 @@ export function PrintableQRModal({ business, qrUrl, isOpen, onClose }: Printable
             {business.website && (
               <p className="flex flex-col gap-0.5 mt-2">
                 <span className="text-xs font-semibold text-gray-400 uppercase">Website</span>
-                <span className="text-[#c8102e] font-mono text-wrap">{business.website.replace(/^https?:\/\//, "")}</span>
+                <span className="text-[#c8102e] font-mono text-wrap">
+                  {business.website.replace(/^https?:\/\//, "")}
+                </span>
               </p>
             )}
           </div>
         </div>
 
         <div className="flex items-center gap-3 p-4 bg-gray-50 border-t border-gray-200 no-print">
-          <Button variant="outline" className="flex-1 bg-white border-gray-200 text-gray-700 hover:bg-gray-100 h-11 rounded-xl" onClick={handleShare}>
+          <Button
+            variant="outline"
+            className="flex-1 bg-white border-gray-200 text-gray-700 hover:bg-gray-100 h-11 rounded-xl"
+            onClick={handleShare}
+          >
             <Share2 className="w-4 h-4 mr-2" /> Chia sẻ
           </Button>
-          <Button variant="outline" className="flex-1 bg-white border-gray-200 text-gray-700 hover:bg-gray-100 h-11 rounded-xl" onClick={handleDownloadImage}>
+          <Button
+            variant="outline"
+            className="flex-1 bg-white border-gray-200 text-gray-700 hover:bg-gray-100 h-11 rounded-xl"
+            onClick={handleDownloadImage}
+          >
             <Download className="w-4 h-4 mr-2" /> Tải ảnh
           </Button>
-          <Button className="flex-1 bg-[#c8102e] text-white border-0 hover:bg-[#a00d24] h-11 rounded-xl shadow-lg" onClick={handlePrint}>
+          <Button
+            className="flex-1 bg-[#c8102e] text-white border-0 hover:bg-[#a00d24] h-11 rounded-xl shadow-lg"
+            onClick={handlePrint}
+          >
             <Printer className="w-4 h-4 mr-2" /> In
           </Button>
         </div>

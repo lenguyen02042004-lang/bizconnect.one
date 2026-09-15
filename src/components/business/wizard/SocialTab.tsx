@@ -9,15 +9,14 @@ export function SocialTab() {
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-muted-foreground">Nhập đường dẫn cho các nền tảng bạn sử dụng. Để trống nếu không có.</p>
+      <p className="text-sm text-muted-foreground">
+        Nhập đường dẫn cho các nền tảng bạn sử dụng. Để trống nếu không có.
+      </p>
       <div className="grid sm:grid-cols-2 gap-3">
         {SOCIAL_PLATFORMS.map((p) => (
           <div key={p.key}>
             <Label className="text-xs">{p.name}</Label>
-            <Input
-              {...register(`socials.${p.key}`)}
-              placeholder={p.placeholder}
-            />
+            <Input {...register(`socials.${p.key}`)} placeholder={p.placeholder} />
           </div>
         ))}
       </div>

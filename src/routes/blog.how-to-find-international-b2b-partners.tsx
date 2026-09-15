@@ -50,27 +50,29 @@ function ArticlePage() {
       <Navbar />
       <article className="prose prose-slate dark:prose-invert mx-auto max-w-3xl px-4 pt-28 pb-20">
         <p className="text-sm text-muted-foreground">
-          <Link to="/" className="hover:underline">Home</Link> · Guide
+          <Link to="/" className="hover:underline">
+            Home
+          </Link>{" "}
+          · Guide
         </p>
         <h1>{TITLE}</h1>
         <p className="lead">{DESCRIPTION}</p>
 
         <h2>1. Start with a trusted global business directory</h2>
         <p>
-          A global business directory is the fastest way to build a shortlist of potential
-          partners across markets you don&apos;t yet know. Directories aggregate verified
-          company profiles, industries, contact details and social presence in one place.
-          On <Link to="/explore">BizConnect.One</Link> you can filter companies by
-          country and industry on an interactive map and open a full online business card
-          in one click.
+          A global business directory is the fastest way to build a shortlist of potential partners
+          across markets you don&apos;t yet know. Directories aggregate verified company profiles,
+          industries, contact details and social presence in one place. On{" "}
+          <Link to="/explore">BizConnect.One</Link> you can filter companies by country and industry
+          on an interactive map and open a full online business card in one click.
         </p>
 
         <h2>2. Verify the company&apos;s legal identity</h2>
         <p>
-          Cross-check every promising lead against the local trade registry (for example,
-          the SEC EDGAR in the US, Companies House in the UK, or the National Business
-          Registration Portal in Vietnam). Confirm the registration number, incorporation
-          date, active status and registered address match what the company advertises.
+          Cross-check every promising lead against the local trade registry (for example, the SEC
+          EDGAR in the US, Companies House in the UK, or the National Business Registration Portal
+          in Vietnam). Confirm the registration number, incorporation date, active status and
+          registered address match what the company advertises.
         </p>
 
         <h2>3. Assess reputation and track record</h2>
@@ -82,32 +84,31 @@ function ArticlePage() {
 
         <h2>4. Run financial due diligence</h2>
         <p>
-          For meaningful deals, purchase a credit report from a provider such as
-          Dun &amp; Bradstreet, Experian or Coface. Look for payment behaviour, litigation
-          history and beneficial ownership.
+          For meaningful deals, purchase a credit report from a provider such as Dun &amp;
+          Bradstreet, Experian or Coface. Look for payment behaviour, litigation history and
+          beneficial ownership.
         </p>
 
         <h2>5. Validate operations before you commit</h2>
         <p>
-          Request product samples, schedule a video walk-through of the facility, or hire a
-          local third-party inspection service. For services businesses, run a small paid
-          pilot before signing a long-term contract.
+          Request product samples, schedule a video walk-through of the facility, or hire a local
+          third-party inspection service. For services businesses, run a small paid pilot before
+          signing a long-term contract.
         </p>
 
         <h2>6. Protect the relationship contractually</h2>
         <p>
-          Use an NDA before sharing sensitive information, agree on Incoterms for physical
-          goods, and specify the governing law and dispute-resolution venue in every
-          contract. For cross-border payments, prefer escrow or letters of credit until
-          trust is established.
+          Use an NDA before sharing sensitive information, agree on Incoterms for physical goods,
+          and specify the governing law and dispute-resolution venue in every contract. For
+          cross-border payments, prefer escrow or letters of credit until trust is established.
         </p>
 
         <h2>Where BizConnect.One fits in</h2>
         <p>
-          BizConnect.One is a worldwide B2B directory built around an interactive 3D
-          map. You can browse companies by <Link to="/countries">country</Link> or by
-          industry, save contacts, exchange digital business cards and follow suppliers
-          you want to monitor — all from one profile.
+          BizConnect.One is a worldwide B2B directory built around an interactive 3D map. You can
+          browse companies by <Link to="/countries">country</Link> or by industry, save contacts,
+          exchange digital business cards and follow suppliers you want to monitor — all from one
+          profile.
         </p>
 
         <p className="mt-10">

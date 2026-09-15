@@ -6,9 +6,24 @@ import { Badge } from "@/components/ui/badge";
 import { Navbar } from "@/components/Navbar";
 import { getPersonalBySlug } from "@/lib/personal-public.functions";
 import {
-  Phone, Mail, MessageCircle, Download, Share2, Printer, Send,
-  BookmarkPlus, CheckCircle2, Loader2, Briefcase, Building2,
-  Globe, Copy, QrCode, ExternalLink, Facebook, Linkedin,
+  Phone,
+  Mail,
+  MessageCircle,
+  Download,
+  Share2,
+  Printer,
+  Send,
+  BookmarkPlus,
+  CheckCircle2,
+  Loader2,
+  Briefcase,
+  Building2,
+  Globe,
+  Copy,
+  QrCode,
+  ExternalLink,
+  Facebook,
+  Linkedin,
 } from "lucide-react";
 import { toast } from "sonner";
 import { SendCardDialog } from "@/components/SendCardDialog";
@@ -48,7 +63,11 @@ export const Route = createFileRoute("/p/$slug")({
 });
 
 function esc(v: string) {
-  return (v ?? "").replace(/\\/g, "\\\\").replace(/,/g, "\\,").replace(/;/g, "\\;").replace(/\n/g, "\\n");
+  return (v ?? "")
+    .replace(/\\/g, "\\\\")
+    .replace(/,/g, "\\,")
+    .replace(/;/g, "\\;")
+    .replace(/\n/g, "\\n");
 }
 
 function PublicPersonalCard() {
@@ -76,7 +95,8 @@ function PublicPersonalCard() {
 
   const saveVcf = () => {
     const lines = [
-      "BEGIN:VCARD", "VERSION:3.0",
+      "BEGIN:VCARD",
+      "VERSION:3.0",
       `FN:${esc(profile.full_name)}`,
       profile.company_name ? `ORG:${esc(profile.company_name)}` : "",
       profile.job_title ? `TITLE:${esc(profile.job_title)}` : "",
@@ -84,7 +104,9 @@ function PublicPersonalCard() {
       profile.email ? `EMAIL:${esc(profile.email)}` : "",
       url ? `URL:${esc(url)}` : "",
       "END:VCARD",
-    ].filter(Boolean).join("\r\n");
+    ]
+      .filter(Boolean)
+      .join("\r\n");
     const blob = new Blob([lines], { type: "text/vcard;charset=utf-8" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -95,7 +117,12 @@ function PublicPersonalCard() {
 
   const share = async () => {
     if (navigator.share) {
-      try { await navigator.share({ title: profile.full_name, url }); return; } catch { /* cancelled */ }
+      try {
+        await navigator.share({ title: profile.full_name, url });
+        return;
+      } catch {
+        /* cancelled */
+      }
     }
     await navigator.clipboard.writeText(url);
     toast.success(t("publicCard.copied"));
@@ -111,28 +138,36 @@ function PublicPersonalCard() {
   const zalo = (profile.zalo || profile.phone || "").replace(/\D/g, "");
 
   const saveContact = async () => {
-    if (!user) { setShowQuickSignup(true); return; }
+    if (!user) {
+      setShowQuickSignup(true);
+      return;
+    }
     if (saving) return;
     setSaving(true);
     try {
-      const { error } = await supabase.from("saved_contacts").upsert({
-        user_id: user.id,
-        business_id: null,
-        business_name: profile.full_name,
-        business_slug: profile.slug,
-        phone: profile.phone ?? null,
-        email: profile.email ?? null,
-        website: null,
-        logo_url: profile.avatar_url ?? null,
-        note: null,
-        personal_profile_id: profile.id,
-      }, { onConflict: profile.id ? "user_id,personal_profile_id" : "user_id,business_id" });
+      const { error } = await supabase.from("saved_contacts").upsert(
+        {
+          user_id: user.id,
+          business_id: null,
+          business_name: profile.full_name,
+          business_slug: profile.slug,
+          phone: profile.phone ?? null,
+          email: profile.email ?? null,
+          website: null,
+          logo_url: profile.avatar_url ?? null,
+          note: null,
+          personal_profile_id: profile.id,
+        },
+        { onConflict: profile.id ? "user_id,personal_profile_id" : "user_id,business_id" },
+      );
       if (error) throw error;
       setSaved(true);
       toast.success(t("publicCard.saveSuccess", { name: profile.full_name }));
     } catch (e: any) {
       toast.error(e.message ?? t("publicCard.saveError"));
-    } finally { setSaving(false); }
+    } finally {
+      setSaving(false);
+    }
   };
 
   const hasSocials = profile.facebook_url || profile.linkedin_url;
@@ -147,10 +182,8 @@ function PublicPersonalCard() {
 
       <main className="relative pt-20 pb-20 px-4 z-10">
         <article className="max-w-sm mx-auto">
-
           {/* ===== CARD ===== */}
           <div className="rounded-[2rem] overflow-hidden border border-border/30 bg-card shadow-2xl">
-
             {/* Hero */}
             <div className="relative overflow-hidden">
               {/* Gradient header */}
@@ -209,15 +242,18 @@ function PublicPersonalCard() {
 
             {/* ===== CONTACT ACTIONS ===== */}
             <div className="px-5 py-5 space-y-2.5 border-b border-border/30">
-
               {profile.phone && (
-                <a href={`tel:${profile.phone}`}
-                  className="flex items-center gap-3.5 p-4 rounded-2xl bg-accent/50 hover:bg-primary/5 hover:border-primary/30 border border-transparent transition-all duration-200 group">
+                <a
+                  href={`tel:${profile.phone}`}
+                  className="flex items-center gap-3.5 p-4 rounded-2xl bg-accent/50 hover:bg-primary/5 hover:border-primary/30 border border-transparent transition-all duration-200 group"
+                >
                   <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
                     <Phone className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("publicCard.phone")}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      {t("publicCard.phone")}
+                    </p>
                     <p className="font-bold text-sm">{profile.phone}</p>
                   </div>
                   <ExternalLink className="w-4 h-4 text-muted-foreground ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -225,13 +261,17 @@ function PublicPersonalCard() {
               )}
 
               {profile.email && (
-                <a href={`mailto:${profile.email}`}
-                  className="flex items-center gap-3.5 p-4 rounded-2xl bg-accent/50 hover:bg-primary/5 hover:border-primary/30 border border-transparent transition-all duration-200 group">
+                <a
+                  href={`mailto:${profile.email}`}
+                  className="flex items-center gap-3.5 p-4 rounded-2xl bg-accent/50 hover:bg-primary/5 hover:border-primary/30 border border-transparent transition-all duration-200 group"
+                >
                   <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
                     <Mail className="w-5 h-5 text-primary" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("publicCard.email")}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      {t("publicCard.email")}
+                    </p>
                     <p className="font-bold text-sm truncate">{profile.email}</p>
                   </div>
                   <ExternalLink className="w-4 h-4 text-muted-foreground ml-auto shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -239,14 +279,22 @@ function PublicPersonalCard() {
               )}
 
               {zalo && (
-                <a href={`https://zalo.me/${zalo}`} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-3.5 p-4 rounded-2xl bg-blue-500/5 hover:bg-blue-500/10 border border-blue-500/10 hover:border-blue-500/30 transition-all duration-200 group">
+                <a
+                  href={`https://zalo.me/${zalo}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3.5 p-4 rounded-2xl bg-blue-500/5 hover:bg-blue-500/10 border border-blue-500/10 hover:border-blue-500/30 transition-all duration-200 group"
+                >
                   <div className="w-11 h-11 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0 group-hover:bg-blue-500/20 transition-colors">
                     <MessageCircle className="w-5 h-5 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("publicCard.zalo")}</p>
-                    <p className="font-bold text-sm text-blue-700 dark:text-blue-400">{t("publicCard.zaloDesc")}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      {t("publicCard.zalo")}
+                    </p>
+                    <p className="font-bold text-sm text-blue-700 dark:text-blue-400">
+                      {t("publicCard.zaloDesc")}
+                    </p>
                   </div>
                   <ExternalLink className="w-4 h-4 text-blue-500 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                 </a>
@@ -256,14 +304,22 @@ function PublicPersonalCard() {
               {hasSocials && (
                 <div className="flex gap-2.5 pt-1">
                   {profile.facebook_url && (
-                    <a href={profile.facebook_url} target="_blank" rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-2 h-12 rounded-2xl bg-blue-600/10 hover:bg-blue-600/20 border border-blue-600/10 hover:border-blue-600/30 text-blue-700 dark:text-blue-400 transition-all font-semibold text-sm">
+                    <a
+                      href={profile.facebook_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-2 h-12 rounded-2xl bg-blue-600/10 hover:bg-blue-600/20 border border-blue-600/10 hover:border-blue-600/30 text-blue-700 dark:text-blue-400 transition-all font-semibold text-sm"
+                    >
                       <Facebook className="w-4 h-4" /> Facebook
                     </a>
                   )}
                   {profile.linkedin_url && (
-                    <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-2 h-12 rounded-2xl bg-sky-600/10 hover:bg-sky-600/20 border border-sky-600/10 hover:border-sky-600/30 text-sky-700 dark:text-sky-400 transition-all font-semibold text-sm">
+                    <a
+                      href={profile.linkedin_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-2 h-12 rounded-2xl bg-sky-600/10 hover:bg-sky-600/20 border border-sky-600/10 hover:border-sky-600/30 text-sky-700 dark:text-sky-400 transition-all font-semibold text-sm"
+                    >
                       <Linkedin className="w-4 h-4" /> LinkedIn
                     </a>
                   )}
@@ -275,7 +331,9 @@ function PublicPersonalCard() {
             <div className="px-5 py-5 border-b border-border/30 flex flex-col items-center">
               <div className="flex items-center gap-2 mb-4 self-start">
                 <div className="w-1 h-4 rounded-full bg-gradient-vivid" />
-                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{t("publicCard.qrTitle")}</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  {t("publicCard.qrTitle")}
+                </p>
               </div>
               <div className="flex gap-5 items-center w-full">
                 <div className="bg-white rounded-2xl p-3 shadow-md border border-gray-100 shrink-0">
@@ -296,7 +354,11 @@ function PublicPersonalCard() {
                     <Globe className="w-3 h-3 shrink-0" />
                     <span className="truncate">/p/{slug}</span>
                     <button onClick={copyLink} className="ml-auto shrink-0">
-                      {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+                      {copied ? (
+                        <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5" />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -305,7 +367,6 @@ function PublicPersonalCard() {
 
             {/* ===== ACTION BUTTONS ===== */}
             <div className="px-5 py-5 space-y-2.5">
-
               {/* Save to contacts */}
               <Button
                 onClick={saveContact}
@@ -317,8 +378,18 @@ function PublicPersonalCard() {
                 }`}
                 variant="outline"
               >
-                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <CheckCircle2 className="w-4 h-4" /> : <BookmarkPlus className="w-4 h-4" />}
-                {saved ? t("publicCard.saved") : saving ? t("publicCard.saving") : t("publicCard.saveContact")}
+                {saving ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : saved ? (
+                  <CheckCircle2 className="w-4 h-4" />
+                ) : (
+                  <BookmarkPlus className="w-4 h-4" />
+                )}
+                {saved
+                  ? t("publicCard.saved")
+                  : saving
+                    ? t("publicCard.saving")
+                    : t("publicCard.saveContact")}
               </Button>
 
               {/* Send card */}
@@ -349,7 +420,10 @@ function PublicPersonalCard() {
                   <Share2 className="w-3.5 h-3.5 text-primary" /> {t("publicCard.share")}
                 </Button>
                 <Link to="/print/$type/$slug" params={{ type: "personal", slug }}>
-                  <Button variant="outline" className="w-full h-11 rounded-xl gap-1.5 text-xs font-semibold">
+                  <Button
+                    variant="outline"
+                    className="w-full h-11 rounded-xl gap-1.5 text-xs font-semibold"
+                  >
                     <Printer className="w-3.5 h-3.5 text-primary" /> {t("publicCard.print")}
                   </Button>
                 </Link>
@@ -358,16 +432,20 @@ function PublicPersonalCard() {
 
             {/* ===== POWERED BY ===== */}
             <div className="px-5 pb-5 pt-1">
-              <a href="/" className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-accent/30 hover:bg-accent/50 border border-border/30 transition-colors">
+              <a
+                href="/"
+                className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-accent/30 hover:bg-accent/50 border border-border/30 transition-colors"
+              >
                 <div className="w-5 h-5 rounded-md bg-gradient-vivid flex items-center justify-center">
                   <span className="text-[8px] font-black text-white">B</span>
                 </div>
-                <span className="text-xs text-muted-foreground font-medium">Powered by <strong className="text-foreground">BizConnect.One</strong></span>
+                <span className="text-xs text-muted-foreground font-medium">
+                  Powered by <strong className="text-foreground">BizConnect.One</strong>
+                </span>
                 <ExternalLink className="w-3 h-3 text-muted-foreground ml-auto" />
               </a>
             </div>
           </div>
-
         </article>
       </main>
 
@@ -383,13 +461,13 @@ function PublicPersonalCard() {
       {showQuickSignup && (
         <Dialog open={showQuickSignup} onOpenChange={setShowQuickSignup}>
           <DialogContent className="sm:max-w-md bg-card border-border">
-            <QuickSignupExchange 
-              toId={profile.user_id} 
-              toType="personal" 
+            <QuickSignupExchange
+              toId={profile.user_id}
+              toType="personal"
               onSuccess={() => {
                 setShowQuickSignup(false);
                 setTimeout(() => window.location.reload(), 1500);
-              }} 
+              }}
             />
           </DialogContent>
         </Dialog>

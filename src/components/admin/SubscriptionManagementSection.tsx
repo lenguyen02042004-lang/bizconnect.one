@@ -22,11 +22,21 @@ export function SubscriptionManagementSection() {
   const grantFn = useServerFn(adminGrantSubscription);
   const query = useQuery({ queryKey: ["admin-subscriptions"], queryFn: () => listFn() });
   const [showGrant, setShowGrant] = useState(false);
-  const [grantForm, setGrantForm] = useState({ user_id: "", business_id: "", sub_type: "b2b_premium" as const, months: 12 });
+  const [grantForm, setGrantForm] = useState({
+    user_id: "",
+    business_id: "",
+    sub_type: "b2b_premium" as const,
+    months: 12,
+  });
 
   const grantMut = useMutation({
-    mutationFn: () => grantFn({ data: { ...grantForm, business_id: grantForm.business_id || null } }),
-    onSuccess: () => { toast.success("Đã cấp gói thành công!"); setShowGrant(false); query.refetch(); },
+    mutationFn: () =>
+      grantFn({ data: { ...grantForm, business_id: grantForm.business_id || null } }),
+    onSuccess: () => {
+      toast.success("Đã cấp gói thành công!");
+      setShowGrant(false);
+      query.refetch();
+    },
     onError: (e: any) => toast.error(e.message ?? "Lỗi"),
   });
 
@@ -40,12 +50,20 @@ export function SubscriptionManagementSection() {
           <CreditCard className="w-5 h-5 text-primary" />
           <h2 className="font-display text-xl font-semibold">
             Quản lý Gói Thành viên
-            <span className="ml-2 text-sm font-normal text-muted-foreground">({active.length} đang hoạt động)</span>
+            <span className="ml-2 text-sm font-normal text-muted-foreground">
+              ({active.length} đang hoạt động)
+            </span>
           </h2>
         </div>
         <div className="flex gap-2">
-          <Button size="sm" variant="outline" onClick={() => query.refetch()}><RefreshCw className="w-3.5 h-3.5" /></Button>
-          <Button size="sm" className="gap-1.5 bg-gradient-vivid text-white border-0" onClick={() => setShowGrant(!showGrant)}>
+          <Button size="sm" variant="outline" onClick={() => query.refetch()}>
+            <RefreshCw className="w-3.5 h-3.5" />
+          </Button>
+          <Button
+            size="sm"
+            className="gap-1.5 bg-gradient-vivid text-white border-0"
+            onClick={() => setShowGrant(!showGrant)}
+          >
             <Gift className="w-3.5 h-3.5" /> Cấp gói thủ công
           </Button>
         </div>
@@ -89,7 +107,9 @@ export function SubscriptionManagementSection() {
             <div className="space-y-1">
               <Label className="text-xs">Số tháng</Label>
               <Input
-                type="number" min={1} max={120}
+                type="number"
+                min={1}
+                max={120}
                 value={grantForm.months}
                 onChange={(e) => setGrantForm({ ...grantForm, months: Number(e.target.value) })}
               />
@@ -106,7 +126,9 @@ export function SubscriptionManagementSection() {
       )}
 
       {/* Subscription list */}
-      {query.isLoading ? <p className="text-sm text-muted-foreground">Đang tải...</p> : (
+      {query.isLoading ? (
+        <p className="text-sm text-muted-foreground">Đang tải...</p>
+      ) : (
         <div className="overflow-auto rounded-xl border border-border">
           <table className="w-full text-xs text-left">
             <thead className="bg-muted">
@@ -124,32 +146,52 @@ export function SubscriptionManagementSection() {
                 const expired = s.current_period_end && new Date(s.current_period_end) < new Date();
                 return (
                   <tr key={s.id} className="border-t border-border hover:bg-accent/30">
-                    <td className="p-2 text-muted-foreground">{s.owner_email || s.user_id?.slice(0,8) + "…"}</td>
+                    <td className="p-2 text-muted-foreground">
+                      {s.owner_email || s.user_id?.slice(0, 8) + "…"}
+                    </td>
                     <td className="p-2">
                       <span className="px-2 py-0.5 rounded bg-primary/10 text-primary font-medium">
                         {SUB_TYPE_LABELS[s.sub_type] ?? s.sub_type}
                       </span>
                     </td>
                     <td className="p-2">{s.businesses?.name ?? "—"}</td>
-                    <td className="p-2">{s.current_period_start ? new Date(s.current_period_start).toLocaleDateString("vi-VN") : "—"}</td>
+                    <td className="p-2">
+                      {s.current_period_start
+                        ? new Date(s.current_period_start).toLocaleDateString("vi-VN")
+                        : "—"}
+                    </td>
                     <td className={`p-2 ${expired ? "text-destructive font-semibold" : ""}`}>
-                      {s.current_period_end ? new Date(s.current_period_end).toLocaleDateString("vi-VN") : "Vĩnh viễn"}
+                      {s.current_period_end
+                        ? new Date(s.current_period_end).toLocaleDateString("vi-VN")
+                        : "Vĩnh viễn"}
                       {expired && " ⏰"}
                     </td>
                     <td className="p-2">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                        s.status === "active" && !expired ? "bg-green-500/20 text-green-700" :
-                        s.status === "cancelled" ? "bg-red-500/20 text-red-600" :
-                        "bg-muted text-muted-foreground"
-                      }`}>
-                        {s.status === "active" && !expired ? "✅ ACTIVE" : s.status === "cancelled" ? "HUỶ" : "⏰ HẾT HẠN"}
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          s.status === "active" && !expired
+                            ? "bg-green-500/20 text-green-700"
+                            : s.status === "cancelled"
+                              ? "bg-red-500/20 text-red-600"
+                              : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {s.status === "active" && !expired
+                          ? "✅ ACTIVE"
+                          : s.status === "cancelled"
+                            ? "HUỶ"
+                            : "⏰ HẾT HẠN"}
                       </span>
                     </td>
                   </tr>
                 );
               })}
               {subs.length === 0 && (
-                <tr><td colSpan={6} className="p-4 text-center text-muted-foreground">Chưa có subscription nào.</td></tr>
+                <tr>
+                  <td colSpan={6} className="p-4 text-center text-muted-foreground">
+                    Chưa có subscription nào.
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>

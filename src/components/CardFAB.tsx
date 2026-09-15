@@ -24,7 +24,10 @@ export function CardFAB() {
 
   const openMyCard = async () => {
     setExpanded(false);
-    if (cardData) { setShowCard(true); return; }
+    if (cardData) {
+      setShowCard(true);
+      return;
+    }
     setLoadingCard(true);
     try {
       if (accountType === "personal") {
@@ -56,7 +59,9 @@ export function CardFAB() {
         // Business account — get first public business
         const { data } = await supabase
           .from("businesses")
-          .select("id, name, slug, logo_url, phone, email, website, address, province, country_code, short_intro, industry_id, industries(name)")
+          .select(
+            "id, name, slug, logo_url, phone, email, website, address, province, country_code, short_intro, industry_id, industries(name)",
+          )
           .eq("owner_id", user.id)
           .eq("status", "public")
           .order("created_at", { ascending: false })
@@ -148,34 +153,19 @@ export function CardFAB() {
           }`}
           aria-label={expanded ? "Đóng" : "Trao đổi danh thiếp"}
         >
-          {expanded ? (
-            <X className="w-5 h-5" />
-          ) : (
-            <Plus className="w-5 h-5" />
-          )}
+          {expanded ? <X className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
         </button>
       </div>
 
       {/* Backdrop when expanded */}
-      {expanded && (
-        <div
-          className="fixed inset-0 z-[999]"
-          onClick={() => setExpanded(false)}
-        />
-      )}
+      {expanded && <div className="fixed inset-0 z-[999]" onClick={() => setExpanded(false)} />}
 
       {/* Scanner dialog */}
-      {showScanner && (
-        <QRScannerDialog onClose={() => setShowScanner(false)} />
-      )}
+      {showScanner && <QRScannerDialog onClose={() => setShowScanner(false)} />}
 
       {/* My Card modal */}
       {showCard && cardData && (
-        <MyCardModal
-          card={cardData}
-          isOpen={showCard}
-          onClose={() => setShowCard(false)}
-        />
+        <MyCardModal card={cardData} isOpen={showCard} onClose={() => setShowCard(false)} />
       )}
     </>
   );

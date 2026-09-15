@@ -14,7 +14,15 @@ interface Props {
   className?: string;
 }
 
-export function ImageUpload({ bucket, userId, value, onChange, label, aspect = "square", className }: Props) {
+export function ImageUpload({
+  bucket,
+  userId,
+  value,
+  onChange,
+  label,
+  aspect = "square",
+  className,
+}: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
 
@@ -40,7 +48,9 @@ export function ImageUpload({ bucket, userId, value, onChange, label, aspect = "
   return (
     <div className={className}>
       <label className="text-sm font-medium mb-1.5 block">{label}</label>
-      <div className={`relative ${aspectClass} rounded-2xl border-2 border-dashed border-border bg-muted/30 overflow-hidden group`}>
+      <div
+        className={`relative ${aspectClass} rounded-2xl border-2 border-dashed border-border bg-muted/30 overflow-hidden group`}
+      >
         {value ? (
           <>
             <img src={value} alt={label} className="w-full h-full object-cover" />
@@ -59,7 +69,11 @@ export function ImageUpload({ bucket, userId, value, onChange, label, aspect = "
             disabled={busy}
             className="w-full h-full flex flex-col items-center justify-center text-muted-foreground hover:text-primary transition-smooth disabled:opacity-50"
           >
-            {busy ? <Upload className="w-6 h-6 animate-pulse" /> : <ImageIcon className="w-6 h-6" />}
+            {busy ? (
+              <Upload className="w-6 h-6 animate-pulse" />
+            ) : (
+              <ImageIcon className="w-6 h-6" />
+            )}
             <span className="text-xs mt-1.5">{busy ? "Đang tải..." : "Bấm để tải lên"}</span>
           </button>
         )}
@@ -130,7 +144,11 @@ export function GalleryUpload({ userId, value, onChange, max = 5 }: GalleryProps
             disabled={busy}
             className="aspect-square rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground hover:text-primary transition-smooth"
           >
-            {busy ? <Upload className="w-5 h-5 animate-pulse" /> : <ImageIcon className="w-5 h-5" />}
+            {busy ? (
+              <Upload className="w-5 h-5 animate-pulse" />
+            ) : (
+              <ImageIcon className="w-5 h-5" />
+            )}
           </button>
         )}
       </div>

@@ -17,9 +17,17 @@ export function CertificationsTab() {
       <div className="flex items-center justify-between">
         <div>
           <p className="font-semibold">Chứng nhận & Danh hiệu</p>
-          <p className="text-xs text-muted-foreground">Liệt kê các giải thưởng, chứng chỉ chất lượng, danh hiệu của doanh nghiệp.</p>
+          <p className="text-xs text-muted-foreground">
+            Liệt kê các giải thưởng, chứng chỉ chất lượng, danh hiệu của doanh nghiệp.
+          </p>
         </div>
-        <Button type="button" size="sm" variant="outline" onClick={() => append({ name: "", issuer: "", year: null, icon: "🏅" })} className="gap-1.5">
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={() => append({ name: "", issuer: "", year: null, icon: "🏅" })}
+          className="gap-1.5"
+        >
           <Plus className="w-4 h-4" /> Thêm
         </Button>
       </div>
@@ -32,7 +40,10 @@ export function CertificationsTab() {
       ) : (
         <div className="space-y-3">
           {fields.map((field, idx) => (
-            <div key={field.id} className="grid grid-cols-[auto_1fr_auto] gap-2 p-3 rounded-xl border border-border bg-accent/30">
+            <div
+              key={field.id}
+              className="grid grid-cols-[auto_1fr_auto] gap-2 p-3 rounded-xl border border-border bg-accent/30"
+            >
               <Input
                 {...register(`certifications.${idx}.icon` as const)}
                 placeholder="🏅"
@@ -57,7 +68,13 @@ export function CertificationsTab() {
                   max={2100}
                 />
               </div>
-              <Button type="button" size="icon" variant="ghost" onClick={() => remove(idx)} className="text-muted-foreground hover:text-destructive">
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                onClick={() => remove(idx)}
+                className="text-muted-foreground hover:text-destructive"
+              >
                 <Trash2 className="w-4 h-4" />
               </Button>
             </div>

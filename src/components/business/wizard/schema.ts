@@ -20,14 +20,16 @@ export const businessFormSchema = z.object({
   status: z.enum(["draft", "public"]).default("draft"),
   socials: z.record(z.string()).default({}),
   gallery: z.array(z.string()).default([]),
-  certifications: z.array(
-    z.object({
-      name: z.string(),
-      issuer: z.string().optional().nullable(),
-      year: z.number().nullable(),
-      icon: z.string().optional().nullable(),
-    })
-  ).default([]),
+  certifications: z
+    .array(
+      z.object({
+        name: z.string(),
+        issuer: z.string().optional().nullable(),
+        year: z.number().nullable(),
+        icon: z.string().optional().nullable(),
+      }),
+    )
+    .default([]),
 });
 
 export type BusinessFormValues = z.infer<typeof businessFormSchema>;

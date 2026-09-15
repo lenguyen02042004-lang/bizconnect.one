@@ -16,7 +16,9 @@ export function isRealId(id: string) {
 
 export async function isConnectedTo(businessId: string): Promise<boolean> {
   if (!isRealId(businessId)) return false;
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return false;
   const { data } = await supabase
     .from("connections")
@@ -29,9 +31,15 @@ export async function isConnectedTo(businessId: string): Promise<boolean> {
 
 export async function connectAndExchange(businessId: string, source: "qr" | "manual") {
   if (!isRealId(businessId)) {
-    return { ok: false as const, reason: "demo" as const, message: "Doanh nghiệp mẫu chưa hỗ trợ kết nối" };
+    return {
+      ok: false as const,
+      reason: "demo" as const,
+      message: "Doanh nghiệp mẫu chưa hỗ trợ kết nối",
+    };
   }
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return { ok: false as const, reason: "auth" as const };
 
   const { data, error } = await supabase.rpc("connect_and_exchange", {
@@ -49,12 +57,21 @@ export type WalletLimits = {
 };
 
 export async function getMyWallet(): Promise<WalletLimits | null> {
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return null;
 
   const [{ count }, { data: subs }] = await Promise.all([
-    supabase.from("saved_contacts").select("*", { count: "exact", head: true }).eq("user_id", user.id),
-    supabase.from("subscriptions").select("status, sub_type, current_period_end").eq("user_id", user.id).eq("status", "active")
+    supabase
+      .from("saved_contacts")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id),
+    supabase
+      .from("subscriptions")
+      .select("status, sub_type, current_period_end")
+      .eq("user_id", user.id)
+      .eq("status", "active"),
   ]);
 
   let activeBlocks = 0;
@@ -68,8 +85,8 @@ export async function getMyWallet(): Promise<WalletLimits | null> {
     }
   }
 
-  const limit = 200 + (activeBlocks * 500) + (addonBlocks * 500);
-  
+  const limit = 200 + activeBlocks * 500 + addonBlocks * 500;
+
   return {
     current_saved_count: count ?? 0,
     max_saved_allowed: limit,

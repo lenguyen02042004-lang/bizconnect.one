@@ -8,9 +8,17 @@ export const Route = createFileRoute("/countries")({
   head: () => ({
     meta: [
       { title: "Danh mục quốc gia có doanh nghiệp — BizConnect.One" },
-      { name: "description", content: "Duyệt danh mục doanh nghiệp theo từng quốc gia trên bản đồ B2B toàn cầu. Chọn thị trường bạn quan tâm để khám phá đối tác tiềm năng." },
+      {
+        name: "description",
+        content:
+          "Duyệt danh mục doanh nghiệp theo từng quốc gia trên bản đồ B2B toàn cầu. Chọn thị trường bạn quan tâm để khám phá đối tác tiềm năng.",
+      },
       { property: "og:title", content: "Danh mục quốc gia có doanh nghiệp — BizConnect.One" },
-      { property: "og:description", content: "Duyệt danh mục doanh nghiệp theo từng quốc gia trên bản đồ B2B toàn cầu — chọn thị trường bạn quan tâm để khám phá đối tác." },
+      {
+        property: "og:description",
+        content:
+          "Duyệt danh mục doanh nghiệp theo từng quốc gia trên bản đồ B2B toàn cầu — chọn thị trường bạn quan tâm để khám phá đối tác.",
+      },
       { property: "og:url", content: "https://earth-biz-link.lovable.app/countries" },
       { property: "og:type", content: "website" },
       { property: "og:image", content: `https://earth-biz-link.lovable.app${countriesOg}` },
@@ -24,7 +32,7 @@ export const Route = createFileRoute("/countries")({
   loader: async () => {
     const listRes = await getGlobalLists();
     return { countries: listRes.countries };
-  }
+  },
 });
 
 // Region-based gradient for a distinctive thumbnail per country card.
@@ -36,10 +44,35 @@ const REGION_GRADIENTS: Record<string, string> = {
   oceania: "from-cyan-500/20 via-blue-500/10 to-transparent",
 };
 const REGION_BY_CODE: Record<string, keyof typeof REGION_GRADIENTS> = {
-  VN: "asia", CN: "asia", JP: "asia", KR: "asia", SG: "asia", TH: "asia", MY: "asia", ID: "asia", PH: "asia", IN: "asia",
-  US: "americas", CA: "americas", MX: "americas", BR: "americas", AR: "americas",
-  GB: "europe", DE: "europe", FR: "europe", IT: "europe", ES: "europe", NL: "europe", CH: "europe", SE: "europe", RU: "europe", TR: "europe",
-  AE: "mena", SA: "mena", EG: "mena", ZA: "mena",
+  VN: "asia",
+  CN: "asia",
+  JP: "asia",
+  KR: "asia",
+  SG: "asia",
+  TH: "asia",
+  MY: "asia",
+  ID: "asia",
+  PH: "asia",
+  IN: "asia",
+  US: "americas",
+  CA: "americas",
+  MX: "americas",
+  BR: "americas",
+  AR: "americas",
+  GB: "europe",
+  DE: "europe",
+  FR: "europe",
+  IT: "europe",
+  ES: "europe",
+  NL: "europe",
+  CH: "europe",
+  SE: "europe",
+  RU: "europe",
+  TR: "europe",
+  AE: "mena",
+  SA: "mena",
+  EG: "mena",
+  ZA: "mena",
   AU: "oceania",
 };
 
@@ -67,7 +100,9 @@ function CountriesPage() {
                 aria-label={`Xem doanh nghiệp tại ${c.name}`}
                 className="group relative overflow-hidden p-4 rounded-2xl bg-card hover:bg-accent border border-border/50 hover:border-primary/40 transition-smooth hover:shadow-soft"
               >
-                <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${gradient} opacity-70 group-hover:opacity-100 transition-opacity`} />
+                <div
+                  className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${gradient} opacity-70 group-hover:opacity-100 transition-opacity`}
+                />
                 <div className="relative">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-background/70 backdrop-blur text-muted-foreground">
@@ -88,4 +123,3 @@ function CountriesPage() {
     </div>
   );
 }
-
