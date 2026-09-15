@@ -279,11 +279,11 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 relative z-20">
                   <FollowButton
                     businessId={business.id}
                     variant="full"
-                    className="bg-white text-primary hover:bg-white/90 border-0 shadow-md h-8 text-xs font-semibold"
+                    className="bg-white text-primary hover:bg-white/90 border-0 shadow-md h-8 text-xs font-semibold relative z-20"
                   />
                 </div>
               </div>
@@ -578,26 +578,26 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
         </div>
 
         {/* === STICKY ACTION BAR === */}
-        <div className="border-t border-border/40 bg-card/95 backdrop-blur px-4 sm:px-5 py-3 flex gap-2 shrink-0">
+        <div className="border-t border-border/40 bg-card/95 backdrop-blur px-3 sm:px-5 py-3 flex gap-1.5 sm:gap-2 shrink-0">
           <Button
             onClick={() => {
               if (!user) setShowQuickSignup(true);
               else setShowSend(true);
             }}
-            className="flex-1 bg-gradient-vivid hover:opacity-90 text-white border-0 shadow-pink h-11 gap-1.5 font-semibold"
+            className="flex-1 bg-gradient-vivid hover:opacity-90 text-white border-0 shadow-pink h-11 gap-1.5 font-semibold text-xs sm:text-sm px-2 sm:px-4"
           >
-            <Send className="w-4 h-4" /> {t("businessCard.sendCard")}
+            <Send className="w-4 h-4 shrink-0" /> <span className="truncate">{t("businessCard.sendCard")}</span>
           </Button>
           <Button
             onClick={handleSaveContact}
             disabled={saving}
             variant={saved ? "default" : "outline"}
-            className={`h-11 gap-1.5 font-semibold ${saved ? "bg-green-500/15 text-green-600 border-green-500/30 hover:bg-green-500/20" : ""}`}
+            className={`flex-1 h-11 px-2 sm:px-4 gap-1.5 font-semibold text-xs sm:text-sm ${saved ? "bg-green-500/15 text-green-600 border-green-500/30 hover:bg-green-500/20" : ""}`}
             title={saved ? t("businessCard.savedToContacts") : t("businessCard.saveToContacts")}
           >
-            {saved ? <BookmarkCheck className="w-4 h-4" /> : <BookmarkPlus className="w-4 h-4" />}
-            <span className="hidden sm:inline text-sm">
-              {saved ? t("businessCard.saved") : t("businessCard.save")}
+            {saved ? <BookmarkCheck className="w-4 h-4 shrink-0" /> : <BookmarkPlus className="w-4 h-4 shrink-0" />}
+            <span className="truncate">
+              {saved ? t("businessCard.savedToContacts") || "Đã lưu" : t("businessCard.saveToContacts") || "Lưu danh bạ"}
             </span>
           </Button>
           <Button
