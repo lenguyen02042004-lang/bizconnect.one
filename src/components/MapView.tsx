@@ -134,16 +134,18 @@ export function MapView({ onSelect, businesses = [] }: Props) {
           });
 
           let fallbackApplied = false;
-          // If OSM tiles fail (network block, etc.), auto-fallback to CARTO
+          // OSM may fail on some networks — fallback to ESRI World Street Map (free, no API key)
           osmLayer.on("tileerror", () => {
             if (fallbackApplied) return;
             fallbackApplied = true;
             map.removeLayer(osmLayer);
-            L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-              attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
-              subdomains: "abcd",
-              maxZoom: 20,
-            }).addTo(map);
+            L.tileLayer(
+              "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+              {
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012',
+                maxZoom: 19,
+              }
+            ).addTo(map);
           });
 
           osmLayer.addTo(map);
