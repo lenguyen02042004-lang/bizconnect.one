@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
 import "leaflet/dist/leaflet.css";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import type { BusinessProfile } from "@/types/business";
 
 interface Props {
@@ -18,6 +20,7 @@ export function MapView({ onSelect, businesses = [] }: Props) {
     (async () => {
       try {
         const leafletModule = await import("leaflet");
+        await import("leaflet.markercluster"); // Load the plugin
         const L = leafletModule.default || leafletModule;
         if (cancelled || !ref.current || !L || !L.map) return;
 
@@ -29,9 +32,9 @@ export function MapView({ onSelect, businesses = [] }: Props) {
         });
         mapRef.current = map;
 
-        L.tileLayer("https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}", {
-          attribution: '&copy; Google Maps',
-          maxZoom: 20,
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          maxZoom: 19,
         }).addTo(map);
 
         // Fix Leaflet tile loading/size issue when container is initially hidden or 0 height
@@ -50,14 +53,32 @@ export function MapView({ onSelect, businesses = [] }: Props) {
 
         // Store observer to clean up later
         (mapRef.current as any)._resizeObserver = resizeObserver;
-      } else {
-        // Remove existing markers if we are re-running for businesses update
-        map.eachLayer((layer: any) => {
-          if (layer instanceof L.Marker) {
-            map.removeLayer(layer);
+
+        // Initialize Marker Cluster Group
+        const clusterGroup = (L as any).markerClusterGroup({
+          chunkedLoading: true,
+          showCoverageOnHover: false,
+          spiderfyOnMaxZoom: true,
+          maxClusterRadius: 40,
+          iconCreateFunction: function(cluster: any) {
+            const count = cluster.getChildCount();
+            return L.divIcon({
+              html: `<div style="background:#c8102e;color:white;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:bold;box-shadow:0 4px 12px rgba(200,16,46,0.4);border:3px solid white;">${count}</div>`,
+              className: 'custom-cluster-icon',
+              iconSize: L.point(40, 40)
+            });
           }
         });
+        (mapRef.current as any)._clusterGroup = clusterGroup;
+        map.addLayer(clusterGroup);
+      } else {
+        // Clear existing markers if we are re-running for businesses update
+        if ((mapRef.current as any)._clusterGroup) {
+          (mapRef.current as any)._clusterGroup.clearLayers();
+        }
       }
+
+      const clusterGroup = (mapRef.current as any)._clusterGroup;
 
       businesses.forEach((b) => {
         const isPremium = b.icon_tier === "premium";
@@ -73,9 +94,11 @@ export function MapView({ onSelect, businesses = [] }: Props) {
           </div>`;
 
         const icon = L.divIcon({ html, className: "biz-marker", iconSize: [size, size], iconAnchor: [size / 2, size / 2] });
-        const marker = L.marker([b.lat ?? 0, b.lng ?? 0], { icon }).addTo(map);
+        const marker = L.marker([b.lat ?? 0, b.lng ?? 0], { icon });
         marker.on("click", () => onSelect(b));
         marker.bindTooltip(b.name, { direction: "top", offset: [0, -size / 2] });
+        
+        clusterGroup.addLayer(marker);
       });
       } catch (error) {
         console.error("Leaflet initialization error:", error);
