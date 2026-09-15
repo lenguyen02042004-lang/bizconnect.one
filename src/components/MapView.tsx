@@ -126,13 +126,27 @@ export function MapView({ onSelect, businesses = [] }: Props) {
           });
           mapRef.current = map;
 
-          // OSM tiles — free, no API key needed
-          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          // OSM tiles — free, no API key, NO crossOrigin (OSM does not support CORS)
+          const osmLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             maxZoom: 19,
-            crossOrigin: true,
-            subdomains: ["a", "b", "c"],
-          }).addTo(map);
+            subdomains: "abc",
+          });
+
+          let fallbackApplied = false;
+          // If OSM tiles fail (network block, etc.), auto-fallback to CARTO
+          osmLayer.on("tileerror", () => {
+            if (fallbackApplied) return;
+            fallbackApplied = true;
+            map.removeLayer(osmLayer);
+            L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+              attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+              subdomains: "abcd",
+              maxZoom: 20,
+            }).addTo(map);
+          });
+
+          osmLayer.addTo(map);
 
           // Fix container size issues
           const resizeObserver = new ResizeObserver(() => {
