@@ -16,7 +16,7 @@ import {
 import { SubscriptionWidget } from "@/components/SubscriptionWidget";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { Loader2, Save, Eye, Printer, Share2, Copy } from "lucide-react";
+import { Loader2, Save, Eye, Printer, Share2, Copy, Phone, Mail, MessageCircle } from "lucide-react";
 
 export const Route = createFileRoute("/me")({
   component: MePage,
@@ -366,6 +366,26 @@ function MePage() {
                     {[form.job_title, form.company_name].filter(Boolean).join(" tại ") ||
                       t("me.defaultJob")}
                   </p>
+                  <div className="flex flex-wrap justify-center gap-2 mt-4 max-w-sm mx-auto">
+                    {form.phone && (
+                      <span className="inline-flex items-center gap-1.5 text-xs bg-muted/50 px-2.5 py-1.5 rounded-md text-foreground">
+                        <Phone className="w-3 h-3 text-muted-foreground" />
+                        {form.phone}
+                      </span>
+                    )}
+                    {form.zalo && (
+                      <span className="inline-flex items-center gap-1.5 text-xs bg-blue-500/10 px-2.5 py-1.5 rounded-md text-blue-700 dark:text-blue-400">
+                        <MessageCircle className="w-3 h-3 text-blue-500" />
+                        {form.zalo}
+                      </span>
+                    )}
+                    {form.email && (
+                      <span className="inline-flex items-center gap-1.5 text-xs bg-muted/50 px-2.5 py-1.5 rounded-md text-foreground w-full justify-center truncate">
+                        <Mail className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                        <span className="truncate">{form.email}</span>
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 

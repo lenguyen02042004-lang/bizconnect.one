@@ -81,7 +81,7 @@ export function SubscriptionWidget() {
           </p>
           <Link to="/pricing">
             <Button size="sm" className="bg-gradient-vivid text-white border-0 gap-1.5">
-              <Sparkles className="w-3 h-3" /> Xem gói B2B Premium ($5/năm)
+              <Sparkles className="w-3 h-3" /> Xem các gói Nâng cấp
             </Button>
           </Link>
         </div>
