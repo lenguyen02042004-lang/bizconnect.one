@@ -108,7 +108,7 @@ function CountriesPage() {
                   to="/country/$slug"
                   params={{ slug: c.code.toLowerCase() }}
                   aria-label={`Xem doanh nghiệp tại ${c.name}`}
-                  className="group block relative h-full rounded-2xl bg-[#160b0e] border border-white/10 overflow-hidden hover:shadow-xl hover:border-primary/50 hover:-translate-y-1 transition-all duration-300"
+                  className="group block relative h-full rounded-2xl bg-gradient-to-br from-[#7a0f1d] to-[#2b050a] border border-white/10 overflow-hidden hover:shadow-xl hover:border-primary/50 hover:-translate-y-1 transition-all duration-300"
                 >
                   <div className="relative p-5 h-full flex flex-col">
                     <div className="flex items-start justify-between mb-4">

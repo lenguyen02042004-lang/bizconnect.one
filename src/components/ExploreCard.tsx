@@ -13,7 +13,7 @@ export function ExploreCard({ business: b, onSelect }: any) {
       onKeyDown={(e) => {
         if (e.key === "Enter") onSelect();
       }}
-      className={`group relative overflow-hidden rounded-[24px] cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl bg-[#160b0e] text-white ${
+      className={`group relative overflow-hidden rounded-[24px] cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl bg-gradient-to-br from-[#7a0f1d] to-[#2b050a] text-white ${
         b.icon_tier === "premium"
           ? "border border-premium/50 hover:border-premium shadow-premium/20"
           : "border border-white/10 hover:border-primary/50 shadow-soft"
