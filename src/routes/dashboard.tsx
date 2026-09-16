@@ -30,6 +30,7 @@ import { DashboardShell, DEMO_OWNER_PREFIX } from "@/components/DashboardShell";
 import { SubscriptionWidget } from "@/components/SubscriptionWidget";
 import { getMyQuota, getInbox } from "@/lib/messaging.functions";
 import { useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 
 export const Route = createFileRoute("/dashboard")({
   component: Dashboard,
@@ -74,6 +75,8 @@ type Stats = {
 };
 
 function Dashboard() {
+  const quotaFn = useServerFn(getMyQuota);
+  const inboxFn = useServerFn(getInbox);
   const { user } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -132,8 +135,8 @@ function Dashboard() {
           .from("follows")
           .select("*", { count: "exact", head: true })
           .eq("follower_id", user.id),
-        getMyQuota(),
-        getInbox({}),
+        quotaFn(),
+        inboxFn({}),
       ]);
       if (cancelled) return;
 
