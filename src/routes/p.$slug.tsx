@@ -229,14 +229,6 @@ function PublicPersonalCard() {
                   </div>
                 )}
 
-                {/* Badges */}
-                <div className="flex flex-wrap gap-2 justify-center mt-3">
-                  {profile.job_title && (
-                    <Badge className="bg-white/15 text-white border-white/20 text-xs backdrop-blur">
-                      <Briefcase className="w-3 h-3 mr-1" /> {profile.job_title}
-                    </Badge>
-                  )}
-                </div>
               </div>
             </div>
 
