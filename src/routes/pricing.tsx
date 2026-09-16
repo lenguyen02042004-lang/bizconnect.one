@@ -128,8 +128,14 @@ function PricingPage() {
       .eq("owner_id", user.id)
       .limit(1);
     
+    const bizIdStr = businesses?.[0]?.id ?? null;
+    if (!bizIdStr && (planTarget.subType === 'b2b_block_500' || planTarget.subType === 'icon_premium')) {
+      toast.error("Vui lòng tạo Danh thiếp Doanh nghiệp trước khi nâng cấp gói này!");
+      return;
+    }
+    
     setUserId(user.id);
-    setBizId(businesses?.[0]?.id ?? null);
+    setBizId(bizIdStr);
     setTarget(planTarget);
     setReceiptUrl(null);
     setQrLoaded(false);
@@ -189,7 +195,7 @@ function PricingPage() {
 
   const generatePaymentContent = () => {
     if (!target || !userId) return "";
-    const planId = (target.subType ?? "membership").toUpperCase();
+    const planId = (target.subType ?? "membership").toUpperCase().replace(/_/g, "");
     const shortUser = userId.substring(0, 8).toUpperCase();
     const shortBiz = bizId ? bizId.substring(0, 8).toUpperCase() : "";
     return `BIZC ${planId} ${shortUser} ${shortBiz}`.trim();

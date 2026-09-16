@@ -18,8 +18,31 @@ import {
   Edit,
   Lock,
   X,
+  QrCode,
+  Loader2,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { getMyWallet, buyContactBlock, type WalletLimits } from "@/lib/connect";
+
+const BANK = {
+  name: "TPBank (Tiên Phong Bank)",
+  account: "00003554020",
+  owner: "LE TAN LOI",
+  bin: "970423",
+  vndRate: 1,
+};
+
+function vietQrUrl(amount: number, content: string, bankInfo: typeof BANK) {
+  const vnd = amount * bankInfo.vndRate;
+  const cleanAccount = bankInfo.account.replace(/\s+/g, "");
+  return `https://img.vietqr.io/image/${bankInfo.bin}-${cleanAccount}-compact2.png?amount=${vnd}&addInfo=${encodeURIComponent(content)}&accountName=${encodeURIComponent(bankInfo.owner)}`;
+}
 
 export const Route = createFileRoute("/contacts")({
   component: ContactsPage,
@@ -60,6 +83,11 @@ function ContactsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 12;
 
+  const [showModal, setShowModal] = useState(false);
+  const [qrLoaded, setQrLoaded] = useState(false);
+  const [userId, setUserId] = useState<string>("");
+  const [bankInfo, setBankInfo] = useState(BANK);
+
   const load = async () => {
     setLoading(true);
     const {
@@ -71,6 +99,24 @@ function ContactsPage() {
       return;
     }
     setAuthed(true);
+    setUserId(user.id);
+    supabase
+      .from("app_settings")
+      .select("value")
+      .eq("key", "bank_info")
+      .single()
+      .then(({ data }) => {
+        if (data?.value) {
+          const val = data.value as any;
+          setBankInfo({
+            ...BANK,
+            name: val.bank_name || BANK.name,
+            account: val.account_number || BANK.account,
+            owner: val.account_owner || BANK.owner,
+            bin: val.bin || BANK.bin,
+          });
+        }
+      });
     const { data, error } = await supabase
       .from("saved_contacts")
       .select("*")
@@ -84,15 +130,7 @@ function ContactsPage() {
   };
 
   const handleBuy = async () => {
-    setBuying(true);
-    const res = await buyContactBlock();
-    setBuying(false);
-    if (!res.ok) {
-      toast.error(res.message);
-      return;
-    }
-    setWallet(res.wallet);
-    toast.success("Đã mở rộng thêm 500 chỗ lưu danh bạ");
+    setShowModal(true);
   };
 
   useEffect(() => {
@@ -384,6 +422,46 @@ function ContactsPage() {
           onSave={(note) => handleSaveEdit(editing.id, note)}
         />
       )}
+
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-3xl">
+          <div className="bg-gradient-vivid p-6 text-white text-center">
+            <DialogHeader>
+              <DialogTitle className="text-white text-xl flex justify-center items-center gap-2">
+                <QrCode className="w-5 h-5" /> Thanh toán gói mở rộng
+              </DialogTitle>
+              <DialogDescription className="text-white/90 text-sm mt-2">
+                Gói: <strong>Mở rộng 500 liên hệ</strong> - <strong>150.000 VNĐ</strong>
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+          <div className="p-6">
+            <div className="flex flex-col items-center justify-center gap-4">
+              <div className="bg-white p-2 rounded-2xl border-2 border-primary/20 shadow-sm relative">
+                {!qrLoaded && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-white rounded-2xl">
+                    <Loader2 className="w-8 h-8 animate-spin text-primary/40" />
+                  </div>
+                )}
+                <img
+                  src={vietQrUrl(150000, `BIZC CONTACTBLOCKADDON ${userId.substring(0, 8).toUpperCase()}`, bankInfo)}
+                  className={`w-56 h-56 object-contain rounded-xl ${qrLoaded ? "block" : "hidden"}`}
+                  onLoad={() => setQrLoaded(true)}
+                  onError={() => setQrLoaded(true)}
+                  alt="QR Code"
+                />
+              </div>
+              <div className="text-center space-y-1 text-sm text-muted-foreground">
+                <p>Quét mã bằng ứng dụng ngân hàng.</p>
+                <p>Hệ thống tự động cộng hạn mức ngay lập tức!</p>
+              </div>
+              <Button variant="outline" className="mt-2 w-full" onClick={() => setShowModal(false)}>
+                Đóng
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </DashboardShell>
   );
 }
