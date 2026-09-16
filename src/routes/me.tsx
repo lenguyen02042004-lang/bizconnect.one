@@ -150,33 +150,6 @@ function MePage() {
       title={t("me.title")}
       subtitle={t("me.subtitle")}
       maxWidth="5xl"
-      actions={
-        <>
-          {profile && (
-            <>
-              <Link to="/p/$slug" params={{ slug: profile.slug }}>
-                <Button variant="outline" size="sm" className="gap-1.5">
-                  <Eye className="w-4 h-4" /> {t("me.view")}
-                </Button>
-              </Link>
-              <Link to="/print/$type/$slug" params={{ type: "personal", slug: profile.slug }}>
-                <Button variant="outline" size="sm" className="gap-1.5">
-                  <Printer className="w-4 h-4" /> {t("me.print")}
-                </Button>
-              </Link>
-            </>
-          )}
-          <Button
-            onClick={save}
-            disabled={saving || loading}
-            size="sm"
-            className="gap-1.5 bg-gradient-vivid text-white border-0 shadow-pink"
-          >
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}{" "}
-            {t("me.save")}
-          </Button>
-        </>
-      }
     >
       {loading ? (
         <div className="grid lg:grid-cols-[1fr_360px] gap-8 items-start animate-pulse">
@@ -334,6 +307,31 @@ function MePage() {
                 checked={form.is_public}
                 onCheckedChange={(v) => setForm({ ...form, is_public: v })}
               />
+            </div>
+
+            <div className="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-border mt-4">
+              {profile && (
+                <>
+                  <Link to="/p/$slug" params={{ slug: profile.slug }}>
+                    <Button variant="outline" className="gap-1.5 h-11 px-5">
+                      <Eye className="w-4 h-4" /> {t("me.view")}
+                    </Button>
+                  </Link>
+                  <Link to="/print/$type/$slug" params={{ type: "personal", slug: profile.slug }}>
+                    <Button variant="outline" className="gap-1.5 h-11 px-5">
+                      <Printer className="w-4 h-4" /> {t("me.print")}
+                    </Button>
+                  </Link>
+                </>
+              )}
+              <Button
+                onClick={save}
+                disabled={saving || loading}
+                className="gap-1.5 h-11 px-6 bg-gradient-vivid text-white border-0 shadow-pink text-base"
+              >
+                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}{" "}
+                {t("me.save")}
+              </Button>
             </div>
           </div>
 
