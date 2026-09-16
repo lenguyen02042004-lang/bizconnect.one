@@ -110,42 +110,36 @@ export const markMessageRead = createServerFn({ method: "POST" })
 export const getMyQuota = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data: quota, error } = await context.supabase.rpc("get_my_quota");
+    // We always calculate manually in TS to avoid outdated RPC definitions on the server
+    const year = new Date().getFullYear();
+    const { data: row } = await context.supabase
+      .from("message_quotas")
+      .select("used_count, bonus_credits")
+      .eq("period_year", year)
+      .maybeSingle();
 
-    if (error) {
-      // Fallback manual calculation if RPC fails
-      const year = new Date().getFullYear();
-      const { data: row } = await context.supabase
-        .from("message_quotas")
-        .select("used_count, bonus_credits")
-        .eq("period_year", year)
-        .maybeSingle();
+    // Count active b2b_block_500 and contact_block_addon subscriptions
+    const { data: subs } = await context.supabase
+      .from("subscriptions")
+      .select("status, sub_type, current_period_end")
+      .eq("user_id", context.userId)
+      .eq("status", "active")
+      .in("sub_type", ["b2b_block_500", "contact_block_addon"]);
 
-      // Count active b2b_block_500 subscriptions
-      const { data: subs } = await context.supabase
-        .from("subscriptions")
-        .select("status, sub_type, current_period_end")
-        .eq("user_id", context.userId)
-        .eq("status", "active")
-        .eq("sub_type", "b2b_block_500");
-
-      let activeBlocks = 0;
-      if (subs) {
-        for (const sub of subs) {
-          if (!sub.current_period_end || new Date(sub.current_period_end) > new Date()) {
-            activeBlocks++;
-          }
+    let activeBlocks = 0;
+    if (subs) {
+      for (const sub of subs) {
+        if (!sub.current_period_end || new Date(sub.current_period_end) > new Date()) {
+          activeBlocks++;
         }
       }
-
-      const base = 200;
-      const used = row?.used_count ?? 0;
-      const bonus = row?.bonus_credits ?? 0;
-      const limit = base + activeBlocks * 500;
-      return { used_count: used, bonus_credits: bonus, limit };
     }
 
-    return quota as { used_count: number; bonus_credits: number; limit: number };
+    const base = 200;
+    const used = row?.used_count ?? 0;
+    const bonus = row?.bonus_credits ?? 0;
+    const limit = base + activeBlocks * 500;
+    return { used_count: used, bonus_credits: bonus, limit };
   });
 
 export const getMyBusinesses = createServerFn({ method: "GET" })
