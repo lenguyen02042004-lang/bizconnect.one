@@ -465,7 +465,7 @@ function ContactsPage() {
                   </div>
                 )}
                 <img
-                  src={vietQrUrl(150000, `BIZC CONTACTBLOCKADDON ${userId.substring(0, 8).toUpperCase()}`, bankInfo)}
+                  src={vietQrUrl(150000, `BIZC CBA ${userId.substring(0, 8).toUpperCase()}`, bankInfo)}
                   className={`w-56 h-56 object-contain rounded-xl ${qrLoaded ? "block" : "hidden"}`}
                   onLoad={() => setQrLoaded(true)}
                   onError={() => setQrLoaded(true)}

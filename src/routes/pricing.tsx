@@ -195,9 +195,18 @@ function PricingPage() {
 
   const generatePaymentContent = () => {
     if (!target || !userId) return "";
-    const planId = (target.subType ?? "membership").toUpperCase().replace(/_/g, "");
+    const rawPlan = target.subType ?? "membership";
+    
+    const PLAN_SHORT_CODES: Record<string, string> = {
+      contact_block_addon: "CBA",
+      b2b_block_500: "B2B",
+      icon_premium: "ICO"
+    };
+    
+    const planId = PLAN_SHORT_CODES[rawPlan] || rawPlan.toUpperCase().replace(/_/g, "").substring(0, 5);
     const shortUser = userId.substring(0, 8).toUpperCase();
     const shortBiz = bizId ? bizId.substring(0, 8).toUpperCase() : "";
+    
     return `BIZC ${planId} ${shortUser} ${shortBiz}`.trim();
   };
 

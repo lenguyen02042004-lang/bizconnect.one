@@ -40,12 +40,12 @@ serve(async (req: Request) => {
       return new Response(JSON.stringify({ success: true, ignored: true, reason: "Not a BIZC transaction" }), { status: 200 });
     }
 
-    let planId = match[1].toLowerCase(); // e.g. b2b_block_500
+    let planId = match[1].toLowerCase(); // e.g. b2b_block_500, cba, b2b, ico
     
-    // Fix missing underscores caused by some banks stripping them
-    if (planId === "b2bblock500") planId = "b2b_block_500";
-    if (planId === "contactblockaddon") planId = "contact_block_addon";
-    if (planId === "iconpremium") planId = "icon_premium";
+    // Map short codes back to DB plan IDs (backward compatibility included)
+    if (planId === "cba" || planId === "contactblockaddon") planId = "contact_block_addon";
+    if (planId === "b2b" || planId === "b2bblock500") planId = "b2b_block_500";
+    if (planId === "ico" || planId === "iconpremium") planId = "icon_premium";
 
     const shortUserId = match[2].toLowerCase(); // 8 chars
     const shortBizId = match[3] ? match[3].toLowerCase() : null; // 8 chars
