@@ -162,11 +162,11 @@ function Dashboard() {
     };
   }, [user, navigate]);
   const totalViews = useMemo(() => {
-    if (profile?.account_type === "personal") return personalProfile?.views_count ?? 0;
+    if ((profile?.account_type || "personal") === "personal") return personalProfile?.views_count ?? 0;
     return businesses.reduce((s, b) => s + (b.views_count ?? 0), 0);
   }, [businesses, profile, personalProfile]);
   const totalFollowers = useMemo(() => {
-    if (profile?.account_type === "personal") return personalProfile?.followers_count ?? 0;
+    if ((profile?.account_type || "personal") === "personal") return personalProfile?.followers_count ?? 0;
     return businesses.reduce((s, b) => s + (b.followers_count ?? 0), 0);
   }, [businesses, profile, personalProfile]);
   const publicBiz = businesses.find((b) => b.status === "public");
@@ -196,7 +196,7 @@ function Dashboard() {
       })}
       subtitle={t("dashboard.subtitle")}
       actions={
-        profile?.account_type === "personal" ? (
+        (profile?.account_type || "personal") === "personal" ? (
           <Link to="/me">
             <Button size="sm" className="gap-1.5 bg-gradient-vivid text-white border-0 shadow-pink">
               <Pencil className="w-4 h-4" /> {t("dashboard.personalCard", "Sửa thẻ cá nhân")}
@@ -278,7 +278,7 @@ function Dashboard() {
         />
       </div>
 
-      {(publicBiz || (profile?.account_type === "personal" && personalProfile?.slug)) && (
+      {(publicBiz || ((profile?.account_type || "personal") === "personal" && personalProfile?.slug)) && (
         <div className="mb-8 rounded-2xl border border-border bg-gradient-to-br from-card to-accent/40 p-5 flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
@@ -287,7 +287,7 @@ function Dashboard() {
             <div className="min-w-0">
               <p className="text-sm font-semibold">{t("dashboard.yourLink")}</p>
               <p className="text-xs text-muted-foreground truncate">
-                {profile?.account_type === "personal" ? `/p/${personalProfile?.slug}` : `/business/${publicBiz?.slug}`}
+                {(profile?.account_type || "personal") === "personal" ? `/p/${personalProfile?.slug}` : `/business/${publicBiz?.slug}`}
               </p>
             </div>
           </div>
@@ -295,14 +295,14 @@ function Dashboard() {
             <Button
               size="sm"
               variant="outline"
-              onClick={() => copyLink(profile?.account_type === "personal" ? personalProfile!.slug : publicBiz!.slug, profile?.account_type === "personal")}
+              onClick={() => copyLink((profile?.account_type || "personal") === "personal" ? personalProfile!.slug : publicBiz!.slug, (profile?.account_type || "personal") === "personal")}
               className="gap-1.5"
             >
               <Copy className="w-3.5 h-3.5" /> {t("dashboard.copy")}
             </Button>
             <Button
               size="sm"
-              onClick={() => shareLink(profile?.account_type === "personal" ? personalProfile!.slug : publicBiz!.slug, profile?.account_type === "personal")}
+              onClick={() => shareLink((profile?.account_type || "personal") === "personal" ? personalProfile!.slug : publicBiz!.slug, (profile?.account_type || "personal") === "personal")}
               className="gap-1.5 bg-gradient-vivid text-white border-0"
             >
               <Share2 className="w-3.5 h-3.5" /> {t("dashboard.share")}
