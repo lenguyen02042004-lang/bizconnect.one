@@ -68,7 +68,7 @@ export const Route = createFileRoute("/")({
         content:
           "Bản đồ 3D tương tác kết nối doanh nghiệp toàn cầu theo quốc gia & ngành nghề. Tạo danh thiếp online, gửi card visit, mở rộng đối tác B2B quốc tế.",
       },
-      { property: "og:url", content: "https://earth-biz-link.lovable.app/" },
+      { property: "og:url", content: "https://bizconnect.one/" },
       {
         property: "og:image",
         content:
@@ -80,7 +80,7 @@ export const Route = createFileRoute("/")({
           "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/00a22ce0-49e6-49b7-90b4-01df776e6cc4/id-preview-2ea6aefd--f585c186-6c05-4cf6-909f-f5ed83a67e7f.lovable.app-1780538420894.png",
       },
     ],
-    links: [{ rel: "canonical", href: "https://earth-biz-link.lovable.app/" }],
+    links: [{ rel: "canonical", href: "https://bizconnect.one/" }],
   }),
   loader: async () => {
     const [bizRes, listRes] = await Promise.all([getExploreBusinesses(), getGlobalLists()]);

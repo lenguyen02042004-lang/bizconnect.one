@@ -205,12 +205,12 @@ export default {
         cta: "Start for free",
       },
       bizBlock500: {
-        name: "B2B Block 500",
+        name: "B2B Block (+500)",
         badge: "FLEXIBLE",
-        desc: "Expand your trade limits.",
+        desc: "Expand your card sends and contact capacity.",
         f1: "Add 500 business card sends",
         f2: "Add 500 contact capacity",
-        f3: "Flexible block purchases (e.g., 1000, 1500)",
+        f3: "Can buy multiple times (cumulative)",
         f4: "Track QR code scan statistics",
         f5: "Interact via internal Inbox",
         f6: "Priority technical support",
@@ -218,7 +218,7 @@ export default {
         period: "/year",
       },
       bizIconPremium: {
-        name: "Icon Premium",
+        name: "Premium Icon",
         desc: "Stand out on the map with a large icon.",
         f1: "30% larger icon on the map",
         f2: "Dynamic pink gradient border",
@@ -230,8 +230,8 @@ export default {
     },
     addons: {
       contactBlock: {
-        name: "Expand Contacts +500",
-        desc: "1 year duration.",
+        name: "Contact Block (+500)",
+        desc: "Add 500 contact capacity. Can buy multiple times (cumulative). Valid for 1 year.",
       },
     },
   },

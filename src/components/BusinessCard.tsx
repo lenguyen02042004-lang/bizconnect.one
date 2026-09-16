@@ -145,6 +145,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
     setSaving(true);
     const res = await saveBusinessContact(business);
     setSaving(false);
+    console.error("SAVE RESULT:", res);
     if (!res.ok) {
       toast.error(res.message || t("businessCard.saveError"));
       return;
@@ -186,7 +187,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
           {/* Background: banner or gradient */}
           {business.banner_url ? (
             <img
-              src={business.banner_url}
+              src={business.banner_url || undefined}
               alt=""
               loading="lazy"
               decoding="async"
@@ -211,7 +212,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                 >
                   {business.logo_url ? (
                     <img
-                      src={`https://wsrv.nl/?url=${encodeURIComponent(business.logo_url)}&w=160&h=160&fit=cover`}
+                      src={business.logo_url ? `https://wsrv.nl/?url=${encodeURIComponent(business.logo_url)}&w=160&h=160&fit=cover` : undefined}
                       alt={business.name}
                       className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white/90 object-contain p-1"
                     />
@@ -297,7 +298,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                 >
                   <div className="w-20 h-20 rounded-xl bg-white p-1.5 shadow-xl hover:scale-105 transition-smooth relative">
                     <img
-                      src={qrUrl}
+                      src={qrUrl || undefined}
                       alt={`QR ${business.name}`}
                       loading="lazy"
                       decoding="async"
@@ -322,7 +323,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
               className="w-full sm:hidden flex items-center gap-3 px-4 py-3 bg-accent/30 border-b border-border/50 text-left hover:bg-accent/50 transition-colors"
             >
               <img
-                src={qrUrl}
+                src={qrUrl || undefined}
                 alt="QR Code"
                 loading="lazy"
                 decoding="async"
@@ -545,7 +546,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                       className="aspect-square rounded-xl overflow-hidden bg-muted border border-border/40"
                     >
                       <img
-                        src={src}
+                        src={src || undefined}
                         alt=""
                         loading="lazy"
                         decoding="async"

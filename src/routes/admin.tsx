@@ -8,6 +8,8 @@ import {
   bulkImportBusinesses,
   adminListBusinesses,
   seedDemoAccounts,
+  adminCreateCountry,
+  adminCreateIndustry,
 } from "@/lib/admin.functions";
 import { DashboardShell } from "@/components/DashboardShell";
 import { Shield } from "lucide-react";
@@ -18,6 +20,7 @@ import { PaymentReviewSection } from "@/components/admin/PaymentReviewSection";
 import { SubscriptionManagementSection } from "@/components/admin/SubscriptionManagementSection";
 import { BusinessTableSection } from "@/components/admin/BusinessTableSection";
 import { BulkImportSection } from "@/components/admin/BulkImportSection";
+import { GlobalDataSection } from "@/components/admin/GlobalDataSection";
 
 export const Route = createFileRoute("/admin")({
   beforeLoad: async () => {
@@ -33,6 +36,8 @@ function AdminPage() {
   const importFn = useServerFn(bulkImportBusinesses);
   const listFn = useServerFn(adminListBusinesses);
   const seedFn = useServerFn(seedDemoAccounts);
+  const createCountryFn = useServerFn(adminCreateCountry);
+  const createIndustryFn = useServerFn(adminCreateIndustry);
 
   const adminQ = useQuery({ queryKey: ["is-admin"], queryFn: () => checkAdmin() });
 
@@ -61,6 +66,7 @@ function AdminPage() {
       </div>
 
       <DemoAccountsSection seedFn={seedFn as any} />
+      <GlobalDataSection createCountryFn={createCountryFn as any} createIndustryFn={createIndustryFn as any} />
       <BankSettingsSection />
       <PaymentReviewSection />
       <SubscriptionManagementSection />

@@ -1,7 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 export type UnlockedContact = {
   connected: boolean;
   phone: string | null;
@@ -10,15 +8,11 @@ export type UnlockedContact = {
   address: string | null;
 };
 
-export function isRealId(id: string) {
-  return UUID_RE.test(id);
-}
-
 export async function isConnectedTo(businessId: string): Promise<boolean> {
-  if (!isRealId(businessId)) return false;
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user;
   if (!user) return false;
   const { data } = await supabase
     .from("connections")
@@ -30,13 +24,6 @@ export async function isConnectedTo(businessId: string): Promise<boolean> {
 }
 
 export async function connectAndExchange(businessId: string, source: "qr" | "manual") {
-  if (!isRealId(businessId)) {
-    return {
-      ok: false as const,
-      reason: "demo" as const,
-      message: "Doanh nghiệp mẫu chưa hỗ trợ kết nối",
-    };
-  }
   const {
     data: { user },
   } = await supabase.auth.getUser();

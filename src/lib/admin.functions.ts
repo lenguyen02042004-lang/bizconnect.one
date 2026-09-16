@@ -529,3 +529,56 @@ export const getMySubscriptions = createServerFn({ method: "GET" })
       } | null,
     };
   });
+
+// === Admin: Create Country ===
+export const adminCreateCountry = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z
+      .object({
+        code: z.string().length(2).toUpperCase(),
+        name: z.string().min(1).max(100),
+        flag: z.string().min(1).max(20),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await requireAdmin(supabase, userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { error } = await supabaseAdmin.from("countries").insert({
+      code: data.code,
+      name: data.name,
+      flag: data.flag,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// === Admin: Create Industry ===
+export const adminCreateIndustry = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z
+      .object({
+        slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/),
+        name: z.string().min(1).max(100),
+        icon: z.string().max(20).optional().nullable(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await requireAdmin(supabase, userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { error } = await supabaseAdmin.from("industries").insert({
+      slug: data.slug,
+      name: data.name,
+      icon: data.icon,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+

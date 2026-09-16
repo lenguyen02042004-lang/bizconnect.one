@@ -39,9 +39,9 @@ export const Route = createFileRoute("/signup")({
             "Tạo tài khoản doanh nghiệp miễn phí: danh thiếp online, hiển thị trên bản đồ toàn cầu và kết nối đối tác B2B quốc tế.",
         }),
       },
-      { property: "og:url", content: "https://earth-biz-link.lovable.app/signup" },
+      { property: "og:url", content: "https://bizconnect.one/signup" },
     ],
-    links: [{ rel: "canonical", href: "https://earth-biz-link.lovable.app/signup" }],
+    links: [{ rel: "canonical", href: "https://bizconnect.one/signup" }],
   }),
 });
 

@@ -3,7 +3,7 @@ import type {} from "@tanstack/react-start";
 import { COUNTRY_LIST } from "@/lib/constants";
 import { supabase } from "@/integrations/supabase/client";
 
-const BASE_URL = "https://earth-biz-link.lovable.app";
+const BASE_URL = "https://bizconnect.one";
 
 interface SitemapEntry {
   loc: string;

@@ -43,9 +43,9 @@ export const Route = createFileRoute("/explore")({
         content:
           "Bản đồ 2D doanh nghiệp toàn cầu — lọc theo quốc gia, ngành nghề, tìm kiếm nhanh và theo dõi các doanh nghiệp phù hợp với bạn.",
       },
-      { property: "og:url", content: "https://earth-biz-link.lovable.app/explore" },
+      { property: "og:url", content: "https://bizconnect.one/explore" },
     ],
-    links: [{ rel: "canonical", href: "https://earth-biz-link.lovable.app/explore" }],
+    links: [{ rel: "canonical", href: "https://bizconnect.one/explore" }],
   }),
 });
 

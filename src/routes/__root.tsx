@@ -148,22 +148,22 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@graph": [
             {
               "@type": "Organization",
-              "@id": "https://earth-biz-link.lovable.app/#org",
+              "@id": "https://bizconnect.one/#org",
               name: "BizConnect.One",
-              url: "https://earth-biz-link.lovable.app/",
-              logo: "https://earth-biz-link.lovable.app/favicon.ico",
+              url: "https://bizconnect.one/",
+              logo: "https://bizconnect.one/favicon.ico",
               description:
                 "Worldwide B2B business directory with an interactive 3D map. Create online business cards, connect and exchange contacts with international partners.",
             },
             {
               "@type": "WebSite",
-              "@id": "https://earth-biz-link.lovable.app/#website",
-              url: "https://earth-biz-link.lovable.app/",
+              "@id": "https://bizconnect.one/#website",
+              url: "https://bizconnect.one/",
               name: "BizConnect.One",
-              publisher: { "@id": "https://earth-biz-link.lovable.app/#org" },
+              publisher: { "@id": "https://bizconnect.one/#org" },
               potentialAction: {
                 "@type": "SearchAction",
-                target: "https://earth-biz-link.lovable.app/explore?q={search_term_string}",
+                target: "https://bizconnect.one/explore?q={search_term_string}",
                 "query-input": "required name=search_term_string",
               },
             },

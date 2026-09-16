@@ -19,9 +19,9 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseKey, {
 
 test.describe("360-Degree E2E Master Logic Test", () => {
   const timestamp = Date.now();
-  const testEmail = `biz_master_${timestamp}@example.com`;
+  const testEmail = `bizmaster${timestamp}@example.com`;
   const testPassword = "Password123!";
-  const testBusinessName = `BIZ_MASTER_TEST_${timestamp}`;
+  const testBusinessName = `Biz Master Test ${timestamp}`;
   const testPhone = "0987654321";
   
   let businessId: string;
@@ -83,6 +83,10 @@ test.describe("360-Degree E2E Master Logic Test", () => {
     expect(businesses).not.toBeNull();
     businessId = businesses!.id;
 
+    // Navigate away to stop any pending React Hook Form auto-saves from overwriting our admin updates
+    await page.goto("/dashboard");
+    await page.waitForLoadState("networkidle");
+
     // We will just directly update DB for deep info to test Rendering logic
     // because interacting with complex 8-step form takes too long and might be brittle
     const { error: updateErr } = await supabaseAdmin.from("businesses").update({
@@ -94,10 +98,24 @@ test.describe("360-Degree E2E Master Logic Test", () => {
     }).eq("id", businessId);
     if (updateErr) throw updateErr;
 
-    // 3. Visit Public Card UI and verify Data Rendering
-    await page.goto(`/business/${businesses!.slug}`);
-    await page.waitForLoadState("networkidle");
-    
+    // 3. Mark as public
+    const { error: updateError } = await supabaseAdmin.from("businesses").update({ status: "public" }).eq("id", businessId);
+    expect(updateError).toBeNull();
+    expect(businesses).toBeDefined();
+
+    // Verify DB status
+    const { data: dbBiz } = await supabaseAdmin.from("businesses").select("*").eq("id", businessId).single();
+    console.log("DB BIZ STATUS:", dbBiz?.status, "SLUG:", dbBiz?.slug);
+
+    // 4. Poll until business is visible (handles DB propagation delay)
+    await expect(async () => {
+      await page.goto(`/business/${businesses!.slug}`);
+      await page.waitForLoadState("networkidle");
+      const bodyText = await page.locator("body").innerText();
+      expect(bodyText).not.toMatch(/Business not found|Không tìm thấy doanh nghiệp/i);
+      expect(bodyText).toContain(testBusinessName);
+    }).toPass({ timeout: 15000, intervals: [1000, 2000, 3000] });
+
     // Assert Strict Render Match
     const bodyText = await page.locator("body").innerText();
     expect(bodyText).toContain(testBusinessName);
@@ -199,27 +217,63 @@ test.describe("360-Degree E2E Master Logic Test", () => {
   });
 
   test("C. Follow & Save Contact Logic on Mobile", async ({ page }) => {
-    // 1. Log in
-    await page.goto("/login");
-    await page.waitForLoadState("networkidle");
-    await page.fill('input[type="email"]', testEmail);
-    await page.fill('input[type="password"]', testPassword);
-    await page.click('button[type="submit"]');
-    await page.waitForURL("**/dashboard**", { timeout: 10000 });
-    await page.waitForTimeout(1000); // extra buffer
+    page.on("console", (msg) => {
+      if (msg.type() === "error") {
+        console.error("PAGE ERROR:", msg.text());
+      }
+    });
+    page.on('response', async (response) => {
+      if (response.url().includes('_server')) {
+        try {
+          const body = await response.text();
+          console.log(`RPC [${response.url()}] ${response.status()}:`, body.substring(0, 200));
+        } catch(e) {}
+      }
+    });
 
-    // 2. Navigate to Explore
-    await page.goto("/explore");
+    // 1. Navigate to signup and clear session
+    await page.goto("/signup");
+    await page.waitForLoadState("networkidle");
+    await page.context().clearCookies();
+    await page.evaluate(() => localStorage.clear());
+    await page.reload(); // Reload to apply cleared session
+    await page.waitForLoadState("networkidle");
+
+    // 2. Create a consumer account and log in
+    const consumerEmail = `consumer_${Date.now()}@test.com`;
     
-    // Search for our business
-    const searchInput = page.locator('aside input').first();
-    await searchInput.waitFor({ state: 'visible' });
-    await searchInput.fill(testBusinessName);
-    // Wait for search debounce
-    await page.waitForTimeout(1500);
+    page.on("console", (msg) => {
+      if (msg.type() === "error" || msg.type() === "warning" || msg.type() === "log") {
+        console.log(`BROWSER ${msg.type().toUpperCase()}: ${msg.text()}`);
+      }
+    });
+
+    await page.fill('input[id="name"]', "Test Consumer");
+    await page.fill('input[id="email"]', consumerEmail);
+    await page.fill('input[id="password"]', testPassword);
+    await page.click('button[type="submit"]');
+    await page.waitForURL("**/me**", { timeout: 15000 });
     
-    // Check that search works via RPC (we mock RPC by typing in UI and seeing it)
-    await expect(page.locator("body")).toContainText(testBusinessName);
+    // Fetch the consumer user ID from DB
+    const { data: consumerUsers } = await supabaseAdmin.auth.admin.listUsers();
+    const consumerUser = consumerUsers.users.find(u => u.email === consumerEmail);
+    expect(consumerUser).toBeDefined();
+
+    // 2. Navigate to Explore and poll until business appears in search (cache/sync delay)
+    await expect(async () => {
+      await page.goto(`/explore`);
+      await page.reload();
+      await page.waitForLoadState("networkidle");
+      const searchInput = page.locator('aside input').first();
+      await searchInput.waitFor({ state: 'visible' });
+      await searchInput.fill(testBusinessName);
+      // Wait for search debounce
+      await page.waitForTimeout(1500);
+      // Check that search works via RPC
+      const asideText = await page.locator("aside").innerText();
+      console.log("ASIDE TEXT AFTER SEARCH:", asideText);
+      await expect(page.locator("body")).toContainText(testBusinessName, { timeout: 2000 });
+    }).toPass({ timeout: 25000, intervals: [2000, 3000] });
     
     // Click it to go to profile (opens modal)
     await page.locator(`text=${testBusinessName}`).first().click();
@@ -229,37 +283,45 @@ test.describe("360-Degree E2E Master Logic Test", () => {
     const { data: bizBefore } = await supabaseAdmin.from("businesses").select("followers_count").eq("id", businessId).single();
     const initialFollowers = bizBefore?.followers_count || 0;
 
+    page.on("console", (msg) => console.log(`BROWSER CONSOLE: ${msg.text()}`));
+
+    // Click Save Contact
+    const saveBtn = page.locator("button", { hasText: /Lưu danh bạ|Save/i }).first();
+    await saveBtn.click();
+    
+    // Add a screenshot to see what happened after click
+    await page.waitForTimeout(1000);
+    const bodyText = await page.evaluate(() => document.body.innerText);
+    console.log("BODY TEXT AFTER CLICKING SAVE:", bodyText);
+    await page.screenshot({ path: "test-results/c-after-save.png" });
+
+    
+    // Check DB for Saved Contact (Polled because DB insert takes time)
+    await expect(async () => {
+      const { data: saved } = await supabaseAdmin
+        .from("saved_contacts")
+        .select("*")
+        .eq("user_id", consumerUser!.id)
+        .eq("business_id", businessId);
+      expect(saved?.length).toBeGreaterThanOrEqual(1);
+    }).toPass({ timeout: 10000, intervals: [1000, 2000] });
+
     // Click Follow
     const followBtn = page.locator("button", { hasText: /Theo dõi|Follow/i }).first();
     await followBtn.click();
-    await page.waitForTimeout(1500); // let db update
-    
-    // Check DB: Follows table
-    const { data: follows } = await supabaseAdmin
-      .from("follows")
-      .select("*")
-      .eq("business_id", businessId)
-      .eq("follower_id", ownerId);
-    // Note: We skip the exact length check because if the user is the owner,
-    // following their own business might be blocked by RLS or they might already follow it.
-    // expect(follows?.length).toBe(1);
+
+    // Check DB for Follow (Polled)
+    await expect(async () => {
+      const { data: followed } = await supabaseAdmin
+        .from("follows")
+        .select("*")
+        .eq("follower_id", consumerUser!.id)
+        .eq("business_id", businessId);
+      expect(followed?.length).toBeGreaterThanOrEqual(1);
+    }).toPass({ timeout: 10000, intervals: [1000, 2000] });
 
     // Check DB: businesses.followers_count
     const { data: bizAfter } = await supabaseAdmin.from("businesses").select("followers_count").eq("id", businessId).single();
-    // expect(bizAfter?.followers_count).toBe(initialFollowers + 1);
-
-    // Click Save Contact
-    // Need to use the exact UI text rendered e.g. "Lưu"
-    const saveBtn = page.locator("button", { hasText: /Lưu|Save/i }).filter({ hasText: /danh bạ|contact|Lưu/i }).first();
-    await saveBtn.click();
-    await page.waitForTimeout(1500); // let db update
-    
-    // Check DB: saved_contacts
-    const { data: saved } = await supabaseAdmin
-      .from("saved_contacts")
-      .select("*")
-      .eq("contact_business_id", businessId)
-      .eq("user_id", ownerId);
-    // expect(saved?.length).toBeGreaterThanOrEqual(1);
+    expect(bizAfter?.followers_count).toBe(initialFollowers + 1);
   });
 });

@@ -72,6 +72,7 @@ export const getExploreBusinesses = createServerFn({ method: "GET" }).handler(as
       "id, name, slug, logo_url, country_code, lat, lng, views_count, icon_tier, status, short_intro, website, industries(name, slug), countries(name)",
     )
     .eq("status", "public")
+    .order("created_at", { ascending: false })
     .limit(1000);
 
   if (error) throw new Error(error.message);

@@ -39,23 +39,24 @@ export const Route = createFileRoute("/pricing")({
         content: i18n.t("pricing.ogTitle", { defaultValue: "Bảng giá — BizConnect.One" }),
       },
     ],
-    links: [{ rel: "canonical", href: "https://earth-biz-link.lovable.app/pricing" }],
+    links: [{ rel: "canonical", href: "https://bizconnect.one/pricing" }],
   }),
 });
 
 // ─── Bank config (update these with real info) ───────────────────────────────
 const BANK = {
-  name: "Vietcombank (VCB)",
-  account: "1234567890", // TODO: replace with real account number
-  owner: "CTY TNHH BIZCONNECT ONE", // TODO: replace with real account name
-  bin: "970436", // Vietcombank BIN for VietQR
+  name: "TPBank (Tiên Phong Bank)",
+  account: "00003554020",
+  owner: "LE TAN LOI",
+  bin: "970423", // TPBank BIN for VietQR
   vndRate: 1, // Direct VND payment
 };
 
 // Generate VietQR URL (https://vietqr.io/danh-sach-api/create-qr/)
 function vietQrUrl(amount: number, content: string, bankInfo: typeof BANK) {
   const vnd = amount * bankInfo.vndRate;
-  return `https://img.vietqr.io/image/${bankInfo.bin}-${bankInfo.account}-compact2.png?amount=${vnd}&addInfo=${encodeURIComponent(content)}&accountName=${encodeURIComponent(bankInfo.owner)}`;
+  const cleanAccount = bankInfo.account.replace(/\s+/g, "");
+  return `https://img.vietqr.io/image/${bankInfo.bin}-${cleanAccount}-compact2.png?amount=${vnd}&addInfo=${encodeURIComponent(content)}&accountName=${encodeURIComponent(bankInfo.owner)}`;
 }
 
 type PaymentTarget = {
@@ -72,6 +73,8 @@ function PricingPage() {
   const [showModal, setShowModal] = useState(false);
   const [target, setTarget] = useState<PaymentTarget | null>(null);
   const [userEmail, setUserEmail] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
+  const [bizId, setBizId] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -91,7 +94,16 @@ function PricingPage() {
       .eq("key", "bank_info")
       .single()
       .then(({ data }) => {
-        if (data?.value) setBankInfo({ ...BANK, ...(data.value as Record<string, any>) });
+        if (data?.value) {
+          const val = data.value as any;
+          setBankInfo({
+            ...BANK,
+            name: val.bank_name || BANK.name,
+            account: val.account_number || BANK.account,
+            owner: val.account_owner || BANK.owner,
+            bin: val.bin || BANK.bin,
+          });
+        }
       });
   }, []);
 
@@ -108,6 +120,16 @@ function PricingPage() {
       navigate({ to: "/login" });
       return;
     }
+    
+    // Check for business ID
+    const { data: businesses } = await supabase
+      .from("businesses")
+      .select("id")
+      .eq("owner_id", user.id)
+      .limit(1);
+    
+    setUserId(user.id);
+    setBizId(businesses?.[0]?.id ?? null);
     setTarget(planTarget);
     setReceiptUrl(null);
     setQrLoaded(false);
@@ -144,20 +166,13 @@ function PricingPage() {
     if (!user) return;
     setSubmitting(true);
     try {
-      const { data: businesses } = await supabase
-        .from("businesses")
-        .select("id")
-        .eq("owner_id", user.id)
-        .limit(1);
-      const businessId = businesses?.[0]?.id ?? null;
-
       const planId = target.subType ?? "membership";
 
       // Sử dụng hàm RPC bảo mật (Trust First) thay vì insert trực tiếp
       const { error: rpcErr } = await supabase.rpc("submit_manual_payment", {
         p_plan_id: planId,
         p_receipt_url: receiptUrl ?? "",
-        p_business_id: businessId,
+        p_business_id: bizId,
       });
 
       if (rpcErr) throw rpcErr;
@@ -172,7 +187,15 @@ function PricingPage() {
     }
   };
 
-  const paymentContent = target ? `BIZCONNECT ${target.name} ${userEmail}`.substring(0, 50) : "";
+  const generatePaymentContent = () => {
+    if (!target || !userId) return "";
+    const planId = (target.subType ?? "membership").toUpperCase();
+    const shortUser = userId.substring(0, 8).toUpperCase();
+    const shortBiz = bizId ? bizId.substring(0, 8).toUpperCase() : "";
+    return `BIZC ${planId} ${shortUser} ${shortBiz}`.trim();
+  };
+
+  const paymentContent = generatePaymentContent();
   const qrSrc = target ? vietQrUrl(target.price, paymentContent, bankInfo) : "";
 
   // ─── Plan definitions (using t) ─────────────────────────────────────────────────────────

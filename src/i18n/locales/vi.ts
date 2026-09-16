@@ -206,12 +206,12 @@ export default {
         cta: "Bắt đầu miễn phí",
       },
       bizBlock500: {
-        name: "Block B2B 500",
+        name: "Gói Giao Thương (+500)",
         badge: "LINH HOẠT",
-        desc: "Mở rộng giới hạn giao thương.",
+        desc: "Mở rộng giới hạn gửi danh thiếp và lưu danh bạ.",
         f1: "Thêm 500 lượt gửi danh thiếp",
         f2: "Thêm 500 sức chứa danh bạ",
-        f3: "Mua nhiều block linh hoạt (vd: 1000, 1500)",
+        f3: "Có thể mua nhiều lần cộng dồn",
         f4: "Theo dõi thống kê lượt quét thẻ",
         f5: "Tương tác qua Hộp thư nội bộ",
         f6: "Hỗ trợ kỹ thuật ưu tiên",
@@ -219,7 +219,7 @@ export default {
         period: "/năm",
       },
       bizIconPremium: {
-        name: "Icon Premium",
+        name: "Gói Icon Nổi Bật",
         desc: "Nổi bật trên bản đồ với icon lớn.",
         f1: "Icon 30% lớn hơn trên bản đồ",
         f2: "Viền gradient hồng động",
@@ -231,8 +231,8 @@ export default {
     },
     addons: {
       contactBlock: {
-        name: "Mở rộng danh bạ +500 liên hệ",
-        desc: "Thời hạn 1 năm.",
+        name: "Gói Danh Bạ (+500)",
+        desc: "Thêm 500 sức chứa danh bạ. Có thể mua nhiều lần cộng dồn. Hạn 1 năm.",
       },
     },
   },

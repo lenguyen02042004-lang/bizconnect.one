@@ -15,40 +15,28 @@ interface Props {
   className?: string;
 }
 
-// Stable pseudo-random count for mock (demo) businesses so UI doesn't show 0
-function mockSeedCount(id: string): number {
-  let h = 0;
-  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
-  return (h % 4800) + 120;
-}
-
 export function FollowButton({ businessId, initialCount, variant = "full", className }: Props) {
   const navigate = useNavigate();
-  const isRealBusiness = UUID_RE.test(businessId);
   const [following, setFollowing] = useState(false);
-  const [count, setCount] = useState<number>(
-    initialCount ?? (isRealBusiness ? 0 : mockSeedCount(businessId)),
-  );
+  const [count, setCount] = useState<number>(initialCount ?? 0);
   const [loading, setLoading] = useState(false);
 
   // Initial fetch: real follower count (from businesses.followers_count, publicly readable)
   // + whether current user follows. The follows table is now restricted, so the
   // denormalized count on businesses (maintained by DB trigger) is what we read.
   useEffect(() => {
-    if (!isRealBusiness) return;
     let active = true;
     (async () => {
       const [
         { data: biz },
-        {
-          data: { user },
-        },
+        sessionData
       ] = await Promise.all([
         supabase.from("businesses").select("followers_count").eq("id", businessId).maybeSingle(),
-        supabase.auth.getUser(),
+        supabase.auth.getSession(),
       ]);
       if (!active) return;
       if (biz && typeof biz.followers_count === "number") setCount(biz.followers_count);
+      const user = sessionData?.session?.user;
       if (user) {
         const { data } = await supabase
           .from("follows")
@@ -62,7 +50,7 @@ export function FollowButton({ businessId, initialCount, variant = "full", class
     return () => {
       active = false;
     };
-  }, [businessId, isRealBusiness]);
+  }, [businessId]);
 
   // Note: realtime subscription on `follows` intentionally removed — the
   // table is no longer part of the realtime publication to prevent leaking
@@ -75,22 +63,14 @@ export function FollowButton({ businessId, initialCount, variant = "full", class
     if (loading) return;
 
     const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      data: { session },
+    } = await supabase.auth.getSession();
+    const user = session?.user;
     if (!user) {
       toast.error("Vui lòng đăng nhập để theo dõi");
       navigate({ to: "/login" });
       return;
     }
-
-    if (!isRealBusiness) {
-      setFollowing((f) => {
-        setCount((c) => Math.max(0, c + (f ? -1 : 1)));
-        return !f;
-      });
-      return;
-    }
-
     setLoading(true);
     // Optimistic
     const wasFollowing = following;
@@ -109,13 +89,15 @@ export function FollowButton({ businessId, initialCount, variant = "full", class
         toast.error(error.message);
       }
     } else {
-      const { error } = await supabase
-        .from("follows")
-        .insert({ business_id: businessId, follower_id: user.id });
+      const { error } = await supabase.from("follows").insert({
+        business_id: businessId,
+        follower_id: user.id,
+      });
       if (error) {
+        console.error("Follow Insert Error:", error);
         setFollowing(false);
         setCount((c) => Math.max(0, c - 1));
-        toast.error(error.message);
+        toast.error("Có lỗi xảy ra: " + error.message);
       }
     }
     setLoading(false);

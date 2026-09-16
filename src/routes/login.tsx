@@ -39,9 +39,9 @@ export const Route = createFileRoute("/login")({
             "Đăng nhập để quản lý danh thiếp doanh nghiệp, hộp thư kết nối và danh bạ đối tác B2B toàn cầu.",
         }),
       },
-      { property: "og:url", content: "https://earth-biz-link.lovable.app/login" },
+      { property: "og:url", content: "https://bizconnect.one/login" },
     ],
-    links: [{ rel: "canonical", href: "https://earth-biz-link.lovable.app/login" }],
+    links: [{ rel: "canonical", href: "https://bizconnect.one/login" }],
   }),
 });
 

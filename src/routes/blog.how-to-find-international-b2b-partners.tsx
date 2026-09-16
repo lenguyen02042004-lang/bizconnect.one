@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Navbar } from "@/components/Navbar";
 
-const URL = "https://earth-biz-link.lovable.app/blog/how-to-find-international-b2b-partners";
+const URL = "https://bizconnect.one/blog/how-to-find-international-b2b-partners";
 const TITLE = "How to Find and Verify International B2B Partners (2026 Guide)";
 const DESCRIPTION =
   "A practical guide to finding, vetting and verifying international B2B partners using global business directories, trade registries and due-diligence checks.";
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/blog/how-to-find-international-b2b-partne
             name: "BizConnect.One",
             logo: {
               "@type": "ImageObject",
-              url: "https://earth-biz-link.lovable.app/favicon.ico",
+              url: "https://bizconnect.one/favicon.ico",
             },
           },
           mainEntityOfPage: URL,
