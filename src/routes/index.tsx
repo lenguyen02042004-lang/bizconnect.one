@@ -38,6 +38,9 @@ import {
   MoreHorizontal,
   Send,
   Users,
+  UserPlus,
+  QrCode,
+  FolderLock,
 } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
@@ -56,17 +59,17 @@ export const Route = createFileRoute("/")({
   component: HomePage,
   head: () => ({
     meta: [
-      { title: "BizConnect.One — Bản đồ doanh nghiệp toàn cầu 3D" },
+      { title: "BizConnect.One — Danh bạ doanh nghiệp toàn cầu 3D" },
       {
         name: "description",
         content:
-          "Bản đồ 3D tương tác kết nối hàng ngàn doanh nghiệp toàn cầu theo quốc gia và ngành nghề. Tạo danh thiếp online, gửi card visit và mở rộng đối tác B2B quốc tế chỉ từ $5/năm.",
+          "Danh bạ 3D tương tác kết nối hàng ngàn doanh nghiệp toàn cầu theo quốc gia và ngành nghề. Tạo danh thiếp online, gửi card visit và mở rộng đối tác B2B quốc tế chỉ từ $5/năm.",
       },
-      { property: "og:title", content: "BizConnect.One — Bản đồ doanh nghiệp toàn cầu 3D" },
+      { property: "og:title", content: "BizConnect.One — Danh bạ doanh nghiệp toàn cầu 3D" },
       {
         property: "og:description",
         content:
-          "Bản đồ 3D tương tác kết nối doanh nghiệp toàn cầu theo quốc gia & ngành nghề. Tạo danh thiếp online, gửi card visit, mở rộng đối tác B2B quốc tế.",
+          "Danh bạ 3D tương tác kết nối doanh nghiệp toàn cầu theo quốc gia & ngành nghề. Tạo danh thiếp online, gửi card visit, mở rộng đối tác B2B quốc tế.",
       },
       { property: "og:url", content: "https://bizconnect.one/" },
       {
@@ -86,6 +89,7 @@ export const Route = createFileRoute("/")({
     const [bizRes, listRes] = await Promise.all([getExploreBusinesses(), getGlobalLists()]);
     return {
       businesses: bizRes.businesses,
+      totalCount: bizRes.total,
       countries: listRes.countries,
       industries: listRes.industries,
     };
@@ -137,7 +141,7 @@ const ALL_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 function HomePage() {
-  const { businesses, countries, industries } = Route.useLoaderData();
+  const { businesses, totalCount, countries, industries } = Route.useLoaderData();
   const [selected, setSelected] = useState<any | null>(null);
   const [industry, setIndustry] = useState("all");
   const [country, setCountry] = useState("all");
@@ -156,10 +160,11 @@ function HomePage() {
   useEffect(() => setMounted(true), []);
 
   const counts = useMemo(() => {
+    if (stats?.industryCounts) return stats.industryCounts;
     const m: Record<string, number> = {};
     for (const b of businesses) m[b.industry_slug] = (m[b.industry_slug] || 0) + 1;
     return m;
-  }, [businesses]);
+  }, [businesses, stats?.industryCounts]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -213,7 +218,11 @@ function HomePage() {
               {t("home.heroTitlePrefix")}{" "}
               <span className="text-gradient">{t("home.heroTitleGradient")}</span>
             </h1>
-            <p className="mt-4 text-white/80 text-base sm:text-lg max-w-2xl mx-auto">
+            <div className="mt-4 inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm sm:text-base font-medium text-primary-glow backdrop-blur-md shadow-glow">
+              <Sparkles className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+              Hướng đến cộng đồng hơn 100k+ doanh nghiệp toàn cầu!
+            </div>
+            <p className="mt-5 text-white/80 text-base sm:text-lg max-w-2xl mx-auto">
               {t("home.heroSubtitle", { count: countries.length })}
             </p>
             <div className="mt-6 flex flex-wrap gap-3 justify-center pointer-events-auto">
@@ -354,7 +363,7 @@ function HomePage() {
             </h2>
 
             <p className="text-white/60 text-sm mb-5">
-              {t("home.searchFilterDesc", { count: businesses.length })}
+              {t("home.searchFilterDesc", { count: totalCount })}
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-2 p-2 bg-white/10 backdrop-blur-xl border border-white/15 rounded-2xl shadow-glow">
@@ -473,7 +482,7 @@ function HomePage() {
                   industry === "all" ? "text-primary-glow" : "text-white/60 hover:text-white"
                 }`}
               >
-                {t("home.showAll", { count: businesses.length })}
+                {t("home.showAll", { count: totalCount })}
               </button>
             </div>
 
@@ -513,9 +522,53 @@ function HomePage() {
             </div>
           </div>
 
+          {/* Features Section */}
+          <div className="mt-20 animate-fade-up" style={{ animationDelay: "0.2s" }}>
+            <div className="text-center mb-10">
+              <h2 className="text-2xl sm:text-3xl font-display font-bold text-white mb-3">
+                Danh bạ doanh nghiệp <span className="text-gradient">Ưu việt</span>
+              </h2>
+              <p className="text-white/70 max-w-2xl mx-auto">
+                Kết nối giao thương nhanh chóng chỉ với 3 bước đơn giản, lưu trữ an toàn không lo thất lạc.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-smooth group">
+                <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <UserPlus className="w-6 h-6 text-primary-glow" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">1. Tạo tài khoản</h3>
+                <p className="text-white/60 text-sm leading-relaxed">
+                  Đăng ký dễ dàng và tạo hồ sơ doanh nghiệp của bạn trong vòng chưa đầy 1 phút.
+                </p>
+              </div>
+
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-smooth group">
+                <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <QrCode className="w-6 h-6 text-primary-glow" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">2. Quét QR - Gửi danh thiếp</h3>
+                <p className="text-white/60 text-sm leading-relaxed">
+                  Trao đổi thông tin tức thì qua mã QR, gửi danh thiếp số để kết nối giao thương nhanh chóng.
+                </p>
+              </div>
+
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-smooth group">
+                <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <FolderLock className="w-6 h-6 text-primary-glow" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">3. Lưu trữ an toàn</h3>
+                <p className="text-white/60 text-sm leading-relaxed">
+                  Lưu hàng ngàn danh bạ vào một nơi duy nhất. Đảm bảo an toàn, không bao giờ lo thất lạc!
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Footer CTA */}
           <div
-            className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-3 text-center animate-fade-up"
+            className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-3 text-center animate-fade-up"
             style={{ animationDelay: "0.2s" }}
           >
             <Link to="/explore">

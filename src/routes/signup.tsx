@@ -23,7 +23,7 @@ export const Route = createFileRoute("/signup")({
         name: "description",
         content: i18n.t("auth.signupDesc", {
           defaultValue:
-            "Tạo tài khoản doanh nghiệp miễn phí trên BizConnect.One: thiết kế danh thiếp online, hiển thị trên bản đồ toàn cầu và kết nối với đối tác B2B quốc tế.",
+            "Tạo tài khoản doanh nghiệp miễn phí trên BizConnect.One: thiết kế danh thiếp online, hiển thị trên danh bạ toàn cầu và kết nối với đối tác B2B quốc tế.",
         }),
       },
       {
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/signup")({
         property: "og:description",
         content: i18n.t("auth.signupOgDesc", {
           defaultValue:
-            "Tạo tài khoản doanh nghiệp miễn phí: danh thiếp online, hiển thị trên bản đồ toàn cầu và kết nối đối tác B2B quốc tế.",
+            "Tạo tài khoản doanh nghiệp miễn phí: danh thiếp online, hiển thị trên danh bạ toàn cầu và kết nối đối tác B2B quốc tế.",
         }),
       },
       { property: "og:url", content: "https://bizconnect.one/signup" },

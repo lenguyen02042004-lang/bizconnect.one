@@ -19,11 +19,12 @@ export function CardFAB() {
   const [cardData, setCardData] = useState<CardData | null>(null);
   const [loadingCard, setLoadingCard] = useState(false);
 
-  // Don't render for unauthenticated users
-  if (!user) return null;
-
   const openMyCard = async () => {
     setExpanded(false);
+    if (!user) {
+      window.location.href = "/login";
+      return;
+    }
     if (cardData) {
       setShowCard(true);
       return;

@@ -36,7 +36,7 @@ export function FollowButton({ businessId, initialCount, variant = "full", class
       ]);
       if (!active) return;
       if (biz && typeof biz.followers_count === "number") setCount(biz.followers_count);
-      const user = sessionData?.session?.user;
+      const user = sessionData?.data?.session?.user;
       if (user) {
         const { data } = await supabase
           .from("follows")

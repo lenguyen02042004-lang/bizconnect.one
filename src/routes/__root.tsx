@@ -84,14 +84,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "referrer", content: "strict-origin-when-cross-origin" },
       {
         title: i18n.t("meta.homeTitle", {
-          defaultValue: "BizConnect.One — Bản đồ doanh nghiệp toàn cầu",
+          defaultValue: "BizConnect.One — Danh bạ doanh nghiệp toàn cầu",
         }),
       },
       {
         name: "description",
         content: i18n.t("meta.homeDesc", {
           defaultValue:
-            "Kết nối doanh nghiệp toàn cầu qua bản đồ tương tác 3D. Quảng bá thương hiệu, mở rộng giao thương quốc tế chỉ từ $5/năm.",
+            "Kết nối doanh nghiệp toàn cầu qua danh bạ tương tác 3D. Quảng bá thương hiệu, mở rộng giao thương quốc tế chỉ từ $5/năm.",
         }),
       },
       { name: "theme-color", content: "#c8102e" },
@@ -99,28 +99,28 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:title",
         content: i18n.t("meta.homeTitle", {
-          defaultValue: "BizConnect.One — Bản đồ doanh nghiệp toàn cầu",
+          defaultValue: "BizConnect.One — Danh bạ doanh nghiệp toàn cầu",
         }),
       },
       {
         property: "og:description",
         content: i18n.t("meta.homeDesc", {
           defaultValue:
-            "Kết nối doanh nghiệp toàn cầu qua bản đồ tương tác 3D. Quảng bá thương hiệu, mở rộng giao thương quốc tế chỉ từ $5/năm.",
+            "Kết nối doanh nghiệp toàn cầu qua danh bạ tương tác 3D. Quảng bá thương hiệu, mở rộng giao thương quốc tế chỉ từ $5/năm.",
         }),
       },
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "twitter:title",
         content: i18n.t("meta.homeTitle", {
-          defaultValue: "BizConnect.One — Bản đồ doanh nghiệp toàn cầu",
+          defaultValue: "BizConnect.One — Danh bạ doanh nghiệp toàn cầu",
         }),
       },
       {
         name: "twitter:description",
         content: i18n.t("meta.homeDesc", {
           defaultValue:
-            "Kết nối doanh nghiệp toàn cầu qua bản đồ tương tác 3D. Quảng bá thương hiệu, mở rộng giao thương quốc tế chỉ từ $5/năm.",
+            "Kết nối doanh nghiệp toàn cầu qua danh bạ tương tác 3D. Quảng bá thương hiệu, mở rộng giao thương quốc tế chỉ từ $5/năm.",
         }),
       },
       { property: "og:site_name", content: "BizConnect.One" },

@@ -31,7 +31,7 @@ export const Route = createFileRoute("/pricing")({
         name: "description",
         content: i18n.t("pricing.descMeta", {
           defaultValue:
-            "Chọn gói phù hợp: miễn phí để bắt đầu, B2B Premium $5/năm với 500 lượt gửi card chủ động, Icon Premium nổi bật trên bản đồ.",
+            "Chọn gói phù hợp: miễn phí để bắt đầu, B2B Premium $5/năm với 500 lượt gửi card chủ động, Icon Premium nổi bật trên danh bạ.",
         }),
       },
       {

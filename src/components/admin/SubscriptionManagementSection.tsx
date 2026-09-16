@@ -100,7 +100,7 @@ export function SubscriptionManagementSection() {
                 className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm"
               >
                 <option value="b2b_premium">B2B Premium (500 lượt gửi/năm)</option>
-                <option value="icon_premium">Icon Premium (icon lớn trên bản đồ)</option>
+                <option value="icon_premium">Icon Premium (icon lớn trên danh bạ)</option>
                 <option value="contact_block_addon">Mở rộng danh bạ (+500)</option>
               </select>
             </div>

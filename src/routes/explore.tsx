@@ -1,15 +1,13 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { Navbar } from "@/components/Navbar";
-import { MapView } from "@/components/MapView";
 import { BusinessCard } from "@/components/BusinessCard";
 import { FilterBar } from "@/components/FilterBar";
-import { FollowButton } from "@/components/FollowButton";
 import { getExploreBusinesses, getGlobalLists } from "@/lib/business-public.functions";
-import { formatCount } from "@/lib/format";
-import { Eye } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { ExploreCard } from "@/components/ExploreCard";
+import { Loader2 } from "lucide-react";
 
 const exploreSearchSchema = z.object({
   industry: z.string().optional(),
@@ -21,27 +19,36 @@ const exploreSearchSchema = z.object({
 export const Route = createFileRoute("/explore")({
   component: ExplorePage,
   validateSearch: (s) => exploreSearchSchema.parse(s),
-  loader: async () => {
-    const [bizRes, listRes] = await Promise.all([getExploreBusinesses(), getGlobalLists()]);
+  loaderDeps: ({ search }) => ({
+    country: search.country,
+    industry: search.industry,
+    q: search.q,
+  }),
+  loader: async ({ deps }) => {
+    const [bizRes, listRes] = await Promise.all([
+      getExploreBusinesses({ data: { page: 1, limit: 20, country: deps.country, industry: deps.industry, q: deps.q } }),
+      getGlobalLists()
+    ]);
     return {
-      businesses: bizRes.businesses,
+      initialBusinesses: bizRes.businesses,
+      totalCount: bizRes.total,
       countries: listRes.countries,
       industries: listRes.industries,
     };
   },
   head: () => ({
     meta: [
-      { title: "Khám phá doanh nghiệp trên bản đồ — BizConnect.One" },
+      { title: "Khám phá doanh nghiệp trên danh bạ - BizConnect.One" },
       {
         name: "description",
         content:
-          "Bản đồ 2D doanh nghiệp toàn cầu — lọc theo quốc gia, ngành nghề, tìm kiếm nhanh và theo dõi các doanh nghiệp phù hợp với bạn.",
+          "Danh bạ 2D doanh nghiệp toàn cầu - lọc theo quốc gia, ngành nghề, tìm kiếm nhanh và theo dõi các doanh nghiệp phù hợp với bạn.",
       },
-      { property: "og:title", content: "Khám phá doanh nghiệp trên bản đồ — BizConnect.One" },
+      { property: "og:title", content: "Khám phá doanh nghiệp trên danh bạ - BizConnect.One" },
       {
         property: "og:description",
         content:
-          "Bản đồ 2D doanh nghiệp toàn cầu — lọc theo quốc gia, ngành nghề, tìm kiếm nhanh và theo dõi các doanh nghiệp phù hợp với bạn.",
+          "Danh bạ 2D doanh nghiệp toàn cầu - lọc theo quốc gia, ngành nghề, tìm kiếm nhanh và theo dõi các doanh nghiệp phù hợp với bạn.",
       },
       { property: "og:url", content: "https://bizconnect.one/explore" },
     ],
@@ -52,105 +59,111 @@ export const Route = createFileRoute("/explore")({
 function ExplorePage() {
   const sp = Route.useSearch();
   const navigate = Route.useNavigate();
-  const { businesses, countries: dbCountries, industries: dbIndustries } = Route.useLoaderData();
+  const { initialBusinesses, totalCount, countries: dbCountries, industries: dbIndustries } = Route.useLoaderData();
   const { t } = useTranslation();
 
-  const [country, setCountry] = useState(sp.country ?? "all");
-  const [industry, setIndustry] = useState(sp.industry ?? "all");
-  const [search, setSearch] = useState(sp.q ?? "");
+  const country = sp.country ?? "all";
+  const industry = sp.industry ?? "all";
+  const search = sp.q ?? "";
+
+  const [businesses, setBusinesses] = useState(initialBusinesses);
+  const [page, setPage] = useState(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const hasMore = businesses.length < totalCount;
+
+  // Reset local state when loader changes initial data
+  useEffect(() => {
+    setBusinesses(initialBusinesses);
+    setPage(1);
+  }, [initialBusinesses]);
 
   const selectedSlug = sp.biz;
-  const selected = useMemo(
-    () => businesses.find((b) => b.slug === selectedSlug) || null,
-    [businesses, selectedSlug],
-  );
+  const selected = businesses.find((b) => b.slug === selectedSlug) || null;
 
   const handleSelect = (b: any | null) => {
     navigate({ search: (prev: any) => ({ ...prev, biz: b ? b.slug : undefined }), replace: true });
   };
 
-  const filtered = useMemo(
-    () =>
-      businesses.filter((b) => {
-        if (country !== "all" && b.country_code !== country) return false;
-        if (industry !== "all" && b.industry_slug !== industry) return false;
-        if (search && !b.name.toLowerCase().includes(search.toLowerCase())) return false;
-        return true;
-      }),
-    [businesses, country, industry, search],
-  );
+  const handleFilter = (key: string, value: string) => {
+    navigate({
+      search: (prev: any) => ({ ...prev, [key]: value || undefined, biz: undefined }),
+      replace: true,
+    });
+  };
+
+  const loadMore = async () => {
+    if (isLoadingMore || !hasMore) return;
+    setIsLoadingMore(true);
+    try {
+      const nextPage = page + 1;
+      const res = await getExploreBusinesses({
+        data: { page: nextPage, limit: 20, country: country, industry: industry, q: search },
+      });
+      setBusinesses((prev) => [...prev, ...res.businesses]);
+      setPage(nextPage);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="pt-16 h-screen flex flex-col lg:flex-row">
-        {/* Sidebar with filter + list */}
-        <aside className="w-full lg:w-96 flex-shrink-0 border-r border-border bg-card flex flex-col">
-          <div className="p-4 border-b border-border">
-            <h1 className="font-display text-2xl font-bold mb-1">{t("nav.explore")}</h1>
-            <p className="text-sm text-muted-foreground mb-3">
-              {filtered.length} {t("home.matchedBusinesses")}
-            </p>
+      <div className="pt-20 px-4 md:px-8 max-w-[1600px] mx-auto pb-20">
+        {/* Sticky Header & Filter Bar */}
+        <div className="sticky top-16 z-30 bg-background/90 backdrop-blur-xl py-6 mb-8 border-b border-border/50">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
+            <div className="text-center md:text-left">
+              <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight mb-2 text-gradient">
+                {t("nav.explore")}
+              </h1>
+              <p className="text-muted-foreground text-sm">
+                {totalCount} {t("home.matchedBusinesses")}
+              </p>
+            </div>
+          </div>
+          
+          <div className="max-w-4xl mx-auto md:mx-0">
             <FilterBar
               countries={dbCountries as any}
               industries={dbIndustries as any}
               country={country}
               industry={industry}
               search={search}
-              onCountry={setCountry}
-              onIndustry={setIndustry}
-              onSearch={setSearch}
+              onCountry={(v) => handleFilter('country', v === 'all' ? '' : v)}
+              onIndustry={(v) => handleFilter('industry', v === 'all' ? '' : v)}
+              onSearch={(v) => handleFilter('q', v)}
             />
           </div>
-          <div className="flex-1 overflow-y-auto p-3 space-y-2">
-            {filtered.map((b) => (
-              <div
-                key={b.id}
-                onClick={() => handleSelect(b)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSelect(b);
-                }}
-                className="w-full text-left p-3 rounded-2xl bg-background hover:bg-accent transition-smooth border border-border/40 hover:border-primary/40 hover:shadow-soft flex gap-3 items-center cursor-pointer"
-              >
-                <div
-                  className={
-                    b.icon_tier === "premium" ? "ring-premium flex-shrink-0" : "flex-shrink-0"
-                  }
-                >
-                  <img
-                    src={b.logo_url}
-                    alt={`Logo ${b.name}`}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-12 h-12 rounded-full bg-white object-cover"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm truncate">{b.name}</p>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {[
-                      b.country_name,
-                      b.industry_slug ? t(`industry.${b.industry_slug}`, { defaultValue: b.industry }) : "",
-                    ]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </p>
-                  <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
-                    <Eye className="w-3 h-3" /> {formatCount(b.views_count)}
-                  </p>
-                </div>
-                <FollowButton businessId={b.id} variant="icon" className="shrink-0" />
-              </div>
-            ))}
-          </div>
-        </aside>
+        </div>
 
-        {/* Map */}
-        <main className="flex-1 relative">
-          <MapView businesses={filtered} onSelect={handleSelect} />
-        </main>
+        {/* Dynamic Card Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {businesses.map((b) => (
+            <ExploreCard key={b.id} business={b} onSelect={() => handleSelect(b)} />
+          ))}
+          {businesses.length === 0 && (
+            <div className="col-span-full py-20 text-center text-muted-foreground">
+              <p>Không tìm thấy doanh nghiệp nào phù hợp với tiêu chí lọc.</p>
+            </div>
+          )}
+        </div>
+
+        {/* Load More */}
+        {hasMore && (
+          <div className="flex justify-center mt-12 mb-8">
+            <button
+              onClick={loadMore}
+              disabled={isLoadingMore}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-card border border-border/50 hover:bg-accent hover:border-primary/50 transition-all font-medium disabled:opacity-50"
+            >
+              {isLoadingMore && <Loader2 className="w-4 h-4 animate-spin" />}
+              {isLoadingMore ? "Đang tải..." : "Tải thêm"}
+            </button>
+          </div>
+        )}
       </div>
       {selected && <BusinessCard business={selected} onClose={() => handleSelect(null)} />}
     </div>

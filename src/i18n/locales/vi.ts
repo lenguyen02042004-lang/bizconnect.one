@@ -1,6 +1,6 @@
 export default {
   nav: {
-    map: "Bản đồ",
+    map: "Danh bạ",
     explore: "Khám phá",
     countries: "Quốc gia",
     pricing: "Bảng giá",
@@ -25,13 +25,13 @@ export default {
     loading: "Đang tải...",
   },
   home: {
-    tagline: "Bản đồ doanh nghiệp toàn cầu",
-    heroTitlePrefix: "Bản đồ doanh nghiệp",
+    tagline: "Danh bạ doanh nghiệp toàn cầu",
+    heroTitlePrefix: "Danh bạ doanh nghiệp",
     heroTitleGradient: "toàn cầu",
     heroSubtitle:
       "Kết nối, gửi danh thiếp online và mở rộng đối tác B2B trên hơn {{count}}+ quốc gia.",
     exploreBtn: "Khám phá ngay",
-    map2dBtn: "Bản đồ 2D",
+    map2dBtn: "Khám phá",
     worldwideB2BMap: "Worldwide B2B Map",
     searchFilterTitle: "Tìm doanh nghiệp trên khắp",
     searchFilterGradient: "thế giới",
@@ -43,10 +43,10 @@ export default {
     statsBusinesses: "Doanh nghiệp",
     statsConnections: "Lượt kết nối card",
     statsCountries: "Quốc gia",
-    industriesTitle: "Ngành nghề trên bản đồ",
+    industriesTitle: "Ngành nghề trên danh bạ",
     showAll: "Hiện tất cả ({{count}})",
     businessUnit: "DN",
-    footerCtaMap: "Mở bản đồ 2D đầy đủ",
+    footerCtaMap: "Khám phá danh bạ đầy đủ",
     footerCtaRegister: "Đăng ký doanh nghiệp của bạn",
     scrollHint: "Tìm kiếm & Ngành nghề",
     loadingGlobe: "Đang tải quả địa cầu...",
@@ -75,9 +75,9 @@ export default {
   auth: {
     signupTitle: "Đăng ký doanh nghiệp miễn phí — BizConnect.One",
     signupDesc:
-      "Tạo tài khoản doanh nghiệp miễn phí trên BizConnect.One: thiết kế danh thiếp online, hiển thị trên bản đồ toàn cầu và kết nối với đối tác B2B quốc tế.",
+      "Tạo tài khoản doanh nghiệp miễn phí trên BizConnect.One: thiết kế danh thiếp online, hiển thị trên danh bạ toàn cầu và kết nối với đối tác B2B quốc tế.",
     signupOgDesc:
-      "Tạo tài khoản doanh nghiệp miễn phí: danh thiếp online, hiển thị trên bản đồ toàn cầu và kết nối đối tác B2B quốc tế.",
+      "Tạo tài khoản doanh nghiệp miễn phí: danh thiếp online, hiển thị trên danh bạ toàn cầu và kết nối đối tác B2B quốc tế.",
     signupSuccess: "Đăng ký thành công!",
     signupHeading: "Bắt đầu miễn phí",
     signupSubheading: "Chọn loại tài khoản và tham gia mạng lưới giao thương toàn cầu",
@@ -124,9 +124,9 @@ export default {
     backToLogin: "← Quay lại đăng nhập",
   },
   meta: {
-    homeTitle: "BizConnect.One — Bản đồ doanh nghiệp toàn cầu",
+    homeTitle: "BizConnect.One — Danh bạ doanh nghiệp toàn cầu",
     homeDesc:
-      "Mạng lưới kết nối B2B và bản đồ doanh nghiệp. Tạo danh thiếp công ty và mở rộng cơ hội kinh doanh toàn cầu.",
+      "Mạng lưới kết nối B2B và danh bạ doanh nghiệp. Tạo danh thiếp công ty và mở rộng cơ hội kinh doanh toàn cầu.",
   },
   settings: {
     title: "Cài đặt tài khoản",
@@ -151,7 +151,7 @@ export default {
   pricing: {
     titleMeta: "Bảng giá gói thành viên — BizConnect.One",
     descMeta:
-      "Chọn gói phù hợp: miễn phí để bắt đầu, B2B Premium 150k/năm với 500 lượt gửi card chủ động, Icon Premium nổi bật trên bản đồ.",
+      "Chọn gói phù hợp: miễn phí để bắt đầu, B2B Premium 150k/năm với 500 lượt gửi card chủ động, Thẻ nổi bật hơn trên danh bạ.",
     ogTitle: "Bảng giá — BizConnect.One",
     loginToUpgrade: "Vui lòng đăng nhập để nâng cấp",
     uploadSuccess: "Đã tải biên lai lên thành công",
@@ -197,10 +197,10 @@ export default {
       },
       bizFree: {
         name: "Doanh nghiệp Miễn phí",
-        desc: "Tạo profile, hiển thị lên bản đồ.",
+        desc: "Tạo profile, hiển thị lên danh bạ.",
         f1: "Lưu tối đa 200 danh bạ",
         f2: "200 lượt gửi card/năm",
-        f3: "Hiển thị trên bản đồ toàn cầu",
+        f3: "Hiển thị trên danh bạ toàn cầu",
         f4: "Trang chi tiết + Mã QR",
         f5: "Lọc & tìm kiếm",
         cta: "Bắt đầu miễn phí",
@@ -220,8 +220,8 @@ export default {
       },
       bizIconPremium: {
         name: "Gói Icon Nổi Bật",
-        desc: "Nổi bật trên bản đồ với icon lớn.",
-        f1: "Icon 30% lớn hơn trên bản đồ",
+        desc: "Nổi bật trên danh bạ với thẻ lớn hơn.",
+        f1: "Thẻ nổi bật 30% trong danh bạ",
         f2: "Viền gradient hồng động",
         f3: "Thứ hạng cao hơn trong tìm kiếm",
         f4: "Huy hiệu Premium",
@@ -301,7 +301,7 @@ export default {
     yourBiz: "Doanh nghiệp của bạn",
     addBiz: "Thêm mới",
     createFirstTitle: "Tạo danh thiếp doanh nghiệp đầu tiên",
-    createFirstDesc: "Đưa doanh nghiệp lên bản đồ thế giới chỉ trong 2 phút.",
+    createFirstDesc: "Đưa doanh nghiệp lên danh bạ thế giới chỉ trong 2 phút.",
     createFirstBtn: "Bắt đầu tạo",
     statusPublic: "Công khai",
     statusDraft: "Bản nháp",

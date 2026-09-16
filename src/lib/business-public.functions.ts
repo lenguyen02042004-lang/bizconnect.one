@@ -64,21 +64,53 @@ export const getBusinessBySlug = createServerFn({ method: "GET" })
     };
   });
 
-export const getExploreBusinesses = createServerFn({ method: "GET" }).handler(async () => {
-  const { supabase } = await import("@/integrations/supabase/client");
-  const { data: bizes, error } = await supabase
-    .from("businesses")
-    .select(
-      "id, name, slug, logo_url, country_code, lat, lng, views_count, icon_tier, status, short_intro, website, industries(name, slug), countries(name)",
-    )
-    .eq("status", "public")
-    .order("created_at", { ascending: false })
-    .limit(1000);
+export const getExploreBusinesses = createServerFn({ method: "GET" })
+  .inputValidator((input: any) =>
+    z.object({
+      page: z.number().optional().default(1),
+      limit: z.number().optional().default(20),
+      country: z.string().optional(),
+      industry: z.string().optional(),
+      q: z.string().optional(),
+    }).parse(input || {})
+  )
+  .handler(async ({ data: input }) => {
+    const { supabase } = await import("@/integrations/supabase/client");
+    let query = supabase
+      .from("businesses")
+      .select(
+        "id, name, slug, logo_url, country_code, lat, lng, views_count, icon_tier, status, short_intro, website, industries(name, slug), countries(name)",
+        { count: 'exact' }
+      )
+      .eq("status", "public");
 
-  if (error) throw new Error(error.message);
+    if (input.country && input.country !== "all") {
+      query = query.eq("country_code", input.country);
+    }
+    
+    if (input.industry && input.industry !== "all") {
+      const { data: ind } = await supabase.from("industries").select("id").eq("slug", input.industry).maybeSingle();
+      if (ind) {
+        query = query.eq("industry_id", ind.id);
+      }
+    }
+    
+    if (input.q) {
+      query = query.ilike("name", `%${input.q}%`);
+    }
 
-  return {
-    businesses: (bizes ?? []).map((biz) => ({
+    const from = (input.page - 1) * input.limit;
+    const to = from + input.limit - 1;
+
+    const { data: bizes, error, count } = await query
+      .order("created_at", { ascending: false })
+      .range(from, to);
+  
+    if (error) throw new Error(error.message);
+  
+    return {
+      total: count || 0,
+      businesses: (bizes ?? []).map((biz) => ({
       id: biz.id,
       name: biz.name,
       slug: biz.slug,

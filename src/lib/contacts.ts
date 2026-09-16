@@ -14,6 +14,8 @@ export async function saveBusinessContact(b: BusinessProfile) {
     {
       user_id: user.id,
       business_id: b.id,
+      business_name: b.name,
+      business_slug: b.slug,
       website: b.website || null,
       logo_url: b.logo_url || null,
     },
