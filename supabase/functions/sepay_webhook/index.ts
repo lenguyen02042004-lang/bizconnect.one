@@ -38,7 +38,13 @@ serve(async (req) => {
       return new Response(JSON.stringify({ success: true, ignored: true, reason: "Not a BIZC transaction" }), { status: 200 });
     }
 
-    const planId = match[1].toLowerCase(); // e.g. b2b_block_500
+    let planId = match[1].toLowerCase(); // e.g. b2b_block_500
+    
+    // Fix missing underscores caused by some banks stripping them
+    if (planId === "b2bblock500") planId = "b2b_block_500";
+    if (planId === "contactblockaddon") planId = "contact_block_addon";
+    if (planId === "iconpremium") planId = "icon_premium";
+
     const shortUserId = match[2].toLowerCase(); // 8 chars
     const shortBizId = match[3] ? match[3].toLowerCase() : null; // 8 chars
 
