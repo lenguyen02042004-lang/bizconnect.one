@@ -360,10 +360,21 @@ function MePage() {
                   <p className="font-bold text-xl leading-tight truncate text-foreground">
                     {form.full_name || t("me.defaultName")}
                   </p>
-                  <p className="text-sm text-muted-foreground truncate mt-1">
-                    {[form.job_title, form.company_name].filter(Boolean).join(" tại ") ||
-                      t("me.defaultJob")}
-                  </p>
+                  {form.job_title && (
+                    <p className="text-sm font-medium text-foreground/80 mt-1 truncate">
+                      {form.job_title}
+                    </p>
+                  )}
+                  {form.company_name && (
+                    <p className="text-xs text-muted-foreground mt-0.5 px-2 break-words line-clamp-2 leading-relaxed">
+                      {form.company_name}
+                    </p>
+                  )}
+                  {!form.job_title && !form.company_name && (
+                    <p className="text-sm text-muted-foreground mt-1 truncate">
+                      {t("me.defaultJob")}
+                    </p>
+                  )}
                   <div className="flex flex-wrap justify-center gap-2 mt-4 max-w-sm mx-auto">
                     {form.phone && (
                       <span className="inline-flex items-center gap-1.5 text-xs bg-muted/50 px-2.5 py-1.5 rounded-md text-foreground">
