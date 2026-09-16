@@ -36,11 +36,35 @@ export function SubscriptionWidget() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getFn()
-      .then(setData)
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+    let active = true;
+    const load = () => {
+      getFn()
+        .then((res) => { if (active) setData(res); })
+        .catch(() => {})
+        .finally(() => { if (active) setLoading(false); });
+    };
+
+    load();
+
+    const channel = supabase
+      .channel("sub_widget_changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "subscriptions" },
+        () => load()
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "message_quotas" },
+        () => load()
+      )
+      .subscribe();
+
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+    };
+  }, [getFn]);
 
   if (loading)
     return (

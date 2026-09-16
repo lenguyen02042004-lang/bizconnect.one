@@ -134,7 +134,28 @@ function ContactsPage() {
   };
 
   useEffect(() => {
-    load();
+    let active = true;
+
+    const doLoad = async () => {
+      if (active) await load();
+    };
+    doLoad();
+
+    const channel = supabase
+      .channel("contacts_wallet_changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "message_quotas" },
+        () => {
+          doLoad();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const handleRemove = async (id: string) => {
