@@ -16,7 +16,7 @@ import {
 import { SubscriptionWidget } from "@/components/SubscriptionWidget";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { Loader2, Save, Eye, Printer, Share2, Copy, Phone, Mail, MessageCircle } from "lucide-react";
+import { Loader2, Save, Eye, Printer, Share2, Copy, Phone, Mail, MessageCircle, Facebook, Linkedin } from "lucide-react";
 
 export const Route = createFileRoute("/me")({
   component: MePage,
@@ -384,6 +384,22 @@ function MePage() {
                         <Mail className="w-3 h-3 text-muted-foreground flex-shrink-0" />
                         <span className="truncate">{form.email}</span>
                       </span>
+                    )}
+                    {(form.facebook_url || form.linkedin_url) && (
+                      <div className="flex w-full justify-center gap-2 mt-1">
+                        {form.facebook_url && (
+                          <span className="inline-flex items-center gap-1.5 text-xs bg-blue-500/10 px-2.5 py-1.5 rounded-md text-blue-700 dark:text-blue-400">
+                            <Facebook className="w-3 h-3 text-blue-500" />
+                            Facebook
+                          </span>
+                        )}
+                        {form.linkedin_url && (
+                          <span className="inline-flex items-center gap-1.5 text-xs bg-blue-600/10 px-2.5 py-1.5 rounded-md text-blue-800 dark:text-blue-500">
+                            <Linkedin className="w-3 h-3 text-blue-600" />
+                            LinkedIn
+                          </span>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
