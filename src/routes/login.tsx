@@ -68,9 +68,14 @@ function LoginPage() {
           .eq("id", data.user.id)
           .single();
 
-        setLoading(false);
-        toast.success(t("auth.loginSuccess"));
-        navigate({ to: profile?.account_type === "personal" ? "/me" : "/dashboard" });
+        if (profile) {
+          setLoading(false);
+          toast.success(t("auth.loginSuccess"));
+          navigate({ to: "/dashboard" });
+        } else {
+          setLoading(false);
+          navigate({ to: "/dashboard" });
+        }
       } else {
         setLoading(false);
         navigate({ to: "/dashboard" });

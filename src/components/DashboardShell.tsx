@@ -45,7 +45,7 @@ const TABS: TabDef[] = [
     icon: LayoutDashboard,
     match: (p) => p === "/dashboard",
     group: "main",
-    allowType: "business",
+    allowType: "both",
   },
   {
     to: "/inbox",

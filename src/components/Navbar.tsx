@@ -67,11 +67,11 @@ export function Navbar() {
           {!loading && user ? (
             <>
               <InboxBell />
-              <Link to={accountType === "personal" ? "/me" : "/dashboard"}>
+              <Link to="/dashboard">
                 <Button variant="ghost" size="sm" className="gap-2">
                   <LayoutDashboard className="w-4 h-4" />{" "}
                   <span className="hidden sm:inline" suppressHydrationWarning>
-                    {accountType === "personal" ? t("nav.personal") : t("nav.dashboard")}
+                    {t("nav.dashboard")}
                   </span>
                 </Button>
               </Link>
