@@ -97,7 +97,7 @@ const TABS: TabDef[] = [
   },
   {
     to: "/me",
-    label: "Hồ sơ cá nhân",
+    label: "Danh thiếp cá nhân",
     icon: IdCard,
     match: (p) => p.startsWith("/me"),
     group: "main",
