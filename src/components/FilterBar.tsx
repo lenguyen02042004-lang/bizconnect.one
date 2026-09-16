@@ -32,8 +32,8 @@ export function FilterBar({
 }: Props) {
   const { t } = useTranslation();
   return (
-    <div className="glass rounded-2xl p-3 flex flex-col sm:flex-row gap-2 shadow-card">
-      <div className="relative flex-1">
+    <div className="bg-background/80 backdrop-blur-md border border-border/40 rounded-2xl p-3 flex flex-col sm:flex-row gap-2 shadow-card">
+      <div className="relative flex-1 group">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
           placeholder={t("common.search")}
