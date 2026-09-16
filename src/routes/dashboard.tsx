@@ -40,6 +40,17 @@ export const Route = createFileRoute("/dashboard")({
   head: () => ({ meta: [{ title: "Bảng điều khiển — BizConnect.One" }] }),
 });
 
+type PersonalProfile = {
+  id: string;
+  slug: string;
+  full_name: string;
+  job_title: string | null;
+  company_name: string | null;
+  avatar_url: string | null;
+  views_count: number;
+  followers_count: number;
+};
+
 type Biz = {
   id: string;
   slug: string;
@@ -71,6 +82,7 @@ function Dashboard() {
     email: string | null;
     account_type?: string;
   } | null>(null);
+  const [personalProfile, setPersonalProfile] = useState<PersonalProfile | null>(null);
   const [businesses, setBusinesses] = useState<Biz[]>([]);
   const [loadingBiz, setLoadingBiz] = useState(true);
   const [stats, setStats] = useState<Stats>({
@@ -89,6 +101,7 @@ function Dashboard() {
       const [
         { data: prof },
         { data: bizes },
+        { data: pProfile },
         { count: contactsCount },
         { count: followingCount },
         myQuotaRes,
@@ -107,6 +120,11 @@ function Dashboard() {
           .eq("owner_id", user.id)
           .order("created_at", { ascending: false }),
         supabase
+          .from("personal_profiles")
+          .select("id, slug, full_name, job_title, company_name, avatar_url, views_count, followers_count")
+          .eq("id", user.id)
+          .maybeSingle(),
+        supabase
           .from("saved_contacts")
           .select("*", { count: "exact", head: true })
           .eq("user_id", user.id),
@@ -119,11 +137,8 @@ function Dashboard() {
       ]);
       if (cancelled) return;
 
-      if ((prof as any)?.account_type === "personal") {
-        navigate({ to: "/me" });
-        return;
-      }
       setProfile(prof as any);
+      setPersonalProfile(pProfile as any);
 
       // Hide system-seeded demo businesses from the user's own dashboard
       const list = ((bizes ?? []) as Biz[]).filter((b) => !b.id.startsWith(DEMO_OWNER_PREFIX));
@@ -146,18 +161,18 @@ function Dashboard() {
       cancelled = true;
     };
   }, [user, navigate]);
-  const totalViews = useMemo(
-    () => businesses.reduce((s, b) => s + (b.views_count ?? 0), 0),
-    [businesses],
-  );
-  const totalFollowers = useMemo(
-    () => businesses.reduce((s, b) => s + (b.followers_count ?? 0), 0),
-    [businesses],
-  );
+  const totalViews = useMemo(() => {
+    if (profile?.account_type === "personal") return personalProfile?.views_count ?? 0;
+    return businesses.reduce((s, b) => s + (b.views_count ?? 0), 0);
+  }, [businesses, profile, personalProfile]);
+  const totalFollowers = useMemo(() => {
+    if (profile?.account_type === "personal") return personalProfile?.followers_count ?? 0;
+    return businesses.reduce((s, b) => s + (b.followers_count ?? 0), 0);
+  }, [businesses, profile, personalProfile]);
   const publicBiz = businesses.find((b) => b.status === "public");
 
-  const shareLink = async (slug: string) => {
-    const url = `${window.location.origin}/business/${slug}`;
+  const shareLink = async (slug: string, isPersonal = false) => {
+    const url = `${window.location.origin}/${isPersonal ? "p" : "business"}/${slug}`;
     try {
       if (navigator.share) await navigator.share({ url, title: t("dashboard.yourLink") });
       else {
@@ -169,8 +184,8 @@ function Dashboard() {
     }
   };
 
-  const copyLink = async (slug: string) => {
-    await navigator.clipboard.writeText(`${window.location.origin}/business/${slug}`);
+  const copyLink = async (slug: string, isPersonal = false) => {
+    await navigator.clipboard.writeText(`${window.location.origin}/${isPersonal ? "p" : "business"}/${slug}`);
     toast.success(t("dashboard.copied"));
   };
 
@@ -181,7 +196,13 @@ function Dashboard() {
       })}
       subtitle={t("dashboard.subtitle")}
       actions={
-        businesses.length === 0 ? (
+        profile?.account_type === "personal" ? (
+          <Link to="/me">
+            <Button size="sm" className="gap-1.5 bg-gradient-vivid text-white border-0 shadow-pink">
+              <Pencil className="w-4 h-4" /> {t("dashboard.personalCard", "Sửa thẻ cá nhân")}
+            </Button>
+          </Link>
+        ) : businesses.length === 0 ? (
           <Link to="/business/edit">
             <Button size="sm" className="gap-1.5 bg-gradient-vivid text-white border-0 shadow-pink">
               <Plus className="w-4 h-4" /> {t("dashboard.createCard")}
@@ -257,7 +278,7 @@ function Dashboard() {
         />
       </div>
 
-      {publicBiz && (
+      {(publicBiz || (profile?.account_type === "personal" && personalProfile?.slug)) && (
         <div className="mb-8 rounded-2xl border border-border bg-gradient-to-br from-card to-accent/40 p-5 flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
@@ -265,21 +286,23 @@ function Dashboard() {
             </div>
             <div className="min-w-0">
               <p className="text-sm font-semibold">{t("dashboard.yourLink")}</p>
-              <p className="text-xs text-muted-foreground truncate">/business/{publicBiz.slug}</p>
+              <p className="text-xs text-muted-foreground truncate">
+                {profile?.account_type === "personal" ? `/p/${personalProfile?.slug}` : `/business/${publicBiz?.slug}`}
+              </p>
             </div>
           </div>
           <div className="flex gap-2">
             <Button
               size="sm"
               variant="outline"
-              onClick={() => copyLink(publicBiz.slug)}
+              onClick={() => copyLink(profile?.account_type === "personal" ? personalProfile!.slug : publicBiz!.slug, profile?.account_type === "personal")}
               className="gap-1.5"
             >
               <Copy className="w-3.5 h-3.5" /> {t("dashboard.copy")}
             </Button>
             <Button
               size="sm"
-              onClick={() => shareLink(publicBiz.slug)}
+              onClick={() => shareLink(profile?.account_type === "personal" ? personalProfile!.slug : publicBiz!.slug, profile?.account_type === "personal")}
               className="gap-1.5 bg-gradient-vivid text-white border-0"
             >
               <Share2 className="w-3.5 h-3.5" /> {t("dashboard.share")}
