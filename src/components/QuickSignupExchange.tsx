@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { slugifyName } from "@/lib/personal-card";
+import { slugifyProfile } from "@/lib/personal-card";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,7 +50,7 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
     }
 
     const userId = authData.user.id;
-    const slug = slugifyName(displayName) + "-" + Math.floor(Math.random() * 1000);
+    const slug = slugifyProfile(displayName) + "-" + Math.floor(Math.random() * 1000);
 
     // 2. Update auth profile
     await supabase
