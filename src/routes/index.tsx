@@ -218,7 +218,7 @@ function HomePage() {
               {t("home.heroTitlePrefix")}{" "}
               <span className="text-gradient">{t("home.heroTitleGradient")}</span>
             </h1>
-            <div className="mt-4 inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm sm:text-base font-medium text-primary-glow backdrop-blur-md shadow-glow">
+            <div className="mt-4 inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-base sm:text-lg font-medium text-white backdrop-blur-md shadow-glow">
               <Sparkles className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               Hướng đến cộng đồng hơn 100k+ doanh nghiệp toàn cầu!
             </div>
