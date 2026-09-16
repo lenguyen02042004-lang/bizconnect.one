@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
@@ -8,7 +9,7 @@ const supabaseServiceRole = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 const supabase = createClient(supabaseUrl, supabaseServiceRole);
 
-serve(async (req) => {
+serve(async (req: Request) => {
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
   }
@@ -27,11 +28,12 @@ serve(async (req) => {
     }
 
     // Parse BIZC {PLAN_ID} {USER_SHORT_ID} [BIZ_SHORT_ID]
-    // Example 1: BIZC CONTACT_BLOCK_ADDON 550E8400
+    // Example 1: BIZC MEMBERSHIP 550E8400
     // Example 2: BIZC ICON_PREMIUM 550E8400 AABBCCDD
     // Example 3: BIZC B2B_BLOCK_500 550E8400
     
-    const match = content.match(/BIZC\s+([A-Z0-9_]+)\s+([A-Z0-9]+)(?:\s+([A-Z0-9]+))?/);
+    // We strictly match 8 characters for user ID and optional 8 characters for biz ID.
+    const match = content.match(/BIZC\s+([A-Z0-9_]+)\s+([A-Z0-9]{8})(?:\s+([A-Z0-9]{8})\b)?/i);
     
     if (!match) {
       console.log("Ignoring non-bizconnect transfer:", content);

@@ -16,9 +16,8 @@ export type PersonalProfile = {
   is_public: boolean;
 };
 
-export function slugifyProfile(name: string, job?: string | null, company?: string | null): string {
-  const text = [name, job, company].filter(Boolean).join(" ");
-  const base = text
+export function slugifyProfile(name: string): string {
+  const base = name
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/đ/g, "d")
@@ -26,8 +25,10 @@ export function slugifyProfile(name: string, job?: string | null, company?: stri
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
-    .slice(0, 100);
-  const suffix = Math.random().toString(36).slice(2, 6);
+    .slice(0, 60);
+  
+  // Use a numeric suffix for cleaner looking URLs (e.g. 5 random digits)
+  const suffix = Math.floor(10000 + Math.random() * 90000).toString();
   return `${base || "card"}-${suffix}`;
 }
 
@@ -66,7 +67,7 @@ export async function upsertMyPersonalProfile(input: PersonalCardInput) {
   const existing = await getMyPersonalProfile();
   const payload = {
     user_id: user.id,
-    slug: existing?.slug ?? slugifyProfile(input.full_name, input.job_title, input.company_name),
+    slug: existing?.slug ?? slugifyProfile(input.full_name),
     full_name: input.full_name,
     job_title: input.job_title || null,
     company_name: input.company_name || null,
