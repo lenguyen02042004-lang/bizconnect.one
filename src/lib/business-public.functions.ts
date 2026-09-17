@@ -140,9 +140,21 @@ export const getExploreBusinesses = createServerFn({ method: "GET" })
 
 export const getGlobalLists = createServerFn({ method: "GET" }).handler(async () => {
   const { supabase } = await import("@/integrations/supabase/client");
+  
+  // Get all countries and industries
   const [{ data: countries }, { data: industries }] = await Promise.all([
     supabase.from("countries").select("code, name, flag").order("name"),
     supabase.from("industries").select("slug, name, icon").order("name"),
   ]);
-  return { countries: countries ?? [], industries: industries ?? [] };
+
+  // Fetch only distinct country codes that have public businesses
+  const { data: activeBizes } = await supabase
+    .from("businesses")
+    .select("country_code")
+    .eq("status", "public");
+
+  const activeCodes = new Set(activeBizes?.map(b => b.country_code) || []);
+  const activeCountries = (countries ?? []).filter(c => activeCodes.has(c.code));
+
+  return { countries: activeCountries, industries: industries ?? [] };
 });

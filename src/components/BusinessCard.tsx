@@ -167,8 +167,8 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
       <div
         className={
           mode === "modal"
-            ? "relative w-full max-w-md md:max-w-2xl max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-2rem)] rounded-2xl sm:rounded-3xl bg-card shadow-glow border border-border/40 flex flex-col overflow-hidden"
-            : "relative w-full max-w-md md:max-w-2xl mx-auto rounded-2xl sm:rounded-3xl bg-card shadow-glow border border-border/40 flex flex-col overflow-hidden"
+            ? "relative w-full max-w-md md:max-w-2xl max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-2rem)] rounded-3xl bg-background/95 backdrop-blur-xl shadow-2xl border border-white/10 flex flex-col overflow-hidden ring-1 ring-black/5"
+            : "relative w-full max-w-md md:max-w-2xl mx-auto rounded-3xl bg-background/95 backdrop-blur-xl shadow-2xl border border-white/10 flex flex-col overflow-hidden ring-1 ring-black/5"
         }
       >
         {/* Close button */}
@@ -186,83 +186,85 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
         <div className="relative shrink-0 overflow-hidden">
           {/* Background: banner or gradient */}
           {business.banner_url ? (
-            <img
-              src={business.banner_url || undefined}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              className="absolute inset-0 w-full h-full object-cover"
-            />
+            <div className="absolute inset-0">
+              <img
+                src={business.banner_url || undefined}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+            </div>
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-[#c8102e] via-[#9b0d23] to-[#5c0715]" />
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-black">
+              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 mix-blend-overlay" />
+            </div>
           )}
-          {/* Dark overlay for readability */}
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
 
-          {/* Decorative orbs */}
-          <div className="absolute -top-8 -right-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
-          <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-rose-400/20 rounded-full blur-xl" />
+          {/* Decorative subtle glows */}
+          <div className="absolute -top-12 -right-12 w-40 h-40 bg-primary/30 rounded-full blur-[60px]" />
+          <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-blue-500/20 rounded-full blur-[50px]" />
 
           <div className="relative z-10 px-5 pt-6 pb-5">
             <div className="flex gap-4 items-start">
               {/* Logo */}
-              <div className="shrink-0 relative">
+              <div className="shrink-0 relative group">
                 <div
-                  className={`${isPremium ? "ring-2 ring-yellow-400 ring-offset-2 ring-offset-transparent" : ""} rounded-2xl shadow-2xl`}
+                  className={`relative z-10 ${isPremium ? "ring-2 ring-amber-400/80 ring-offset-2 ring-offset-transparent shadow-[0_0_20px_rgba(251,191,36,0.3)]" : "ring-1 ring-white/20 shadow-xl"} rounded-2xl bg-white/5 backdrop-blur-md overflow-hidden transition-transform duration-300 group-hover:scale-105`}
                 >
                   {business.logo_url ? (
                     <img
-                      src={business.logo_url ? `https://wsrv.nl/?url=${encodeURIComponent(business.logo_url)}&w=160&h=160&fit=cover` : undefined}
+                      src={`https://wsrv.nl/?url=${encodeURIComponent(business.logo_url)}&w=160&h=160&fit=contain&a=attention`}
                       alt={business.name}
-                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white/90 object-contain p-1"
+                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white object-contain p-1.5"
                     />
                   ) : (
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white/20 backdrop-blur border-2 border-white/30 flex items-center justify-center">
-                      <Building2 className="w-10 h-10 text-white/80" />
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white/10 flex items-center justify-center">
+                      <Building2 className="w-10 h-10 text-white/70" />
                     </div>
                   )}
                 </div>
                 {isPremium && (
-                  <div className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center shadow-lg">
-                    <Star className="w-3.5 h-3.5 text-yellow-900 fill-yellow-900" />
+                  <div className="absolute -top-2 -right-2 z-20 w-7 h-7 rounded-full bg-gradient-to-br from-amber-300 to-amber-500 flex items-center justify-center shadow-lg border border-amber-200/50">
+                    <Star className="w-4 h-4 text-amber-950 fill-amber-950" />
                   </div>
                 )}
               </div>
 
               {/* Info */}
               <div className="flex-1 min-w-0 text-white">
-                <div className="flex flex-wrap gap-1.5 mb-1.5">
+                <div className="flex flex-wrap gap-2 mb-2">
                   {isPremium && (
-                    <Badge className="bg-yellow-400/90 text-yellow-900 border-0 gap-1 h-5 px-2 text-[10px] font-bold">
-                      <Sparkles className="w-2.5 h-2.5" /> Premium
+                    <Badge className="bg-amber-400/20 text-amber-300 border border-amber-400/30 gap-1 h-5 px-2 text-[10px] font-bold backdrop-blur-md">
+                      <Sparkles className="w-3 h-3" /> Premium
                     </Badge>
                   )}
                   {business.industry && (
-                    <Badge className="bg-white/15 text-white border-white/20 h-5 px-2 text-[10px] backdrop-blur">
-                      <Factory className="w-2.5 h-2.5 mr-1" /> {business.industry}
+                    <Badge className="bg-white/10 text-white/90 border-white/10 h-5 px-2 text-[10px] backdrop-blur-md font-medium">
+                      <Factory className="w-3 h-3 mr-1" /> {business.industry}
                     </Badge>
                   )}
                   {business.country_name && (
-                    <Badge className="bg-white/15 text-white border-white/20 h-5 px-2 text-[10px] backdrop-blur">
+                    <Badge className="bg-white/10 text-white/90 border-white/10 h-5 px-2 text-[10px] backdrop-blur-md font-medium">
                       {business.country_name}
                     </Badge>
                   )}
                 </div>
 
-                <h1 className="text-xl sm:text-2xl font-bold leading-tight tracking-tight mb-1">
+                <h1 className="text-2xl sm:text-3xl font-extrabold leading-tight tracking-tight mb-1.5 font-display text-white">
                   <a
                     href={profileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-white/90 flex items-start gap-1.5 group"
+                    className="hover:text-primary transition-colors flex items-start gap-1.5 group"
                   >
                     <span>{business.name}</span>
-                    <ExternalLink className="w-4 h-4 opacity-60 group-hover:opacity-100 mt-0.5 shrink-0" />
                   </a>
                 </h1>
 
                 {business.short_intro && (
-                  <p className="text-sm text-white/80 line-clamp-2 leading-snug mb-2">
+                  <p className="text-sm text-white/80 line-clamp-2 leading-relaxed mb-3 font-medium">
                     {business.short_intro}
                   </p>
                 )}
@@ -294,18 +296,18 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                 <button
                   onClick={() => setShowQR(true)}
                   title={t("businessCard.viewPrintQR")}
-                  className="shrink-0 hidden sm:block group"
+                  className="shrink-0 hidden sm:block group z-20"
                 >
-                  <div className="w-20 h-20 rounded-xl bg-white p-1.5 shadow-xl hover:scale-105 transition-smooth relative">
+                  <div className="w-24 h-24 rounded-2xl bg-white/10 backdrop-blur-md p-2 shadow-2xl border border-white/20 transition-all duration-300 hover:scale-105 hover:bg-white/20 hover:border-white/40 relative">
                     <img
                       src={qrUrl || undefined}
                       alt={`QR ${business.name}`}
                       loading="lazy"
                       decoding="async"
-                      className="w-full h-full"
+                      className="w-full h-full rounded-xl bg-white"
                     />
-                    <div className="absolute inset-0 bg-black/20 rounded-xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                      <QrCode className="w-6 h-6 text-white" />
+                    <div className="absolute inset-0 bg-black/40 rounded-2xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                      <QrCode className="w-8 h-8 text-white" />
                     </div>
                   </div>
                 </button>
@@ -344,15 +346,15 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {/* Address */}
               {(business.address || business.province || business.country_name) && (
-                <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-accent/40 border border-border/50 hover:border-primary/30 transition-colors">
-                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <MapPin className="w-4 h-4 text-primary" />
+                <div className="flex items-start gap-3 p-4 rounded-2xl bg-secondary/40 border border-border/50 hover:border-border transition-colors">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary">
+                    <MapPin className="w-5 h-5" />
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">
+                  <div className="min-w-0 pt-0.5">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
                       {t("businessCard.address")}
                     </p>
-                    <p className="text-sm font-medium leading-snug">
+                    <p className="text-sm font-medium leading-relaxed text-foreground">
                       {[business.address, business.province, business.country_name]
                         .filter(Boolean)
                         .join(", ")}
@@ -366,25 +368,25 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                 (unlocked ? (
                   <a
                     href={`tel:${business.phone}`}
-                    className="flex items-start gap-3 p-3.5 rounded-2xl bg-accent/40 border border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-colors group"
+                    className="flex items-start gap-3 p-4 rounded-2xl bg-secondary/40 border border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all group"
                   >
-                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                      <Phone className="w-4 h-4 text-primary" />
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground text-primary transition-colors">
+                      <Phone className="w-5 h-5" />
                     </div>
-                    <div className="min-w-0">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">
+                    <div className="min-w-0 pt-0.5">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1 group-hover:text-primary/70 transition-colors">
                         {t("businessCard.phone")}
                       </p>
-                      <p className="text-sm font-semibold text-primary">{business.phone}</p>
+                      <p className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{business.phone}</p>
                     </div>
                   </a>
                 ) : (
-                  <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-accent/40 border border-border/50">
-                    <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center shrink-0">
-                      <Lock className="w-4 h-4 text-muted-foreground" />
+                  <div className="flex items-start gap-3 p-4 rounded-2xl bg-secondary/40 border border-border/50 opacity-80 grayscale-[50%]">
+                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+                      <Lock className="w-5 h-5 text-muted-foreground" />
                     </div>
-                    <div className="min-w-0">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">
+                    <div className="min-w-0 pt-0.5">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
                         {t("businessCard.phone")}
                       </p>
                       <p className="text-sm font-medium text-muted-foreground">
@@ -399,25 +401,25 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                 (unlocked ? (
                   <a
                     href={`mailto:${business.email}`}
-                    className="flex items-start gap-3 p-3.5 rounded-2xl bg-accent/40 border border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-colors group"
+                    className="flex items-start gap-3 p-4 rounded-2xl bg-secondary/40 border border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all group"
                   >
-                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                      <Mail className="w-4 h-4 text-primary" />
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground text-primary transition-colors">
+                      <Mail className="w-5 h-5" />
                     </div>
-                    <div className="min-w-0">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">
+                    <div className="min-w-0 pt-0.5">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1 group-hover:text-primary/70 transition-colors">
                         {t("businessCard.email")}
                       </p>
-                      <p className="text-sm font-medium truncate">{business.email}</p>
+                      <p className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">{business.email}</p>
                     </div>
                   </a>
                 ) : (
-                  <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-accent/40 border border-border/50">
-                    <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center shrink-0">
-                      <Lock className="w-4 h-4 text-muted-foreground" />
+                  <div className="flex items-start gap-3 p-4 rounded-2xl bg-secondary/40 border border-border/50 opacity-80 grayscale-[50%]">
+                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+                      <Lock className="w-5 h-5 text-muted-foreground" />
                     </div>
-                    <div className="min-w-0">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">
+                    <div className="min-w-0 pt-0.5">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
                         {t("businessCard.email")}
                       </p>
                       <p className="text-sm font-medium text-muted-foreground truncate">
@@ -433,16 +435,16 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                   href={business.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-start gap-3 p-3.5 rounded-2xl bg-accent/40 border border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-colors group"
+                  className="flex items-start gap-3 p-4 rounded-2xl bg-secondary/40 border border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all group"
                 >
-                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                    <Globe className="w-4 h-4 text-primary" />
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground text-primary transition-colors">
+                    <Globe className="w-5 h-5" />
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">
+                  <div className="min-w-0 pt-0.5">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1 group-hover:text-primary/70 transition-colors">
                       {t("businessCard.website")}
                     </p>
-                    <p className="text-sm font-medium text-primary truncate">
+                    <p className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">
                       {business.website.replace(/^https?:\/\//, "")}
                     </p>
                   </div>
