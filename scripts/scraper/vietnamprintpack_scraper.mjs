@@ -1,102 +1,35 @@
+import "dotenv/config";
 import { chromium } from "playwright";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
-
-// Basic Country Code Mapper (ISO 2-letter)
-function getCountryCode(countryName) {
-  if (!countryName) return null;
-  const map = {
-    China: "CN",
-    Vietnam: "VN",
-    "Viet Nam": "VN",
-    Taiwan: "TW",
-    "South Korea": "KR",
-    Korea: "KR",
-    Japan: "JP",
-    Singapore: "SG",
-    Malaysia: "MY",
-    Thailand: "TH",
-    India: "IN",
-    "Hong Kong": "HK",
-    USA: "US",
-    "United States": "US",
-    Germany: "DE",
-    Italy: "IT",
-    UK: "GB",
-    France: "FR",
-  };
-  return map[countryName.trim()] || null;
-}
-
-function slugify(text) {
-  return text
-    .toString()
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^\w\-]+/g, "")
-    .replace(/\-\-+/g, "-")
-    .replace(/^-+/, "")
-    .replace(/-+$/, "");
-}
-
-async function setupSystemAccount() {
-  const email = "system@bizconnect.one";
-  const { data: users, error: listError } = await supabase.auth.admin.listUsers();
-  if (listError) throw listError;
-
-  let user = users.users.find((u) => u.email === email);
-  if (!user) {
-    const { data: newUser, error } = await supabase.auth.admin.createUser({
-      email: email,
-      password: "SystemPassword2026!",
-      email_confirm: true,
-      user_metadata: { name: "BizConnect System" },
-    });
-    if (error) throw error;
-    user = newUser.user;
-  }
-  return user.id;
-}
-
-async function setupIndustry(industryName) {
-  const slug = slugify(industryName);
-  const { data: existing, error: findErr } = await supabase
-    .from("industries")
-    .select("*")
-    .eq("slug", slug)
-    .single();
-  if (existing) return existing.id;
-
-  const { data: newInd, error: insErr } = await supabase
-    .from("industries")
-    .insert([{ name: industryName, slug: slug, icon: "Factory" }])
-    .select()
-    .single();
-  if (insErr) throw insErr;
-  return newInd.id;
-}
+import { 
+  supabase, 
+  getCountryCode, 
+  slugify, 
+  randomDelay,
+  setupSystemAccount, 
+  setupIndustry 
+} from "./utils.mjs";
 
 (async () => {
   try {
-    console.log("--- STARTING ENHANCED SCRAPER ---");
+    console.log("--- STARTING VIETNAM PRINTPACK SCRAPER ---");
     const ownerId = await setupSystemAccount();
-    const plasticIndustryId = await setupIndustry("Plastic");
+    const industryId = await setupIndustry("Printing & Packaging");
 
     const browser = await chromium.launch({ headless: false, channel: "chrome" });
     const context = await browser.newContext();
     const page = await context.newPage();
 
-    for (let pageNum = 1; pageNum <= 31; pageNum++) {
+    for (let pageNum = 1; pageNum <= 40; pageNum++) {
       console.log(`\n=== Navigating to Page ${pageNum} ===`);
       let pageLoaded = false;
       for (let retries = 0; retries < 3; retries++) {
         try {
-          await page.goto(`https://vietnamplas.chanchao.com.tw/VisitorExhibitor?page=${pageNum}`, {
+          await page.goto(`https://vietnamprintpack.chanchao.com.tw/VisitorExhibitor?page=${pageNum}`, {
             waitUntil: "domcontentloaded",
             timeout: 45000,
           });
           await page.waitForTimeout(4000);
+          await randomDelay(2000, 5000); // Thêm delay ngẫu nhiên 2-5 giây khi chuyển trang
           pageLoaded = true;
           break;
         } catch (e) {
@@ -167,6 +100,10 @@ async function setupIndustry(industryName) {
       });
 
       console.log(`Found ${companies.length} companies on Page ${pageNum}. Extracting details...`);
+      if (companies.length === 0) {
+        console.log("No more companies found. Stopping pagination.");
+        break;
+      }
 
       // Visit each detail page to get website
       for (let i = 0; i < companies.length; i++) {
@@ -175,6 +112,7 @@ async function setupIndustry(industryName) {
           console.log(`[${i + 1}/${companies.length}] Getting details for ${comp.name}...`);
           for (let retries = 0; retries < 2; retries++) {
             try {
+              await randomDelay(3000, 7000); // Thêm delay ngẫu nhiên 3-7 giây giữa các công ty
               await page.goto(comp.detailUrl, { waitUntil: "domcontentloaded", timeout: 20000 });
               const website = await page.evaluate(() => {
                 const websiteIcon = document.querySelector(".fa-globe");
@@ -216,7 +154,7 @@ async function setupIndustry(industryName) {
             slug: slug,
             logo_url: comp.logo_url,
             country_code: cc,
-            industry_id: plasticIndustryId,
+            industry_id: industryId,
             status: "public", // Direct to public for demo
             icon_tier: "standard",
             short_intro: comp.short_intro,
