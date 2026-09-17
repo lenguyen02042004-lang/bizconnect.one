@@ -238,9 +238,11 @@ function Dashboard() {
         <KpiCard
           icon={Send}
           label={
-            stats.tier === "b2b_premium"
-              ? t("dashboard.cardsSentB2B")
-              : t("dashboard.cardsSentFree")
+            (profile?.account_type || "personal") === "personal"
+              ? "Lượt gửi kết nối"
+              : stats.tier === "b2b_premium"
+                ? t("dashboard.cardsSentB2B")
+                : t("dashboard.cardsSentFree")
           }
           value={`${stats.used} / ${stats.limit || 200}`}
           accent="from-orange-500 to-rose-500"
@@ -280,12 +282,14 @@ function Dashboard() {
           title={t("dashboard.following")}
           description={t("dashboard.followingCount", { count: stats.following })}
         />
-        <ShortcutCard
-          to="/business/stats"
-          icon={BarChart3}
-          title={t("dashboard.stats")}
-          description={t("dashboard.statsDesc")}
-        />
+        {(profile?.account_type || "personal") !== "personal" && (
+          <ShortcutCard
+            to="/business/stats"
+            icon={BarChart3}
+            title={t("dashboard.stats")}
+            description={t("dashboard.statsDesc")}
+          />
+        )}
       </div>
 
       {(publicBiz || ((profile?.account_type || "personal") === "personal" && personalProfile?.slug)) && (
