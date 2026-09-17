@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
+import { getAuthErrorMessage } from "@/lib/utils";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -57,7 +58,7 @@ function LoginPage() {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setLoading(false);
-      toast.error(error.message);
+      toast.error(getAuthErrorMessage(error));
     } else {
       // Determine account type to route correctly
       if (data.user) {

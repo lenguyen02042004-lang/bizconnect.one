@@ -9,6 +9,7 @@ import { Sparkles, User, Building2, Info } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
+import { getAuthErrorMessage } from "@/lib/utils";
 
 export const Route = createFileRoute("/signup")({
   component: SignupPage,
@@ -65,7 +66,7 @@ function SignupPage() {
       },
     });
     setLoading(false);
-    if (error) toast.error(error.message);
+    if (error) toast.error(getAuthErrorMessage(error));
     else {
       toast.success(t("auth.signupSuccess"));
       navigate({ to: accountType === "personal" ? "/me" : "/dashboard" });
