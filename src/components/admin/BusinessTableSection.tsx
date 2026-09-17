@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { adminListBusinesses } from "@/lib/admin.functions";
-import { Users, ExternalLink, Pencil } from "lucide-react";
+import { Users, ExternalLink, Pencil, Search, ChevronLeft, ChevronRight } from "lucide-react";
 
 export function BusinessTableSection({
   listFn,
@@ -13,9 +14,15 @@ export function BusinessTableSection({
   const q = useQuery({ queryKey: ["admin-businesses"], queryFn: () => listFn() });
   const list = q.data?.businesses ?? [];
   const [filter, setFilter] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 15;
+
   const filtered = list.filter((b) =>
     `${b.name} ${b.slug} ${b.owner_email}`.toLowerCase().includes(filter.toLowerCase()),
   );
+
+  const totalPages = Math.ceil(filtered.length / pageSize) || 1;
+  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <section className="rounded-3xl bg-card border border-border p-6 mb-6">
@@ -26,12 +33,18 @@ export function BusinessTableSection({
             Tất cả doanh nghiệp ({list.length})
           </h2>
         </div>
-        <input
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          placeholder="Tìm theo tên, slug, email chủ..."
-          className="px-3 py-1.5 rounded-lg border border-border bg-background text-sm w-72 max-w-full"
-        />
+        <div className="relative">
+          <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+          <input
+            value={filter}
+            onChange={(e) => {
+              setFilter(e.target.value);
+              setPage(1);
+            }}
+            placeholder="Tìm theo tên, slug, email chủ..."
+            className="pl-9 pr-3 py-1.5 rounded-lg border border-border bg-background text-sm w-72 max-w-full"
+          />
+        </div>
       </div>
 
       {q.isLoading ? (
@@ -52,7 +65,7 @@ export function BusinessTableSection({
               </tr>
             </thead>
             <tbody>
-              {filtered.map((b) => (
+              {paginated.map((b) => (
                 <tr key={b.id} className="border-t border-border hover:bg-accent/40">
                   <td className="p-2 font-medium">{b.name}</td>
                   <td className="p-2 font-mono text-muted-foreground">{b.slug}</td>
@@ -88,15 +101,46 @@ export function BusinessTableSection({
                   </td>
                 </tr>
               ))}
-              {filtered.length === 0 && (
+              {paginated.length === 0 && (
                 <tr>
                   <td colSpan={8} className="p-4 text-center text-muted-foreground">
-                    Không có dữ liệu
+                    Không tìm thấy doanh nghiệp nào.
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
+
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between p-3 border-t border-border bg-muted/20">
+              <span className="text-xs text-muted-foreground">
+                Đang hiển thị {((page - 1) * pageSize) + 1} - {Math.min(page * pageSize, filtered.length)} trên tổng {filtered.length}
+              </span>
+              <div className="flex gap-1">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-7 px-2"
+                  disabled={page <= 1} 
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                >
+                  <ChevronLeft className="w-3 h-3" />
+                </Button>
+                <span className="text-xs font-medium px-2 py-1">
+                  Trang {page} / {totalPages}
+                </span>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="h-7 px-2"
+                  disabled={page >= totalPages} 
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                >
+                  <ChevronRight className="w-3 h-3" />
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </section>

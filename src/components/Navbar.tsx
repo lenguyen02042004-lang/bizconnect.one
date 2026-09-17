@@ -73,52 +73,53 @@ export function Navbar() {
 
         <div className="flex items-center gap-1">
           <LanguageSwitcher />
-          {!loading && user ? (
-            <>
+          {!loading && user && (
+            <div className="flex items-center">
               <InboxBell />
-              <Link to="/dashboard">
-                <Button variant="ghost" size="sm" className="gap-2">
-                  <LayoutDashboard className="w-4 h-4" />{" "}
-                  <span className="hidden sm:inline" suppressHydrationWarning>
-                    {t("nav.dashboard")}
-                  </span>
-                </Button>
-              </Link>
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={() => supabase.auth.signOut()}
-                title={t("nav.logout")}
-              >
-                <LogOut className="w-4 h-4" />
-              </Button>
-            </>
-          ) : !loading ? (
-            <>
-              <Link to="/login">
-                <Button variant="ghost" size="sm" className="gap-1.5 px-2 sm:px-3">
-                  <LogIn className="w-4 h-4" />{" "}
-                  <span className="hidden sm:inline" suppressHydrationWarning>
-                    {t("nav.login")}
-                  </span>
-                </Button>
-              </Link>
-              <Link to="/signup">
+            </div>
+          )}
+
+          <div className="hidden sm:flex items-center gap-1">
+            {!loading && user ? (
+              <>
+                <Link to="/dashboard">
+                  <Button variant="ghost" size="sm" className="gap-2">
+                    <LayoutDashboard className="w-4 h-4" />{" "}
+                    <span suppressHydrationWarning>{t("nav.dashboard")}</span>
+                  </Button>
+                </Link>
                 <Button
-                  size="sm"
-                  className="gap-1.5 px-2 sm:px-3 bg-gradient-vivid hover:opacity-90 text-white border-0 shadow-pink"
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => supabase.auth.signOut()}
+                  title={t("nav.logout")}
                 >
-                  <Sparkles className="w-4 h-4" />{" "}
-                  <span className="hidden sm:inline" suppressHydrationWarning>
-                    {t("nav.signup")}
-                  </span>
+                  <LogOut className="w-4 h-4" />
                 </Button>
-              </Link>
-            </>
-          ) : null}
+              </>
+            ) : !loading ? (
+              <>
+                <Link to="/login">
+                  <Button variant="ghost" size="sm" className="gap-1.5 px-3">
+                    <LogIn className="w-4 h-4" />{" "}
+                    <span suppressHydrationWarning>{t("nav.login")}</span>
+                  </Button>
+                </Link>
+                <Link to="/signup">
+                  <Button
+                    size="sm"
+                    className="gap-1.5 px-3 bg-gradient-vivid hover:opacity-90 text-white border-0 shadow-pink"
+                  >
+                    <Sparkles className="w-4 h-4" />{" "}
+                    <span suppressHydrationWarning>{t("nav.signup")}</span>
+                  </Button>
+                </Link>
+              </>
+            ) : null}
+          </div>
 
           {/* Mobile Menu */}
-          <div className="md:hidden ml-1">
+          <div className="sm:hidden ml-1">
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" aria-label="Menu">
@@ -127,6 +128,42 @@ export function Navbar() {
               </SheetTrigger>
               <SheetContent side="right" className="w-[280px] sm:w-[320px] flex flex-col gap-6 pt-12">
                 <SheetTitle className="sr-only">Menu</SheetTitle>
+                
+                {/* Mobile Auth Buttons */}
+                {!loading && user ? (
+                  <div className="flex flex-col gap-3 pb-6 border-b border-border/50">
+                    <Link to="/dashboard" className="w-full">
+                      <Button className="w-full gap-2 justify-start h-11" variant="secondary">
+                        <LayoutDashboard className="w-5 h-5" />
+                        <span className="text-base" suppressHydrationWarning>{t("nav.dashboard")}</span>
+                      </Button>
+                    </Link>
+                    <Button 
+                      variant="outline" 
+                      className="w-full gap-2 justify-start h-11"
+                      onClick={() => supabase.auth.signOut()}
+                    >
+                      <LogOut className="w-5 h-5" />
+                      <span className="text-base" suppressHydrationWarning>{t("nav.logout")}</span>
+                    </Button>
+                  </div>
+                ) : !loading ? (
+                  <div className="flex flex-col gap-3 pb-6 border-b border-border/50">
+                    <Link to="/login" className="w-full">
+                      <Button variant="outline" className="w-full gap-2 justify-start h-11">
+                        <LogIn className="w-5 h-5" />
+                        <span className="text-base" suppressHydrationWarning>{t("nav.login")}</span>
+                      </Button>
+                    </Link>
+                    <Link to="/signup" className="w-full">
+                      <Button className="w-full gap-2 justify-start h-11 bg-gradient-vivid text-white border-0 shadow-pink">
+                        <Sparkles className="w-5 h-5" />
+                        <span className="text-base" suppressHydrationWarning>{t("nav.signup")}</span>
+                      </Button>
+                    </Link>
+                  </div>
+                ) : null}
+
                 <nav className="flex flex-col gap-4 text-lg font-medium">
                   <Link
                     to="/"

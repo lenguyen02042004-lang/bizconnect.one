@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Sparkles, User, Building2 } from "lucide-react";
+import { Sparkles, User, Building2, Info } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
 
@@ -106,13 +107,15 @@ function SignupPage() {
             </div>
             <form onSubmit={handleSignup} className="space-y-4">
               <div>
-                <Label htmlFor="name">{t("auth.fullName")}</Label>
+                <Label htmlFor="name">
+                  {accountType === "business" ? "Tên người đại diện / Tên doanh nghiệp" : t("auth.fullName")}
+                </Label>
                 <Input
                   id="name"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder={t("auth.namePlaceholder")}
+                  placeholder={accountType === "business" ? "Nhập tên công ty hoặc tên của bạn" : t("auth.namePlaceholder")}
                 />
               </div>
               <div>
@@ -138,6 +141,16 @@ function SignupPage() {
                 />
                 <p className="text-xs text-muted-foreground mt-1">{t("auth.passwordHint")}</p>
               </div>
+
+              {accountType === "business" && (
+                <Alert className="bg-primary/5 border-primary/20">
+                  <Info className="w-4 h-4 text-primary" />
+                  <AlertDescription className="text-xs ml-2 text-primary/90">
+                    Ngay sau khi tạo tài khoản, bạn sẽ được hệ thống hướng dẫn khai báo <strong>Hồ sơ Doanh nghiệp</strong> chi tiết (ngành nghề, quốc gia, logo,...) ở màn hình Dashboard.
+                  </AlertDescription>
+                </Alert>
+              )}
+
               <Button
                 type="submit"
                 disabled={loading}
@@ -147,12 +160,14 @@ function SignupPage() {
                 {loading ? t("auth.creatingAccount") : t("auth.signupFree")}
               </Button>
             </form>
-            <p className="text-center text-sm text-muted-foreground mt-5">
-              {t("auth.alreadyHaveAccount")}{" "}
-              <Link to="/login" className="text-primary font-medium hover:underline">
-                {t("auth.loginHere")}
+            <div className="text-center mt-6">
+              <p className="text-sm text-muted-foreground mb-3">{t("auth.alreadyHaveAccount")}</p>
+              <Link to="/login" className="block w-full">
+                <Button variant="outline" className="w-full font-medium h-11">
+                  {t("auth.loginHere")}
+                </Button>
               </Link>
-            </p>
+            </div>
           </div>
         </div>
       </div>

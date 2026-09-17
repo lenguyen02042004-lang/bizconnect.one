@@ -310,7 +310,6 @@ export const adminListPayments = createServerFn({ method: "GET" })
     const { data, error } = await supabase
       .from("payments_log")
       .select("*, businesses(name, slug, owner_id)")
-      .eq("provider", "manual")
       .order("created_at", { ascending: false });
 
     if (error) throw new Error(error.message);
