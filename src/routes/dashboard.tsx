@@ -101,64 +101,71 @@ function Dashboard() {
     if (!user) return;
     let cancelled = false;
     (async () => {
-      const [
-        { data: prof },
-        { data: bizes },
-        { data: pProfile },
-        { count: contactsCount },
-        { count: followingCount },
-        myQuotaRes,
-        inboxRes,
-      ] = await Promise.all([
-        supabase
-          .from("profiles")
-          .select("display_name, email, account_type")
-          .eq("id", user.id)
-          .single(),
-        supabase
-          .from("businesses")
-          .select(
-            "id, slug, name, logo_url, status, icon_tier, country_code, province, views_count, followers_count",
-          )
-          .eq("owner_id", user.id)
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("personal_profiles")
-          .select("id, slug, full_name, job_title, company_name, avatar_url, views_count, followers_count")
-          .eq("id", user.id)
-          .maybeSingle(),
-        supabase
-          .from("saved_contacts")
-          .select("*", { count: "exact", head: true })
-          .eq("user_id", user.id),
-        supabase
-          .from("follows")
-          .select("*", { count: "exact", head: true })
-          .eq("follower_id", user.id),
-        quotaFn(),
-        inboxFn({}),
-      ]);
-      if (cancelled) return;
+      try {
+        const [
+          { data: prof },
+          { data: bizes },
+          { data: pProfile },
+          { count: contactsCount },
+          { count: followingCount },
+          myQuotaRes,
+          inboxRes,
+        ] = await Promise.all([
+          supabase
+            .from("profiles")
+            .select("display_name, email, account_type")
+            .eq("id", user.id)
+            .single(),
+          supabase
+            .from("businesses")
+            .select(
+              "id, slug, name, logo_url, status, icon_tier, country_code, province, views_count, followers_count",
+            )
+            .eq("owner_id", user.id)
+            .order("created_at", { ascending: false }),
+          supabase
+            .from("personal_profiles")
+            .select("id, slug, full_name, job_title, company_name, avatar_url, views_count, followers_count")
+            .eq("id", user.id)
+            .maybeSingle(),
+          supabase
+            .from("saved_contacts")
+            .select("*", { count: "exact", head: true })
+            .eq("user_id", user.id),
+          supabase
+            .from("follows")
+            .select("*", { count: "exact", head: true })
+            .eq("follower_id", user.id),
+          quotaFn().catch(() => ({ used_count: 0, limit: 200 })),
+          inboxFn({}).catch(() => ({ messages: [] })),
+        ]);
+        if (cancelled) return;
 
-      setProfile(prof as any);
-      setPersonalProfile(pProfile as any);
+        setProfile(prof as any);
+        setPersonalProfile(pProfile as any);
 
-      // Hide system-seeded demo businesses from the user's own dashboard
-      const list = ((bizes ?? []) as Biz[]).filter((b) => !b.id.startsWith(DEMO_OWNER_PREFIX));
-      setBusinesses(list);
-      setLoadingBiz(false);
+        // Hide system-seeded demo businesses from the user's own dashboard
+        const list = ((bizes ?? []) as Biz[]).filter((b) => !b.id.startsWith(DEMO_OWNER_PREFIX));
+        setBusinesses(list);
+        
+        const unread = (inboxRes as any)?.messages?.filter((m: any) => !m.read_at).length ?? 0;
+        const quota = myQuotaRes as any;
 
-      const unread = inboxRes?.messages?.filter((m: any) => !m.read_at).length ?? 0;
-      const quota = myQuotaRes as any;
-
-      setStats({
-        unread,
-        used: quota?.used_count ?? 0,
-        limit: quota?.limit ?? 200,
-        tier: (quota?.limit ?? 200) > 200 ? "b2b_premium" : "free",
-        contacts: contactsCount ?? 0,
-        following: followingCount ?? 0,
-      });
+        setStats({
+          unread,
+          used: quota?.used_count ?? 0,
+          limit: quota?.limit ?? 200,
+          tier: (quota?.limit ?? 200) > 200 ? "b2b_premium" : "free",
+          contacts: contactsCount ?? 0,
+          following: followingCount ?? 0,
+        });
+      } catch (err) {
+        console.error("Dashboard fetch error:", err);
+      } finally {
+        if (!cancelled) {
+          setLoadingBiz(false);
+        }
+      }
     })();
     return () => {
       cancelled = true;
@@ -340,125 +347,129 @@ function Dashboard() {
       {/* Subscription tracker */}
       {businesses.length > 0 && <SubscriptionWidget />}
 
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="font-display text-xl font-bold">{t("dashboard.yourBiz")}</h2>
-        {businesses.length > 0 && (
-          <Link
-            to="/business/edit"
-            className="text-sm text-primary hover:underline inline-flex items-center gap-1"
-          >
-            <Plus className="w-3.5 h-3.5" /> {t("dashboard.addBiz")}
-          </Link>
-        )}
-      </div>
-
-      {loadingBiz ? (
-        <div className="py-12 flex justify-center">
-          <Loader2 className="w-6 h-6 animate-spin text-primary" />
-        </div>
-      ) : businesses.length === 0 ? (
-        <div className="relative overflow-hidden bg-gradient-vivid rounded-3xl p-8 text-white shadow-glow">
-          <div className="absolute -top-10 -right-10 w-64 h-64 rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute -bottom-10 -left-10 w-64 h-64 rounded-full bg-white/10 blur-3xl" />
-          <div className="relative">
-            <Sparkles className="w-8 h-8 mb-3" />
-            <h2 className="text-2xl font-bold mb-2">{t("dashboard.createFirstTitle")}</h2>
-            <p className="opacity-90 mb-5 max-w-lg">{t("dashboard.createFirstDesc")}</p>
-            <Link to="/business/edit">
-              <Button size="lg" className="bg-white text-primary hover:bg-white/90 gap-2">
-                {t("dashboard.createFirstBtn")} <Sparkles className="w-4 h-4" />
-              </Button>
-            </Link>
+      {(profile?.account_type || "personal") !== "personal" && (
+        <>
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="font-display text-xl font-bold">{t("dashboard.yourBiz")}</h2>
+            {businesses.length > 0 && (
+              <Link
+                to="/business/edit"
+                className="text-sm text-primary hover:underline inline-flex items-center gap-1"
+              >
+                <Plus className="w-3.5 h-3.5" /> {t("dashboard.addBiz")}
+              </Link>
+            )}
           </div>
-        </div>
-      ) : (
-        <div className="grid sm:grid-cols-2 gap-4">
-          {businesses.map((b) => (
-            <div
-              key={b.id}
-              className="bg-card border border-border rounded-2xl p-4 shadow-card hover:shadow-pink/20 hover:border-primary/30 transition-smooth"
-            >
-              <div className="flex gap-3 items-start">
-                <div
-                  className={
-                    b.icon_tier === "premium" ? "ring-premium flex-shrink-0" : "flex-shrink-0"
-                  }
-                >
-                  {b.logo_url ? (
-                    <img
-                      src={b.logo_url}
-                      alt={b.name}
-                      className="w-14 h-14 rounded-full bg-white object-cover"
-                    />
-                  ) : (
-                    <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center">
-                      <Globe2 className="w-5 h-5 text-muted-foreground" />
-                    </div>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <h3 className="font-semibold truncate">{b.name}</h3>
-                    <Badge
-                      variant={b.status === "public" ? "default" : "secondary"}
-                      className={
-                        b.status === "public"
-                          ? "bg-primary text-primary-foreground border-0 gap-1"
-                          : ""
-                      }
-                    >
-                      {b.status === "public" ? (
-                        <>
-                          <CheckCircle2 className="w-3 h-3" /> {t("dashboard.statusPublic")}
-                        </>
-                      ) : (
-                        t("dashboard.statusDraft")
-                      )}
-                    </Badge>
-                  </div>
-                  {(b.country_code || b.province) && (
-                    <p className="text-xs text-muted-foreground flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      {[b.province, b.country_code].filter(Boolean).join(", ")}
-                    </p>
-                  )}
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
-                    <span className="flex items-center gap-1">
-                      <Eye className="w-3 h-3" /> {b.views_count}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Users className="w-3 h-3" /> {b.followers_count}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-border">
-                <Link to="/business/edit" search={{ id: b.id }}>
-                  <Button size="sm" variant="outline" className="gap-1">
-                    <Pencil className="w-3 h-3" /> {t("dashboard.edit")}
+
+          {loadingBiz ? (
+            <div className="py-12 flex justify-center">
+              <Loader2 className="w-6 h-6 animate-spin text-primary" />
+            </div>
+          ) : businesses.length === 0 ? (
+            <div className="relative overflow-hidden bg-gradient-vivid rounded-3xl p-8 text-white shadow-glow">
+              <div className="absolute -top-10 -right-10 w-64 h-64 rounded-full bg-white/10 blur-3xl" />
+              <div className="absolute -bottom-10 -left-10 w-64 h-64 rounded-full bg-white/10 blur-3xl" />
+              <div className="relative">
+                <Sparkles className="w-8 h-8 mb-3" />
+                <h2 className="text-2xl font-bold mb-2">{t("dashboard.createFirstTitle")}</h2>
+                <p className="opacity-90 mb-5 max-w-lg">{t("dashboard.createFirstDesc")}</p>
+                <Link to="/business/edit">
+                  <Button size="lg" className="bg-white text-primary hover:bg-white/90 gap-2">
+                    {t("dashboard.createFirstBtn")} <Sparkles className="w-4 h-4" />
                   </Button>
                 </Link>
-                {b.status === "public" && (
-                  <>
-                    <Link to="/business/$slug" params={{ slug: b.slug }}>
-                      <Button size="sm" variant="ghost" className="gap-1">
-                        <Eye className="w-3 h-3" /> {t("dashboard.view")}
-                      </Button>
-                    </Link>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => shareLink(b.slug)}
-                      className="gap-1"
-                    >
-                      <Share2 className="w-3 h-3" /> {t("dashboard.share")}
-                    </Button>
-                  </>
-                )}
               </div>
             </div>
-          ))}
-        </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 gap-4">
+              {businesses.map((b) => (
+                <div
+                  key={b.id}
+                  className="bg-card border border-border rounded-2xl p-4 shadow-card hover:shadow-pink/20 hover:border-primary/30 transition-smooth"
+                >
+                  <div className="flex gap-3 items-start">
+                    <div
+                      className={
+                        b.icon_tier === "premium" ? "ring-premium flex-shrink-0" : "flex-shrink-0"
+                      }
+                    >
+                      {b.logo_url ? (
+                        <img
+                          src={b.logo_url}
+                          alt={b.name}
+                          className="w-14 h-14 rounded-full bg-white object-cover"
+                        />
+                      ) : (
+                        <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center">
+                          <Globe2 className="w-5 h-5 text-muted-foreground" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <h3 className="font-semibold truncate">{b.name}</h3>
+                        <Badge
+                          variant={b.status === "public" ? "default" : "secondary"}
+                          className={
+                            b.status === "public"
+                              ? "bg-primary text-primary-foreground border-0 gap-1"
+                              : ""
+                          }
+                        >
+                          {b.status === "public" ? (
+                            <>
+                              <CheckCircle2 className="w-3 h-3" /> {t("dashboard.statusPublic")}
+                            </>
+                          ) : (
+                            t("dashboard.statusDraft")
+                          )}
+                        </Badge>
+                      </div>
+                      {(b.country_code || b.province) && (
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          {[b.province, b.country_code].filter(Boolean).join(", ")}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                        <span className="flex items-center gap-1">
+                          <Eye className="w-3 h-3" /> {b.views_count}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Users className="w-3 h-3" /> {b.followers_count}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-border">
+                    <Link to="/business/edit" search={{ id: b.id }}>
+                      <Button size="sm" variant="outline" className="gap-1">
+                        <Pencil className="w-3 h-3" /> {t("dashboard.edit")}
+                      </Button>
+                    </Link>
+                    {b.status === "public" && (
+                      <>
+                        <Link to="/business/$slug" params={{ slug: b.slug }}>
+                          <Button size="sm" variant="ghost" className="gap-1">
+                            <Eye className="w-3 h-3" /> {t("dashboard.view")}
+                          </Button>
+                        </Link>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => shareLink(b.slug)}
+                          className="gap-1"
+                        >
+                          <Share2 className="w-3 h-3" /> {t("dashboard.share")}
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </DashboardShell>
   );
