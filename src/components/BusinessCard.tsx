@@ -67,7 +67,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const profileUrl =
-    typeof window !== "undefined" ? `https://bizconnect.one/business/${business.slug}` : "";
+    typeof window !== "undefined" ? `https://bizconnect.one/business/${business.id}` : "";
 
   const description = business.description || business.short_intro || "";
   const certifications = business.certifications || [];

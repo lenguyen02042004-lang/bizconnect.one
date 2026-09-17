@@ -1,4 +1,4 @@
-import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, notFound, useNavigate, redirect } from "@tanstack/react-router";
 import { BusinessCard } from "@/components/BusinessCard";
 import { useTranslation } from "react-i18next";
 
@@ -14,6 +14,17 @@ export const Route = createFileRoute("/business/$slug")({
   loader: async ({ params }) => {
     const res = await getBusinessBySlug({ data: { slug: params.slug } });
     if (!res.business) throw notFound();
+    
+    // Redirect UUID access to friendly slug
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.slug);
+    if (isUuid && res.business.slug !== params.slug) {
+      throw redirect({
+        to: "/business/$slug",
+        params: { slug: res.business.slug },
+        replace: true,
+      });
+    }
+    
     return { business: res.business };
   },
   head: ({ loaderData, params }) => {

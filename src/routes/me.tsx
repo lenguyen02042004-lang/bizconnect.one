@@ -58,7 +58,7 @@ function MePage() {
   const { t } = useTranslation();
 
   const publicUrl =
-    profile && typeof window !== "undefined" ? `https://bizconnect.one/p/${profile.slug}` : "";
+    profile && typeof window !== "undefined" ? `https://bizconnect.one/p/${profile.id}` : "";
 
   useEffect(() => {
     (async () => {

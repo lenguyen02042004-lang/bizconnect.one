@@ -10,11 +10,18 @@ export const getBusinessBySlug = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const { supabase } = await import("@/integrations/supabase/client");
 
-    const { data: biz, error } = await supabase
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(data.slug);
+    let query = supabase
       .from("businesses")
-      .select("*, industries(name, slug), countries(name)")
-      .eq("slug", data.slug)
-      .maybeSingle();
+      .select("*, industries(name, slug), countries(name)");
+      
+    if (isUuid) {
+      query = query.eq("id", data.slug);
+    } else {
+      query = query.eq("slug", data.slug);
+    }
+
+    const { data: biz, error } = await query.maybeSingle();
 
     if (error) throw new Error(error.message);
     if (!biz) return { business: null };

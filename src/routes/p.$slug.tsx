@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,17 @@ export const Route = createFileRoute("/p/$slug")({
   loader: async ({ params }) => {
     const { profile } = await getPersonalBySlug({ data: { slug: params.slug } });
     if (!profile) throw notFound();
+
+    // Redirect UUID access to friendly slug
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.slug);
+    if (isUuid && profile.slug !== params.slug) {
+      throw redirect({
+        to: "/p/$slug",
+        params: { slug: profile.slug },
+        replace: true,
+      });
+    }
+
     return { profile };
   },
   head: ({ loaderData }) => {
@@ -95,7 +106,7 @@ function PublicPersonalCard() {
   const { user } = useAuth();
   const { t } = useTranslation();
 
-  const url = typeof window !== "undefined" ? `https://bizconnect.one/p/${slug}` : "";
+  const url = typeof window !== "undefined" ? `https://bizconnect.one/p/${profile.id}` : "";
 
   useEffect(() => {
     if (!url) return;

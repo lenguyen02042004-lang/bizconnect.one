@@ -111,14 +111,17 @@ export function QRScannerDialog({ onClose }: QRScannerDialogProps) {
   const fetchAndShowPreview = async (type: "business" | "personal", slug: string) => {
     toast.loading("Đang tải thông tin...", { id: "scan-load" });
     try {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
       if (type === "business") {
-        const { data } = await supabase
+        let query = supabase
           .from("businesses")
           .select(
             "id, name, slug, logo_url, phone, email, website, address, province, industry_id, industries(name)",
-          )
-          .eq("slug", slug)
-          .maybeSingle();
+          );
+        if (isUuid) query = query.eq("id", slug);
+        else query = query.eq("slug", slug);
+        
+        const { data } = await query.maybeSingle();
 
         if (!data) {
           toast.error("Không tìm thấy doanh nghiệp này.", { id: "scan-load" });
@@ -139,12 +142,15 @@ export function QRScannerDialog({ onClose }: QRScannerDialogProps) {
           province: data.province,
         });
       } else {
-        const { data } = await supabase
+        let query = supabase
           .from("personal_profiles")
           .select("id, full_name, slug, avatar_url, job_title, company_name, phone, email")
-          .eq("slug", slug)
-          .eq("is_public", true)
-          .maybeSingle();
+          .eq("is_public", true);
+          
+        if (isUuid) query = query.eq("id", slug);
+        else query = query.eq("slug", slug);
+
+        const { data } = await query.maybeSingle();
 
         if (!data) {
           toast.error("Không tìm thấy danh thiếp cá nhân này.", {
