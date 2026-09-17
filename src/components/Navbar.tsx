@@ -1,11 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { Globe2, Sparkles, LogIn, LayoutDashboard, LogOut } from "lucide-react";
+import { Globe2, Sparkles, LogIn, LayoutDashboard, LogOut, Menu } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { InboxBell } from "@/components/InboxBell";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 
 export function Navbar() {
   const { user, loading, accountType } = useAuth();
@@ -107,6 +108,54 @@ export function Navbar() {
               </Link>
             </>
           ) : null}
+
+          {/* Mobile Menu */}
+          <div className="md:hidden ml-1">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" aria-label="Menu">
+                  <Menu className="w-5 h-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[280px] sm:w-[320px] flex flex-col gap-6 pt-12">
+                <SheetTitle className="sr-only">Menu</SheetTitle>
+                <nav className="flex flex-col gap-4 text-lg font-medium">
+                  <Link
+                    to="/"
+                    activeProps={{ className: "text-primary" }}
+                    className="hover:text-primary transition-smooth"
+                    suppressHydrationWarning
+                  >
+                    {t("nav.map")}
+                  </Link>
+                  <Link
+                    to="/explore"
+                    activeProps={{ className: "text-primary" }}
+                    className="hover:text-primary transition-smooth"
+                    suppressHydrationWarning
+                  >
+                    {t("nav.explore")}
+                  </Link>
+                  <Link
+                    to="/countries"
+                    activeProps={{ className: "text-primary" }}
+                    className="hover:text-primary transition-smooth"
+                    suppressHydrationWarning
+                  >
+                    {t("nav.countries")}
+                  </Link>
+                  <Link
+                    to="/pricing"
+                    activeProps={{ className: "text-primary" }}
+                    className="hover:text-primary transition-smooth"
+                    suppressHydrationWarning
+                  >
+                    {t("nav.pricing")}
+                  </Link>
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </div>
     </header>
