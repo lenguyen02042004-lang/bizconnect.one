@@ -5,6 +5,9 @@ import { useTranslation } from "react-i18next";
 import { getBusinessBySlug } from "@/lib/business-public.functions";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ClaimBusinessDialog } from "@/components/ClaimBusinessDialog";
+import { ShieldCheck, Info } from "lucide-react";
+import { useState } from "react";
 
 export const Route = createFileRoute("/business/$slug")({
   component: BusinessDetailPage,
@@ -86,6 +89,8 @@ function BusinessDetailPage() {
   const { business } = Route.useLoaderData();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [isClaimOpen, setIsClaimOpen] = useState(false);
+  
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Animated Mesh-like Background */}
@@ -97,7 +102,7 @@ function BusinessDetailPage() {
 
 
       <main className="relative pt-24 pb-16 px-4 z-10">
-        <div className="max-w-4xl mx-auto mb-4">
+        <div className="max-w-4xl mx-auto mb-4 flex items-center justify-between">
           <Button
             variant="ghost"
             onClick={() => window.history.back()}
@@ -106,7 +111,37 @@ function BusinessDetailPage() {
             <ArrowLeft className="w-4 h-4" /> {t("businessCard.back")}
           </Button>
         </div>
+
+        {business.is_claimed === false && (
+          <div className="max-w-4xl mx-auto mb-6 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="mt-1 bg-amber-500/20 p-2 rounded-full">
+                <Info className="w-5 h-5 text-amber-500" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-foreground text-lg">Đây là doanh nghiệp của bạn?</h3>
+                <p className="text-muted-foreground text-sm mt-1">
+                  Nhận quyền quản lý ngay hôm nay để cập nhật thông tin, tương tác với khách hàng B2B và mở rộng mạng lưới giao thương. Hoàn toàn miễn phí.
+                </p>
+              </div>
+            </div>
+            <Button 
+              onClick={() => setIsClaimOpen(true)}
+              className="whitespace-nowrap bg-amber-500 hover:bg-amber-600 text-white shadow-lg shadow-amber-500/20 gap-2 font-semibold"
+            >
+              <ShieldCheck className="w-4 h-4" /> Nhận quyền quản lý
+            </Button>
+          </div>
+        )}
+
         <BusinessCard business={business as any} mode="inline" />
+        
+        <ClaimBusinessDialog 
+          businessId={business.id}
+          businessName={business.name}
+          isOpen={isClaimOpen}
+          onClose={() => setIsClaimOpen(false)}
+        />
       </main>
     </div>
   );

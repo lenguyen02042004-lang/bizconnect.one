@@ -11,4 +11,4 @@ Disallow: /contacts
 Disallow: /following
 Disallow: /reset-password
 
-Sitemap: https://earth-biz-link.lovable.app/sitemap.xml
+Sitemap: https://bizconnect.one/sitemap.xml

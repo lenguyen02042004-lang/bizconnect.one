@@ -25,6 +25,7 @@ import { BusinessTableSection } from "@/components/admin/BusinessTableSection";
 import { BulkImportSection } from "@/components/admin/BulkImportSection";
 import { GlobalDataSection } from "@/components/admin/GlobalDataSection";
 import { PlatformContactsSection } from "@/components/admin/PlatformContactsSection";
+import { AdminClaimsSection } from "@/components/admin/AdminClaimsSection";
 
 export const Route = createFileRoute("/admin")({
   beforeLoad: async () => {
@@ -76,6 +77,7 @@ function AdminPage() {
       <Tabs defaultValue="businesses" className="w-full space-y-6">
         <TabsList className="bg-background border border-border w-full flex-wrap h-auto justify-start p-1 gap-1">
           <TabsTrigger value="businesses" className="data-[state=active]:bg-muted">Doanh nghiệp</TabsTrigger>
+          <TabsTrigger value="claims" className="data-[state=active]:bg-muted">Yêu cầu xác thực</TabsTrigger>
           <TabsTrigger value="payments" className="data-[state=active]:bg-muted">Giao dịch & Gói cước</TabsTrigger>
           <TabsTrigger value="contacts" className="data-[state=active]:bg-muted">Tin nhắn liên hệ</TabsTrigger>
           <TabsTrigger value="settings" className="data-[state=active]:bg-muted">Cài đặt hệ thống</TabsTrigger>
@@ -83,6 +85,10 @@ function AdminPage() {
 
         <TabsContent value="businesses" className="space-y-6">
           <BusinessTableSection listFn={listFn as any} />
+        </TabsContent>
+
+        <TabsContent value="claims" className="space-y-6">
+          <AdminClaimsSection />
         </TabsContent>
 
         <TabsContent value="payments" className="space-y-6">

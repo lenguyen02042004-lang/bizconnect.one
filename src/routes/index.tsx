@@ -202,7 +202,7 @@ function HomePage() {
       return;
     }
     setSubmittingContact(true);
-    const { error } = await (supabase as any).from("platform_contacts").insert([
+    const { error } = await (supabase as any).from("contact_submissions").insert([
       { ...contactForm, company: "" }
     ]);
     setSubmittingContact(false);
