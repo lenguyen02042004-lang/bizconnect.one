@@ -1,10 +1,12 @@
 import { formatCount } from "@/lib/format";
-import { Eye, Globe2, Briefcase } from "lucide-react";
+import { Eye, Globe2, Briefcase, Star } from "lucide-react";
 import { FollowButton } from "./FollowButton";
 import { useTranslation } from "react-i18next";
 
 export function ExploreCard({ business: b, onSelect }: any) {
   const { t } = useTranslation();
+  const isPremium = b.icon_tier === "premium";
+
   return (
     <div
       onClick={onSelect}
@@ -13,57 +15,85 @@ export function ExploreCard({ business: b, onSelect }: any) {
       onKeyDown={(e) => {
         if (e.key === "Enter") onSelect();
       }}
-      className={`group relative overflow-hidden rounded-[24px] cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl bg-gradient-to-br from-[#7a0f1d] to-[#2b050a] text-white ${
-        b.icon_tier === "premium"
-          ? "border border-premium/50 hover:border-premium shadow-premium/20"
-          : "border border-white/10 hover:border-primary/50 shadow-soft"
+      className={`group relative overflow-hidden rounded-[24px] cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl ${
+        isPremium
+          ? "border border-amber-400/40 hover:border-amber-400/70 shadow-[0_4px_24px_rgba(251,191,36,0.15)]"
+          : "border border-white/15 hover:border-primary/60 shadow-[0_4px_24px_rgba(200,16,46,0.12)]"
       }`}
+      style={{
+        background: isPremium
+          ? "linear-gradient(135deg, #c8102e 0%, #e8294a 40%, #ff6680 100%)"
+          : "linear-gradient(135deg, #c8102e 0%, #d91f3a 50%, #b8082a 100%)",
+      }}
     >
-      {/* Decorative gradient for premium */}
-      {b.icon_tier === "premium" && (
-        <div className="absolute -top-10 -right-10 w-40 h-40 bg-premium/15 blur-3xl rounded-full pointer-events-none transition-opacity group-hover:opacity-100 opacity-70" />
-      )}
-      
-      <div className="p-6 flex flex-col h-full relative z-10">
-        <div className="flex items-start justify-between gap-4 mb-5">
-          <div className={`p-1 rounded-[20px] shrink-0 transition-transform duration-300 group-hover:scale-105 ${b.icon_tier === "premium" ? "bg-gradient-premium shadow-glow" : "bg-white/10"}`}>
-            <img
-              src={b.logo_url}
-              alt={`Logo ${b.name}`}
-              loading="lazy"
-              decoding="async"
-              className="w-16 h-16 rounded-[16px] object-cover bg-white"
-            />
-          </div>
-          <FollowButton businessId={b.id} variant="icon" className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+      {/* Subtle noise/texture overlay */}
+      <div className="absolute inset-0 opacity-[0.08] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjY1IiBudW1PY3RhdmVzPSIzIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIiBmaWx0ZXI9InVybCgjYSkiIG9wYWNpdHk9IjEiLz48L3N2Zz4=')] pointer-events-none" />
+
+      {/* Light glow top-right */}
+      <div className="absolute -top-8 -right-8 w-36 h-36 bg-white/20 rounded-full blur-3xl pointer-events-none opacity-60 group-hover:opacity-90 transition-opacity" />
+      <div className="absolute -bottom-8 -left-8 w-28 h-28 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+
+      {/* Premium star badge */}
+      {isPremium && (
+        <div className="absolute top-3 right-3 z-20 w-7 h-7 rounded-full bg-gradient-to-br from-amber-300 to-amber-500 flex items-center justify-center shadow-lg border border-amber-200/50">
+          <Star className="w-4 h-4 text-amber-950 fill-amber-950" />
         </div>
-        
-        <h3 className="font-display font-bold text-lg leading-snug mb-2 group-hover:text-primary transition-colors line-clamp-2 text-white">
+      )}
+
+      <div className="p-6 flex flex-col h-full relative z-10">
+        {/* Logo + Follow button */}
+        <div className="flex items-start justify-between gap-4 mb-5">
+          <div className={`rounded-[18px] shrink-0 transition-transform duration-300 group-hover:scale-105 ${isPremium ? "ring-2 ring-amber-300/60 shadow-[0_0_16px_rgba(251,191,36,0.3)]" : "ring-2 ring-white/30 shadow-md"}`}>
+            {b.logo_url ? (
+              <img
+                src={`https://wsrv.nl/?url=${encodeURIComponent(b.logo_url)}&w=128&h=128&fit=contain&a=attention`}
+                alt={`Logo ${b.name}`}
+                loading="lazy"
+                decoding="async"
+                className="w-16 h-16 rounded-[16px] object-contain bg-white p-1"
+              />
+            ) : (
+              <div className="w-16 h-16 rounded-[16px] bg-white/20 flex items-center justify-center">
+                <span className="text-white text-2xl font-bold">{b.name?.[0] ?? "B"}</span>
+              </div>
+            )}
+          </div>
+          <FollowButton
+            businessId={b.id}
+            variant="icon"
+            className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity bg-white/20 hover:bg-white/30 text-white border-white/20"
+          />
+        </div>
+
+        {/* Business name */}
+        <h3 className="font-display font-bold text-lg leading-snug mb-1 line-clamp-2 text-white drop-shadow-sm">
           {b.name}
         </h3>
-        
-        <div className="mt-auto pt-4 flex flex-col gap-3">
-          {b.short_intro && (
-            <p className="text-sm text-white/70 line-clamp-2 leading-relaxed">
-              {b.short_intro}
-            </p>
-          )}
-          
-          <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-white/70 mt-2">
-            {b.country_name && (
-              <span className="px-2.5 py-1 rounded-lg bg-white/5 flex items-center gap-1.5 transition-colors group-hover:bg-white/10">
-                <Globe2 className="w-3.5 h-3.5" /> <span className="truncate max-w-[100px]">{b.country_name}</span>
-              </span>
-            )}
-            {b.industry_slug && (
-              <span className="px-2.5 py-1 rounded-lg bg-white/5 flex items-center gap-1.5 transition-colors group-hover:bg-white/10">
-                <Briefcase className="w-3.5 h-3.5" /> <span className="truncate max-w-[120px]">{t(`industry.${b.industry_slug}`, { defaultValue: b.industry })}</span>
-              </span>
-            )}
-            <span className="px-2.5 py-1 rounded-lg bg-white/5 flex items-center gap-1.5 ml-auto transition-colors group-hover:bg-white/10 text-rose-500 font-bold">
-              <Eye className="w-3.5 h-3.5" /> {formatCount(b.views_count)}
+
+        {/* Short intro */}
+        {b.short_intro && (
+          <p className="text-sm text-white/80 line-clamp-2 leading-relaxed mb-3">
+            {b.short_intro}
+          </p>
+        )}
+
+        {/* Tags row */}
+        <div className="mt-auto pt-3 flex flex-wrap items-center gap-2 text-xs font-semibold text-white border-t border-white/15">
+          {b.country_name && (
+            <span className="px-2.5 py-1 rounded-lg bg-white/20 backdrop-blur-sm flex items-center gap-1.5 group-hover:bg-white/25 transition-colors">
+              <Globe2 className="w-3.5 h-3.5" />
+              <span className="truncate max-w-[90px]">{b.country_name}</span>
             </span>
-          </div>
+          )}
+          {b.industry_slug && (
+            <span className="px-2.5 py-1 rounded-lg bg-white/20 backdrop-blur-sm flex items-center gap-1.5 group-hover:bg-white/25 transition-colors">
+              <Briefcase className="w-3.5 h-3.5" />
+              <span className="truncate max-w-[100px]">{t(`industry.${b.industry_slug}`, { defaultValue: b.industry })}</span>
+            </span>
+          )}
+          <span className="px-2.5 py-1 rounded-lg bg-white/20 backdrop-blur-sm flex items-center gap-1.5 ml-auto group-hover:bg-white/25 transition-colors">
+            <Eye className="w-3.5 h-3.5" /> {formatCount(b.views_count)}
+          </span>
         </div>
       </div>
     </div>
