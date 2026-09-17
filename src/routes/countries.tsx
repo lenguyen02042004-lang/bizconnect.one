@@ -106,25 +106,33 @@ function CountriesPage() {
                   to="/country/$slug"
                   params={{ slug: c.code.toLowerCase() }}
                   aria-label={`Xem doanh nghiệp tại ${c.name}`}
-                  className="group block relative h-full rounded-2xl bg-gradient-to-br from-[#7a0f1d] to-[#2b050a] border border-white/10 overflow-hidden hover:shadow-xl hover:border-primary/50 hover:-translate-y-1 transition-all duration-300"
+                  className="group block relative rounded-2xl bg-card border border-border overflow-hidden hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_4px_20px_rgba(200,16,46,0.10)] transition-all duration-300 shadow-sm"
                 >
-                  <div className="relative p-5 h-full flex flex-col">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300">
+                  {/* Top accent line */}
+                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/40 via-primary/70 to-primary/40" />
+
+                  <div className="relative p-5 flex flex-col gap-3">
+                    {/* Flag + Arrow */}
+                    <div className="flex items-start justify-between">
+                      <div className="w-12 h-12 rounded-xl bg-muted border border-border flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300">
                         {c.flag ?? "🌍"}
                       </div>
-                      <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary/20 transition-colors border border-white/10">
-                        <ArrowRight className="w-4 h-4 text-white opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary/10 group-hover:border-primary/30 transition-colors border border-border">
+                        <ArrowRight className="w-4 h-4 text-muted-foreground opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-primary transition-all duration-300" />
                       </div>
                     </div>
-                    
-                    <div className="mt-auto">
-                      <h3 className="font-semibold text-lg text-white mb-1 group-hover:text-primary-glow transition-colors">
+
+                    {/* Country name + code */}
+                    <div>
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-[10px] font-bold text-primary/70 bg-primary/8 px-1.5 py-0.5 rounded font-mono tracking-widest">{c.code}</span>
+                      </div>
+                      <h3 className="font-display font-bold text-base text-foreground group-hover:text-primary transition-colors">
                         {c.name}
                       </h3>
-                      <div className="flex items-center gap-1.5 text-sm text-white/70">
-                        <Building2 className="w-4 h-4 opacity-70 text-rose-500" />
-                        <span className="text-rose-500 font-bold">Xem danh mục</span>
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1 group-hover:text-primary transition-colors">
+                        <Building2 className="w-3.5 h-3.5" />
+                        <span>Xem danh mục</span>
                       </div>
                     </div>
                   </div>
