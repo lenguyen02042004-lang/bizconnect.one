@@ -22,16 +22,16 @@ export function ExploreCard({ business: b, onSelect }: any) {
       }`}
       style={{
         background: isPremium
-          ? "linear-gradient(135deg, #c8102e 0%, #e8294a 40%, #ff6680 100%)"
-          : "linear-gradient(135deg, #c8102e 0%, #d91f3a 50%, #b8082a 100%)",
+          ? "linear-gradient(135deg, #9b0d23 0%, #c8102e 55%, #e84057 100%)"
+          : "linear-gradient(135deg, #8b0a1f 0%, #b8102c 55%, #c8102e 100%)",
       }}
     >
       {/* Subtle noise/texture overlay */}
-      <div className="absolute inset-0 opacity-[0.08] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjY1IiBudW1PY3RhdmVzPSIzIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIiBmaWx0ZXI9InVybCgjYSkiIG9wYWNpdHk9IjEiLz48L3N2Zz4=')] pointer-events-none" />
+      <div className="absolute inset-0 opacity-[0.06] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVy idPSJhIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjY1IiBudW1PY3RhdmVzPSIzIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIiBmaWx0ZXI9InVybCgjYSkiIG9wYWNpdHk9IjEiLz48L3N2Zz4=')] pointer-events-none" />
 
-      {/* Light glow top-right */}
-      <div className="absolute -top-8 -right-8 w-36 h-36 bg-white/20 rounded-full blur-3xl pointer-events-none opacity-60 group-hover:opacity-90 transition-opacity" />
-      <div className="absolute -bottom-8 -left-8 w-28 h-28 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+      {/* Soft glow top-right */}
+      <div className="absolute -top-8 -right-8 w-36 h-36 bg-white/10 rounded-full blur-3xl pointer-events-none opacity-40 group-hover:opacity-60 transition-opacity" />
+      <div className="absolute -bottom-8 -left-8 w-28 h-28 bg-white/5 rounded-full blur-2xl pointer-events-none" />
 
       {/* Premium star badge */}
       {isPremium && (
