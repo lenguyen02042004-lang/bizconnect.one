@@ -23,36 +23,57 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) {
+    const trimmedEmail = email.trim().toLowerCase();
+    if (!trimmedEmail) {
       toast.error("Vui lòng nhập email");
       return;
     }
 
     setLoading(true);
-    const password = "123456";
-    const displayName = name || email.split("@")[0];
+    const password = "Biz@" + Math.random().toString(36).slice(2, 8); // stronger random password
+    const displayName = name.trim() || trimmedEmail.split("@")[0];
 
     // 1. Sign up user
     const { data: authData, error: authError } = await supabase.auth.signUp({
-      email,
+      email: trimmedEmail,
       password,
       options: {
         data: {
           display_name: displayName,
+          account_type: accountType,
         },
       },
     });
 
-    if (authError || !authData.user) {
-      toast.error(authError?.message || "Lỗi tạo tài khoản");
+    if (authError) {
+      const msg = authError.message || "";
+      if (msg.includes("already registered") || msg.includes("already been registered") || msg.includes("User already registered")) {
+        toast.error("Email này đã được đăng ký. Vui lòng đăng nhập để trao đổi danh thiếp.");
+      } else if (msg.includes("invalid") && msg.includes("email")) {
+        toast.error("Địa chỉ email không hợp lệ. Vui lòng kiểm tra lại.");
+      } else if (msg.includes("rate limit") || msg.includes("over_email_send_rate_limit")) {
+        toast.error("Bạn đã thử đăng ký quá nhiều lần. Vui lòng thử lại sau vài phút.");
+      } else {
+        toast.error("Không thể tạo tài khoản: " + msg);
+      }
+      setLoading(false);
+      return;
+    }
+
+    if (!authData?.user) {
+      toast.error("Không thể tạo tài khoản. Vui lòng thử lại.");
       setLoading(false);
       return;
     }
 
     const userId = authData.user.id;
-    const slug = slugifyProfile(displayName) + "-" + Math.floor(Math.random() * 1000);
 
-    // 2. Update auth profile
+    // Check if email confirmation is required (session is null but user exists)
+    const needsConfirmation = !authData.session;
+
+    const slug = slugifyProfile(displayName) + "-" + Math.floor(Math.random() * 9000 + 1000);
+
+    // 2. Update profile
     await supabase
       .from("profiles")
       .update({
@@ -69,8 +90,8 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
         user_id: userId,
         full_name: displayName,
         slug,
-        email,
-        phone: phone || null,
+        email: trimmedEmail,
+        phone: phone.trim() || null,
         job_title: "Thành viên mới",
       });
     } else {
@@ -80,8 +101,8 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
           owner_id: userId,
           name: displayName,
           slug,
-          email,
-          phone: phone || null,
+          email: trimmedEmail,
+          phone: phone.trim() || null,
           status: "public",
         })
         .select("id")
@@ -90,25 +111,30 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
       if (bData) createdBusinessId = bData.id;
     }
 
-    // 4. Send card visit
-    const { error: sendError } = await supabase.rpc("send_card_visit", {
-      _from_business: createdBusinessId,
-      _to_business: toType === "business" ? toId : null,
-      _from_user: accountType === "personal" ? userId : null,
-      _to_user: toType === "personal" ? toId : null,
-      _subject: "Xin chào, tôi muốn kết nối giao thương",
-      _body: "Tôi vừa quét mã QR của bạn và tạo danh thiếp nhanh để kết nối.",
-    });
+    // 4. Send card visit (only if we have a session, i.e. auto-confirmed)
+    if (!needsConfirmation) {
+      const { error: sendError } = await supabase.rpc("send_card_visit", {
+        _from_business: createdBusinessId,
+        _to_business: toType === "business" ? toId : null,
+        _from_user: accountType === "personal" ? userId : null,
+        _to_user: toType === "personal" ? toId : null,
+        _subject: "Xin chào, tôi muốn kết nối giao thương",
+        _body: "Tôi vừa quét mã QR của bạn và tạo danh thiếp nhanh để kết nối.",
+      });
 
-    if (sendError) {
-      console.error(sendError);
-      toast.error("Tạo tài khoản thành công nhưng lỗi gửi danh thiếp");
+      if (sendError) {
+        console.error(sendError);
+      }
+
+      toast.success("Đã tạo tài khoản và trao đổi danh thiếp thành công!");
     } else {
-      toast.success("Đã tạo tài khoản và tự động trao đổi danh thiếp!");
-      onSuccess();
+      toast.success("Tài khoản đã được tạo! Vui lòng kiểm tra email để xác nhận tài khoản.", {
+        duration: 6000,
+      });
     }
 
     setLoading(false);
+    onSuccess();
   };
 
   return (
@@ -178,7 +204,7 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
         </div>
 
         <p className="text-[11px] text-muted-foreground italic text-center">
-          * Mật khẩu mặc định là <b>123456</b>, bạn có thể đổi lại sau.
+          * Hệ thống sẽ tạo mật khẩu ngẫu nhiên. Kiểm tra email để đặt lại mật khẩu sau khi đăng ký.
         </p>
         <Button
           type="submit"
