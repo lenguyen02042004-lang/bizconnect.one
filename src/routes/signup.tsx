@@ -59,10 +59,10 @@ function SignupPage() {
     e.preventDefault();
     setLoading(true);
     const { error } = await supabase.auth.signUp({
-      email,
+      email: email.trim(),
       password,
       options: {
-        data: { display_name: name, account_type: accountType },
+        data: { display_name: name.trim(), account_type: accountType },
       },
     });
     setLoading(false);
