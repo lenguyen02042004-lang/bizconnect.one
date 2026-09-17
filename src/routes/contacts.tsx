@@ -141,14 +141,23 @@ function ContactsPage() {
     };
     doLoad();
 
+    // Listen to subscriptions table changes (triggered when admin approves payment)
     const channel = supabase
       .channel("contacts_wallet_changes")
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "message_quotas" },
-        () => {
-          doLoad();
+        { event: "*", schema: "public", table: "subscriptions" },
+        async () => {
+          if (!active) return;
+          // Refresh only the wallet when subscription changes
+          const newWallet = await getMyWallet();
+          if (active) setWallet(newWallet);
         }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "message_quotas" },
+        () => { doLoad(); }
       )
       .subscribe();
 
@@ -157,6 +166,16 @@ function ContactsPage() {
       supabase.removeChannel(channel);
     };
   }, []);
+
+  // Poll wallet every 10s while payment modal is open so user sees update without manual refresh
+  useEffect(() => {
+    if (!showModal) return;
+    const interval = setInterval(async () => {
+      const newWallet = await getMyWallet();
+      setWallet(newWallet);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [showModal]);
 
   const handleRemove = async (id: string) => {
     if (!confirm("Bạn có chắc chắn muốn xóa liên hệ này khỏi danh bạ?")) return;
@@ -444,7 +463,17 @@ function ContactsPage() {
         />
       )}
 
-      <Dialog open={showModal} onOpenChange={setShowModal}>
+      <Dialog
+        open={showModal}
+        onOpenChange={async (open) => {
+          setShowModal(open);
+          if (!open) {
+            // Refresh wallet when modal is closed in case payment was approved
+            const newWallet = await getMyWallet();
+            setWallet(newWallet);
+          }
+        }}
+      >
         <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-3xl">
           <div className="bg-gradient-vivid p-6 text-white text-center">
             <DialogHeader>
@@ -475,9 +504,18 @@ function ContactsPage() {
               <div className="text-center space-y-1 text-sm text-muted-foreground">
                 <p>Quét mã bằng ứng dụng ngân hàng.</p>
                 <p>Hệ thống tự động cộng hạn mức ngay lập tức!</p>
+                <p className="text-xs text-primary font-medium">Sau khi chuyển khoản, đóng cửa sổ này để làm mới hạn mức.</p>
               </div>
-              <Button variant="outline" className="mt-2 w-full" onClick={() => setShowModal(false)}>
-                Đóng
+              <Button
+                variant="outline"
+                className="mt-2 w-full"
+                onClick={async () => {
+                  setShowModal(false);
+                  const newWallet = await getMyWallet();
+                  setWallet(newWallet);
+                }}
+              >
+                Đã chuyển khoản — Đóng & làm mới
               </Button>
             </div>
           </div>
