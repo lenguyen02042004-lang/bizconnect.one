@@ -1,5 +1,4 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Navbar } from "@/components/Navbar";
 import {
   LayoutDashboard,
   Inbox,
@@ -199,7 +198,6 @@ export function DashboardShell({ title, subtitle, actions, children, maxWidth = 
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
 
       <div className="pt-16 flex">
         {/* Desktop sidebar */}

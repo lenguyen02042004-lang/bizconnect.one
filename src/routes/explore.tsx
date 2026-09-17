@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
-import { Navbar } from "@/components/Navbar";
 import { BusinessCard } from "@/components/BusinessCard";
 import { FilterBar } from "@/components/FilterBar";
 import { getExploreBusinesses, getGlobalLists } from "@/lib/business-public.functions";
@@ -36,24 +35,35 @@ export const Route = createFileRoute("/explore")({
       industries: listRes.industries,
     };
   },
-  head: () => ({
-    meta: [
-      { title: "Khám phá doanh nghiệp trên danh bạ - BizConnect.One" },
-      {
-        name: "description",
-        content:
-          "Danh bạ 2D doanh nghiệp toàn cầu - lọc theo quốc gia, ngành nghề, tìm kiếm nhanh và theo dõi các doanh nghiệp phù hợp với bạn.",
-      },
-      { property: "og:title", content: "Khám phá doanh nghiệp trên danh bạ - BizConnect.One" },
-      {
-        property: "og:description",
-        content:
-          "Danh bạ 2D doanh nghiệp toàn cầu - lọc theo quốc gia, ngành nghề, tìm kiếm nhanh và theo dõi các doanh nghiệp phù hợp với bạn.",
-      },
-      { property: "og:url", content: "https://bizconnect.one/explore" },
-    ],
-    links: [{ rel: "canonical", href: "https://bizconnect.one/explore" }],
-  }),
+  head: () => {
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: "Khám phá danh bạ doanh nghiệp toàn cầu - BizConnect.One",
+      description: "Khám phá danh bạ hơn 100,000+ doanh nghiệp trên toàn cầu. Lọc nhanh theo quốc gia, ngành nghề để tìm kiếm đối tác B2B phù hợp nhất.",
+      url: "https://bizconnect.one/explore",
+    };
+
+    return {
+      meta: [
+        { title: "Khám phá doanh nghiệp trên danh bạ - BizConnect.One" },
+        {
+          name: "description",
+          content:
+            "Danh bạ 2D doanh nghiệp toàn cầu - lọc theo quốc gia, ngành nghề, tìm kiếm nhanh và theo dõi các doanh nghiệp phù hợp với bạn.",
+        },
+        { property: "og:title", content: "Khám phá doanh nghiệp trên danh bạ - BizConnect.One" },
+        {
+          property: "og:description",
+          content:
+            "Danh bạ 2D doanh nghiệp toàn cầu - lọc theo quốc gia, ngành nghề, tìm kiếm nhanh và theo dõi các doanh nghiệp phù hợp với bạn.",
+        },
+        { property: "og:url", content: "https://bizconnect.one/explore" },
+      ],
+      links: [{ rel: "canonical", href: "https://bizconnect.one/explore" }],
+      scripts: [{ type: "application/ld+json", children: JSON.stringify(jsonLd) }],
+    };
+  },
 });
 
 function ExplorePage() {
@@ -110,7 +120,6 @@ function ExplorePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
       <div className="pt-20 px-4 md:px-8 max-w-[1600px] mx-auto pb-20">
         {/* Sticky Header & Filter Bar */}
         <div className="sticky top-16 z-30 bg-background/90 backdrop-blur-xl py-6 mb-8 border-b border-border/50">
@@ -119,6 +128,10 @@ function ExplorePage() {
               <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight mb-2 text-gradient">
                 {t("nav.explore")}
               </h1>
+              {/* Answer-First Summary for AEO / SEO */}
+              <p className="sr-only">
+                Khám phá danh bạ hơn 100,000+ doanh nghiệp trên toàn cầu. Lọc nhanh theo quốc gia, ngành nghề để tìm kiếm đối tác B2B phù hợp nhất trên hệ sinh thái BizConnect.One.
+              </p>
               <p className="text-muted-foreground text-sm">
                 {totalCount} {t("home.matchedBusinesses")}
               </p>

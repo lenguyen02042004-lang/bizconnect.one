@@ -11,10 +11,6 @@ import { getExploreBusinesses, getGlobalLists } from "@/lib/business-public.func
 import {
   Search,
   Globe2,
-  LogIn,
-  Sparkles,
-  LayoutDashboard,
-  LogOut,
   ChevronDown,
   MapPin,
   Cpu,
@@ -39,9 +35,17 @@ import {
   Send,
   Users,
   UserPlus,
+  Sparkles,
   QrCode,
   FolderLock,
+  Handshake,
+  MessageSquare,
+  Mail,
+  Phone,
+  FileText,
+  Shield,
 } from "lucide-react";
+import { toast } from "sonner";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -84,6 +88,43 @@ export const Route = createFileRoute("/")({
       },
     ],
     links: [{ rel: "canonical", href: "https://bizconnect.one/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebSite",
+              "@id": "https://bizconnect.one/#website",
+              url: "https://bizconnect.one/",
+              name: "BizConnect.One",
+              description: "Danh bạ 3D tương tác kết nối doanh nghiệp toàn cầu theo quốc gia & ngành nghề.",
+              potentialAction: [
+                {
+                  "@type": "SearchAction",
+                  target: {
+                    "@type": "EntryPoint",
+                    urlTemplate: "https://bizconnect.one/explore?q={search_term_string}",
+                  },
+                  "query-input": "required name=search_term_string",
+                },
+              ],
+            },
+            {
+              "@type": "Organization",
+              "@id": "https://bizconnect.one/#organization",
+              name: "BizConnect.One",
+              url: "https://bizconnect.one/",
+              logo: "https://bizconnect.one/logo.png",
+              sameAs: [
+                "https://www.facebook.com/BizConnect.One",
+              ]
+            }
+          ]
+        }),
+      }
+    ]
   }),
   loader: async () => {
     const [bizRes, listRes] = await Promise.all([getExploreBusinesses(), getGlobalLists()]);
@@ -147,9 +188,31 @@ function HomePage() {
   const [country, setCountry] = useState("all");
   const [search, setSearch] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [contactForm, setContactForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const [submittingContact, setSubmittingContact] = useState(false);
+
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!contactForm.name || !contactForm.email || !contactForm.message) {
+      toast.error("Vui lòng điền đầy đủ các thông tin bắt buộc.");
+      return;
+    }
+    setSubmittingContact(true);
+    const { error } = await (supabase as any).from("platform_contacts").insert([
+      { ...contactForm, company: "" }
+    ]);
+    setSubmittingContact(false);
+    if (error) {
+      toast.error("Gửi thất bại, vui lòng thử lại sau.");
+    } else {
+      toast.success("Đã gửi tin nhắn thành công. Chúng tôi sẽ phản hồi sớm nhất!");
+      setContactForm({ name: "", email: "", phone: "", message: "" });
+    }
+  };
 
   const { data: stats } = useQuery({
     queryKey: ["public-stats"],
@@ -218,6 +281,13 @@ function HomePage() {
               {t("home.heroTitlePrefix")}{" "}
               <span className="text-gradient">{t("home.heroTitleGradient")}</span>
             </h1>
+            
+            {/* Answer-First Summary for AEO / SEO */}
+            <p className="sr-only">
+              BizConnect.One là danh bạ doanh nghiệp toàn cầu 3D, giúp kết nối hàng ngàn công ty theo quốc gia và ngành nghề. 
+              Cho phép tạo danh thiếp online, lưu trữ thông tin đối tác an toàn và mở rộng giao thương B2B quốc tế nhanh chóng.
+            </p>
+
             <div className="mt-4 inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-base sm:text-lg font-medium text-white backdrop-blur-md shadow-glow">
               <Sparkles className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               Hướng đến cộng đồng hơn 100k+ doanh nghiệp toàn cầu!
@@ -240,103 +310,6 @@ function HomePage() {
               </Link>
             </div>
           </div>
-        </div>
-
-        {/* Top-left logo */}
-        <div className="absolute top-5 left-5 z-30">
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-vivid blur-lg opacity-70 group-hover:opacity-100 transition-smooth" />
-              <div className="relative w-11 h-11 rounded-2xl bg-gradient-vivid flex items-center justify-center shadow-glow">
-                <Globe2 className="w-6 h-6 text-white" />
-              </div>
-            </div>
-            <div className="hidden sm:block">
-              <div className="font-display font-bold text-white text-lg leading-tight tracking-tight">
-                BizConnect<span className="text-gradient">.One</span>
-              </div>
-              <div className="text-[10px] text-white/60 uppercase tracking-widest">
-                {t("home.worldwideB2BMap")}
-              </div>
-            </div>
-          </Link>
-        </div>
-
-        {/* Top-right nav — synced with Navbar.tsx */}
-        <div className="absolute top-5 right-5 z-30 flex items-center gap-1">
-          <LanguageSwitcher />
-          <Link to="/explore">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-white hover:bg-white/10 hover:text-white gap-1.5"
-            >
-              <Globe2 className="w-4 h-4" />{" "}
-              <span className="hidden md:inline">{t("nav.explore")}</span>
-            </Button>
-          </Link>
-          <Link to="/countries">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-white hover:bg-white/10 hover:text-white gap-1.5 hidden md:inline-flex"
-            >
-              <MapPin className="w-4 h-4" /> {t("nav.countries")}
-            </Button>
-          </Link>
-          <Link to="/pricing">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-white hover:bg-white/10 hover:text-white hidden sm:inline-flex"
-            >
-              {t("nav.pricing")}
-            </Button>
-          </Link>
-          {!loading && user ? (
-            <>
-              <Link to="/dashboard">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-white hover:bg-white/10 hover:text-white gap-1.5"
-                >
-                  <LayoutDashboard className="w-4 h-4" />{" "}
-                  <span className="hidden sm:inline">{t("nav.dashboard")}</span>
-                </Button>
-              </Link>
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={() => supabase.auth.signOut()}
-                className="text-white hover:bg-white/10 hover:text-white"
-                title={t("nav.logout")}
-              >
-                <LogOut className="w-4 h-4" />
-              </Button>
-            </>
-          ) : !loading ? (
-            <>
-              <Link to="/login">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-white hover:bg-white/10 hover:text-white gap-1.5 hidden sm:inline-flex"
-                >
-                  <LogIn className="w-4 h-4" /> {t("nav.login")}
-                </Button>
-              </Link>
-              <Link to="/signup">
-                <Button
-                  size="sm"
-                  className="gap-1.5 bg-gradient-vivid hover:opacity-90 text-white border-0 shadow-pink"
-                >
-                  <Sparkles className="w-4 h-4" />{" "}
-                  <span className="hidden xs:inline">{t("nav.signup")}</span>
-                </Button>
-              </Link>
-            </>
-          ) : null}
         </div>
 
         {/* Subtle hint to scroll */}
@@ -564,6 +537,127 @@ function HomePage() {
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* B2B Trade & RFQ Section (Coming Soon) */}
+          <div className="mt-24 animate-fade-up">
+            <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border border-white/10 p-8 sm:p-12 text-center md:text-left flex flex-col md:flex-row items-center gap-8 shadow-2xl">
+              {/* Coming soon badge */}
+              <div className="absolute top-4 right-4 bg-gradient-vivid text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-pink animate-pulse">
+                Sắp triển khai
+              </div>
+              <div className="flex-1">
+                <div className="inline-flex items-center gap-2 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                    <Handshake className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-display font-bold text-white">
+                    Giao thương B2B & Yêu cầu Báo giá
+                  </h2>
+                </div>
+                <p className="text-white/70 text-lg leading-relaxed mb-6">
+                  Mô hình kết nối thương mại chuẩn quốc tế. Khám phá cơ hội hợp tác, tạo yêu cầu mua hàng (RFQ) và nhận báo giá trực tiếp từ hàng ngàn nhà cung cấp uy tín trên hệ sinh thái BizConnect.One.
+                </p>
+                <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                  <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-lg flex items-center gap-2">
+                    <Search className="w-4 h-4 text-purple-400" />
+                    <span className="text-sm text-white/90">Tìm nguồn hàng</span>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-lg flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-purple-400" />
+                    <span className="text-sm text-white/90">Đăng yêu cầu RFQ</span>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-lg flex items-center gap-2">
+                    <Shield className="w-4 h-4 text-purple-400" />
+                    <span className="text-sm text-white/90">Giao dịch an toàn</span>
+                  </div>
+                </div>
+              </div>
+              <div className="shrink-0 w-full md:w-1/3">
+                <div className="aspect-video md:aspect-square rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-md relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/20 to-transparent opacity-50"></div>
+                  <MessageSquare className="w-16 h-16 text-white/20 group-hover:scale-110 transition-transform duration-500" />
+                  <div className="absolute bottom-4 left-4 right-4 bg-black/40 backdrop-blur rounded-xl p-3 border border-white/10">
+                     <p className="text-xs text-white/60 mb-1">Gửi từ: Buyer International</p>
+                     <p className="text-sm font-semibold text-white">"Tôi cần báo giá 10,000 SP..."</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Contact Form Section */}
+          <div className="mt-24 animate-fade-up max-w-3xl mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl sm:text-3xl font-display font-bold text-white mb-3">
+                Liên hệ với chúng tôi
+              </h2>
+              <p className="text-white/70">
+                Bạn cần hỗ trợ, tư vấn hay trao đổi hợp tác? Hãy để lại thông tin, đội ngũ Admin sẽ liên hệ lại với bạn sớm nhất.
+              </p>
+            </div>
+            
+            <form onSubmit={handleContactSubmit} className="bg-white/5 border border-white/10 rounded-3xl p-6 sm:p-10 backdrop-blur-xl shadow-2xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-white/80">Họ và tên *</label>
+                  <div className="relative">
+                    <Users className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                    <Input 
+                      required
+                      placeholder="Nhập tên của bạn"
+                      value={contactForm.name}
+                      onChange={e => setContactForm(prev => ({...prev, name: e.target.value}))}
+                      className="pl-10 h-12 bg-black/20 border-white/10 text-white placeholder:text-white/30 rounded-xl focus-visible:ring-primary focus-visible:border-primary"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-white/80">Số điện thoại</label>
+                  <div className="relative">
+                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                    <Input 
+                      placeholder="Nhập số điện thoại"
+                      value={contactForm.phone}
+                      onChange={e => setContactForm(prev => ({...prev, phone: e.target.value}))}
+                      className="pl-10 h-12 bg-black/20 border-white/10 text-white placeholder:text-white/30 rounded-xl focus-visible:ring-primary focus-visible:border-primary"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-1.5 mb-5">
+                <label className="text-sm font-medium text-white/80">Email *</label>
+                <div className="relative">
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                  <Input 
+                    required
+                    type="email"
+                    placeholder="Nhập địa chỉ email"
+                    value={contactForm.email}
+                    onChange={e => setContactForm(prev => ({...prev, email: e.target.value}))}
+                    className="pl-10 h-12 bg-black/20 border-white/10 text-white placeholder:text-white/30 rounded-xl focus-visible:ring-primary focus-visible:border-primary"
+                  />
+                </div>
+              </div>
+              <div className="space-y-1.5 mb-8">
+                <label className="text-sm font-medium text-white/80">Nội dung trao đổi *</label>
+                <textarea 
+                  required
+                  rows={4}
+                  placeholder="Nhập nội dung cần hỗ trợ..."
+                  value={contactForm.message}
+                  onChange={e => setContactForm(prev => ({...prev, message: e.target.value}))}
+                  className="w-full p-4 bg-black/20 border border-white/10 text-white placeholder:text-white/30 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary resize-none transition-smooth"
+                />
+              </div>
+              <Button 
+                type="submit" 
+                disabled={submittingContact}
+                className="w-full h-12 bg-primary hover:bg-primary/90 text-white rounded-xl font-bold shadow-glow text-base"
+              >
+                {submittingContact ? "Đang gửi..." : "Gửi thông tin liên hệ"}
+              </Button>
+            </form>
           </div>
 
           {/* Footer CTA */}

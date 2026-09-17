@@ -10,6 +10,7 @@ import {
 import { Toaster } from "@/components/ui/sonner";
 import { CardFAB } from "@/components/CardFAB";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { Navbar } from "@/components/Navbar";
 
 import appCss from "../styles.css?url";
 
@@ -198,6 +199,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <Navbar />
         <Outlet />
         <CardFAB />
         <Toaster position="top-right" richColors />

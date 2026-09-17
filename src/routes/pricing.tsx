@@ -1,5 +1,4 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Check, Sparkles, Crown, Plus, QrCode, Copy, Upload, Loader2, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
@@ -307,7 +306,6 @@ function PricingPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
       <div className="pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-14 animate-fade-up">

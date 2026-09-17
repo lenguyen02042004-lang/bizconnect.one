@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Navbar } from "@/components/Navbar";
 
 const URL = "https://bizconnect.one/blog/how-to-find-international-b2b-partners";
 const TITLE = "How to Find and Verify International B2B Partners (2026 Guide)";
@@ -47,7 +46,6 @@ export const Route = createFileRoute("/blog/how-to-find-international-b2b-partne
 function ArticlePage() {
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
       <article className="prose prose-slate dark:prose-invert mx-auto max-w-3xl px-4 pt-28 pb-20">
         <p className="text-sm text-muted-foreground">
           <Link to="/" className="hover:underline">

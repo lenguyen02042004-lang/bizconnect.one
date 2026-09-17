@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Navbar } from "@/components/Navbar";
 import { getGlobalLists } from "@/lib/business-public.functions";
 import { Building2, ArrowRight, Search, Globe2, MapPin } from "lucide-react";
 import countriesOg from "@/assets/countries-og.jpg";
@@ -51,7 +50,6 @@ function CountriesPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Navbar />
 
       {/* Hero Section */}
       <section className="relative pt-28 pb-20 overflow-hidden shrink-0 border-b border-border/40">

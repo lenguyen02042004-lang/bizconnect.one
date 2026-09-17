@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Navbar } from "@/components/Navbar";
 import { getPersonalBySlug } from "@/lib/personal-public.functions";
 import {
   Phone,
@@ -47,6 +46,19 @@ export const Route = createFileRoute("/p/$slug")({
     const desc = p
       ? `Danh thiếp online của ${p.full_name}${p.company_name ? ` tại ${p.company_name}` : ""}. Lưu liên hệ, gọi, nhắn Zalo chỉ với một chạm.`
       : "Danh thiếp cá nhân online.";
+    const jsonLd = p ? {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      name: p.full_name,
+      jobTitle: p.job_title || undefined,
+      worksFor: p.company_name ? { "@type": "Organization", name: p.company_name } : undefined,
+      image: p.avatar_url || undefined,
+      telephone: p.phone || undefined,
+      email: p.email || undefined,
+      url: `https://bizconnect.one/p/${p.slug}`,
+      sameAs: [p.facebook_url, p.linkedin_url].filter(Boolean),
+    } : null;
+
     return {
       meta: [
         { title },
@@ -57,6 +69,7 @@ export const Route = createFileRoute("/p/$slug")({
         { property: "og:type", content: "profile" },
         { name: "twitter:card", content: "summary" },
       ],
+      scripts: jsonLd ? [{ type: "application/ld+json", children: JSON.stringify(jsonLd) }] : [],
     };
   },
   component: PublicPersonalCard,
@@ -178,7 +191,6 @@ function PublicPersonalCard() {
       <div className="fixed top-0 left-0 w-[600px] h-[600px] bg-rose-500/10 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
       <div className="fixed bottom-0 right-0 w-[500px] h-[500px] bg-pink-600/10 rounded-full blur-[100px] translate-x-1/2 translate-y-1/2 pointer-events-none" />
 
-      <Navbar />
 
       <main className="relative pt-20 pb-20 px-4 z-10">
         <article className="max-w-sm mx-auto">
@@ -219,6 +231,13 @@ function PublicPersonalCard() {
                 <h1 className="text-2xl font-display font-bold text-white leading-tight tracking-tight mb-1">
                   {profile.full_name}
                 </h1>
+                
+                {/* Answer-First Summary for AEO / SEO */}
+                <p className="sr-only">
+                  Đây là danh thiếp cá nhân điện tử của {profile.full_name}{profile.job_title ? `, ${profile.job_title}` : ""}{profile.company_name ? ` tại ${profile.company_name}` : ""}. 
+                  Quét mã QR, lưu danh bạ hoặc kết nối trực tiếp qua điện thoại, email và Zalo nhanh chóng.
+                </p>
+
                 {profile.job_title && (
                   <p className="text-sm font-semibold text-white/90 mb-1">{profile.job_title}</p>
                 )}

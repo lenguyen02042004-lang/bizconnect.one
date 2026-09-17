@@ -1,5 +1,4 @@
 import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
-import { Navbar } from "@/components/Navbar";
 import { BusinessCard } from "@/components/BusinessCard";
 import { useTranslation } from "react-i18next";
 
@@ -61,7 +60,6 @@ export const Route = createFileRoute("/business/$slug")({
     const { t } = useTranslation();
     return (
       <div className="min-h-screen bg-background">
-        <Navbar />
         <div className="pt-32 text-center px-4">
           <h1 className="font-display text-2xl font-bold mb-2">{t("businessCard.errorLoad")}</h1>
           <p className="text-muted-foreground">{error.message}</p>
@@ -73,7 +71,6 @@ export const Route = createFileRoute("/business/$slug")({
     const { t } = useTranslation();
     return (
       <div className="min-h-screen bg-background">
-        <Navbar />
         <div className="pt-32 text-center px-4">
           <h1 className="font-display text-2xl font-bold mb-2">
             {t("businessCard.errorNotFound")}
@@ -98,7 +95,6 @@ function BusinessDetailPage() {
         style={{ animationDelay: "2s" }}
       />
 
-      <Navbar />
 
       <main className="relative pt-24 pb-16 px-4 z-10">
         <div className="max-w-4xl mx-auto mb-4">

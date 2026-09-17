@@ -582,3 +582,43 @@ export const adminCreateIndustry = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// === Admin: List Platform Contacts ===
+export const adminListContacts = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    await requireAdmin(supabase, userId);
+    
+    // Use the backend admin client just in case RLS on the main client has issues,
+    // though requireAdmin and the RLS policy should allow it anyway.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
+      .from("platform_contacts" as any)
+      .select("*")
+      .order("created_at", { ascending: false });
+      
+    if (error) throw new Error(error.message);
+    return { contacts: data ?? [] };
+  });
+
+// === Admin: Mark Contact as Read ===
+export const adminMarkContactRead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z.object({
+      id: z.string().uuid(),
+    }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await requireAdmin(supabase, userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    
+    const { error } = await supabaseAdmin
+      .from("platform_contacts" as any)
+      .update({ is_read: true })
+      .eq("id", data.id);
+      
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });

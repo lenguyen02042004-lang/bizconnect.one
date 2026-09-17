@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { z } from "zod";
-import { Navbar } from "@/components/Navbar";
 import { BusinessCard } from "@/components/BusinessCard";
 import { getExploreBusinesses, getGlobalLists } from "@/lib/business-public.functions";
 import { ExploreCard } from "@/components/ExploreCard";
@@ -81,7 +80,6 @@ function CountryNotFound() {
   const { slug } = Route.useParams();
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
       <div className="pt-24 max-w-xl mx-auto text-center px-4">
         <h1 className="text-2xl font-bold mb-2">Không tìm thấy quốc gia</h1>
         <p className="text-muted-foreground mb-4">Quốc gia "{slug}" không có trong danh sách.</p>
@@ -153,7 +151,6 @@ function CountryPage() {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <Navbar />
       <div className="pt-16">
         {/* Header */}
         <header className="bg-card border-b border-border">

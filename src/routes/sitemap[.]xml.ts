@@ -33,14 +33,21 @@ export const Route = createFileRoute("/sitemap.xml")({
       }
 
       let businessSlugs: string[] = [];
+      let personalSlugs: string[] = [];
       try {
         const { data: bizes } = await supabase
           .from("businesses")
           .select("slug")
           .eq("status", "public");
         if (bizes) businessSlugs = bizes.map((b) => b.slug);
+
+        const { data: persons } = await supabase
+          .from("personal_profiles")
+          .select("slug")
+          .eq("is_public", true);
+        if (persons) personalSlugs = persons.map((p) => p.slug);
       } catch (e) {
-        console.error("Failed to fetch businesses for sitemap", e);
+        console.error("Failed to fetch profiles for sitemap", e);
       }
 
       for (const slug of businessSlugs) {
@@ -48,6 +55,14 @@ export const Route = createFileRoute("/sitemap.xml")({
           loc: `/business/${slug}`,
           changefreq: "daily",
           priority: 0.8,
+        });
+      }
+
+      for (const slug of personalSlugs) {
+        entries.push({
+          loc: `/p/${slug}`,
+          changefreq: "weekly",
+          priority: 0.6,
         });
       }
 
