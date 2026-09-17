@@ -67,6 +67,7 @@ export function PrintableQRModal({ business, qrUrl, isOpen, onClose }: Printable
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
+        hideCloseButton
         className="max-w-sm sm:max-w-md bg-white border-gray-200 text-black p-0 overflow-y-auto max-h-[95dvh] shadow-2xl printable-modal"
         style={{ zIndex: 1100 }}
       >

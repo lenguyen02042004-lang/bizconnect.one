@@ -197,16 +197,16 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
             </div>
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-black">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#c8102e] via-[#9b0d23] to-[#5c0715]">
               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 mix-blend-overlay" />
             </div>
           )}
 
           {/* Decorative subtle glows */}
-          <div className="absolute -top-12 -right-12 w-40 h-40 bg-primary/30 rounded-full blur-[60px]" />
-          <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-blue-500/20 rounded-full blur-[50px]" />
+          <div className="absolute -top-12 -right-12 w-40 h-40 bg-white/20 rounded-full blur-[60px]" />
+          <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-rose-500/30 rounded-full blur-[50px]" />
 
-          <div className="relative z-10 px-5 pt-6 pb-5">
+          <div className="relative z-10 px-5 pt-12 pb-5">
             <div className="flex gap-4 items-start">
               {/* Logo */}
               <div className="shrink-0 relative group">
