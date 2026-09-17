@@ -20,19 +20,28 @@ export function PrintableQRModal({ business, qrUrl, isOpen, onClose }: Printable
       : "";
 
   const handleShare = async () => {
-    try {
-      if (navigator.share) {
+    let shared = false;
+    if (navigator.share) {
+      try {
         await navigator.share({
           title: `Danh thiếp doanh nghiệp: ${business.name}`,
           text: `Khám phá danh thiếp của ${business.name} trên BizConnect`,
           url: profileUrl,
         });
-      } else {
+        shared = true;
+      } catch (err: any) {
+        if (err.name === "AbortError") return; // user cancelled
+        console.error("Error sharing:", err);
+      }
+    }
+    
+    if (!shared) {
+      try {
         await navigator.clipboard.writeText(profileUrl);
         toast.success("Đã sao chép đường dẫn!");
+      } catch (err) {
+        toast.error("Lỗi khi sao chép đường dẫn");
       }
-    } catch (err) {
-      console.error("Error sharing:", err);
     }
   };
 

@@ -115,17 +115,29 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
     if (UUID_RE.test(business.id)) {
       supabase.rpc("increment_business_shares", { _id: business.id });
     }
+    
+    let shared = false;
     if (navigator.share) {
       try {
         await navigator.share({
-          title: business.name,
-          text: business.short_intro,
+          title: business.name || "",
+          text: business.short_intro || "",
           url: profileUrl,
         });
-      } catch {}
-    } else {
-      await navigator.clipboard.writeText(profileUrl);
-      toast.success(t("publicCard.copiedExclaim"));
+        shared = true;
+      } catch (err: any) {
+        if (err.name === "AbortError") return; // user cancelled
+        console.error("Web Share API failed", err);
+      }
+    }
+    
+    if (!shared) {
+      try {
+        await navigator.clipboard.writeText(profileUrl);
+        toast.success(t("publicCard.copiedExclaim") || "Đã sao chép đường dẫn!");
+      } catch (err) {
+        toast.error("Lỗi khi chia sẻ đường dẫn");
+      }
     }
   };
 
