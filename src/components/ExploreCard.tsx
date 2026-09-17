@@ -12,87 +12,83 @@ export function ExploreCard({ business: b, onSelect }: any) {
       onClick={onSelect}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") onSelect();
-      }}
-      className={`group relative overflow-hidden rounded-[24px] cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl ${
-        isPremium
-          ? "border border-amber-400/40 hover:border-amber-400/70 shadow-[0_4px_24px_rgba(251,191,36,0.15)]"
-          : "border border-white/15 hover:border-primary/60 shadow-[0_4px_24px_rgba(200,16,46,0.12)]"
-      }`}
-      style={{
-        background: isPremium
-          ? "linear-gradient(135deg, #9b0d23 0%, #c8102e 55%, #e84057 100%)"
-          : "linear-gradient(135deg, #8b0a1f 0%, #b8102c 55%, #c8102e 100%)",
-      }}
+      onKeyDown={(e) => { if (e.key === "Enter") onSelect(); }}
+      className={`group relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-300
+        hover:-translate-y-1 hover:shadow-xl
+        bg-card border
+        ${isPremium
+          ? "border-amber-500/30 hover:border-amber-400/60 shadow-[0_2px_16px_rgba(251,191,36,0.08)]"
+          : "border-border hover:border-primary/40 shadow-sm hover:shadow-[0_4px_20px_rgba(200,16,46,0.12)]"
+        }`}
     >
-      {/* Subtle noise/texture overlay */}
-      <div className="absolute inset-0 opacity-[0.06] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVy idPSJhIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjY1IiBudW1PY3RhdmVzPSIzIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIiBmaWx0ZXI9InVybCgjYSkiIG9wYWNpdHk9IjEiLz48L3N2Zz4=')] pointer-events-none" />
+      {/* Subtle top accent line */}
+      <div className={`absolute top-0 left-0 right-0 h-0.5 ${isPremium ? "bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400" : "bg-gradient-to-r from-primary/60 via-primary to-primary/60"} opacity-80`} />
 
-      {/* Soft glow top-right */}
-      <div className="absolute -top-8 -right-8 w-36 h-36 bg-white/10 rounded-full blur-3xl pointer-events-none opacity-40 group-hover:opacity-60 transition-opacity" />
-      <div className="absolute -bottom-8 -left-8 w-28 h-28 bg-white/5 rounded-full blur-2xl pointer-events-none" />
-
-      {/* Premium star badge */}
+      {/* Premium badge */}
       {isPremium && (
-        <div className="absolute top-3 right-3 z-20 w-7 h-7 rounded-full bg-gradient-to-br from-amber-300 to-amber-500 flex items-center justify-center shadow-lg border border-amber-200/50">
-          <Star className="w-4 h-4 text-amber-950 fill-amber-950" />
+        <div className="absolute top-3 right-3 z-10 flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-400/10 border border-amber-400/30">
+          <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
+          <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Premium</span>
         </div>
       )}
 
-      <div className="p-6 flex flex-col h-full relative z-10">
-        {/* Logo + Follow button */}
-        <div className="flex items-start justify-between gap-4 mb-5">
-          <div className={`rounded-[18px] shrink-0 transition-transform duration-300 group-hover:scale-105 ${isPremium ? "ring-2 ring-amber-300/60 shadow-[0_0_16px_rgba(251,191,36,0.3)]" : "ring-2 ring-white/30 shadow-md"}`}>
+      <div className="p-5 flex flex-col gap-4">
+        {/* Logo + Name row */}
+        <div className="flex items-center gap-3">
+          <div className={`shrink-0 rounded-xl overflow-hidden border transition-transform duration-300 group-hover:scale-105
+            ${isPremium ? "border-amber-400/30 shadow-[0_0_12px_rgba(251,191,36,0.15)]" : "border-border/60"}`}>
             {b.logo_url ? (
               <img
-                src={`https://wsrv.nl/?url=${encodeURIComponent(b.logo_url)}&w=128&h=128&fit=contain&a=attention`}
+                src={b.logo_url}
                 alt={`Logo ${b.name}`}
                 loading="lazy"
                 decoding="async"
-                className="w-16 h-16 rounded-[16px] object-contain bg-white p-1"
+                className="w-14 h-14 object-contain bg-white p-1"
               />
             ) : (
-              <div className="w-16 h-16 rounded-[16px] bg-white/20 flex items-center justify-center">
-                <span className="text-white text-2xl font-bold">{b.name?.[0] ?? "B"}</span>
+              <div className="w-14 h-14 flex items-center justify-center bg-primary/10">
+                <span className="text-primary text-xl font-bold">{b.name?.[0] ?? "B"}</span>
               </div>
             )}
           </div>
+
+          <div className="flex-1 min-w-0">
+            <h3 className="font-display font-bold text-sm leading-snug line-clamp-2 text-foreground group-hover:text-primary transition-colors">
+              {b.name}
+            </h3>
+          </div>
+
           <FollowButton
             businessId={b.id}
             variant="icon"
-            className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity bg-white/20 hover:bg-white/30 text-white border-white/20"
+            className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
           />
         </div>
 
-        {/* Business name */}
-        <h3 className="font-display font-bold text-lg leading-snug mb-1 line-clamp-2 text-white drop-shadow-sm">
-          {b.name}
-        </h3>
-
         {/* Short intro */}
         {b.short_intro && (
-          <p className="text-sm text-white/80 line-clamp-2 leading-relaxed mb-3">
+          <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
             {b.short_intro}
           </p>
         )}
 
-        {/* Tags row */}
-        <div className="mt-auto pt-3 flex flex-wrap items-center gap-2 text-xs font-semibold text-white border-t border-white/15">
+        {/* Tags */}
+        <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-border/50">
           {b.country_name && (
-            <span className="px-2.5 py-1 rounded-lg bg-white/20 backdrop-blur-sm flex items-center gap-1.5 group-hover:bg-white/25 transition-colors">
-              <Globe2 className="w-3.5 h-3.5" />
-              <span className="truncate max-w-[90px]">{b.country_name}</span>
+            <span className="px-2 py-0.5 rounded-md bg-muted text-xs font-medium text-muted-foreground flex items-center gap-1 group-hover:bg-primary/8 group-hover:text-primary transition-colors">
+              <Globe2 className="w-3 h-3" />
+              <span className="truncate max-w-[80px]">{b.country_name}</span>
             </span>
           )}
           {b.industry_slug && (
-            <span className="px-2.5 py-1 rounded-lg bg-white/20 backdrop-blur-sm flex items-center gap-1.5 group-hover:bg-white/25 transition-colors">
-              <Briefcase className="w-3.5 h-3.5" />
-              <span className="truncate max-w-[100px]">{t(`industry.${b.industry_slug}`, { defaultValue: b.industry })}</span>
+            <span className="px-2 py-0.5 rounded-md bg-muted text-xs font-medium text-muted-foreground flex items-center gap-1 group-hover:bg-primary/8 group-hover:text-primary transition-colors">
+              <Briefcase className="w-3 h-3" />
+              <span className="truncate max-w-[90px]">{t(`industry.${b.industry_slug}`, { defaultValue: b.industry })}</span>
             </span>
           )}
-          <span className="px-2.5 py-1 rounded-lg bg-white/20 backdrop-blur-sm flex items-center gap-1.5 ml-auto group-hover:bg-white/25 transition-colors">
-            <Eye className="w-3.5 h-3.5" /> {formatCount(b.views_count)}
+          <span className="ml-auto px-2 py-0.5 rounded-md bg-muted text-xs font-semibold text-muted-foreground flex items-center gap-1">
+            <Eye className="w-3 h-3 text-primary" />
+            {formatCount(b.views_count)}
           </span>
         </div>
       </div>
