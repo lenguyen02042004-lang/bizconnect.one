@@ -66,8 +66,30 @@ function SignupPage() {
       },
     });
     setLoading(false);
-    if (error) toast.error(getAuthErrorMessage(error));
-    else {
+    
+    if (error) {
+      const msg = (error.message ?? "").toLowerCase();
+      if (
+        msg.includes("already registered") ||
+        msg.includes("already been registered") ||
+        msg.includes("user already registered") ||
+        msg.includes("already exists") ||
+        msg.includes("duplicate")
+      ) {
+        toast.error("Email này đã có tài khoản.", {
+          description: "Vui lòng chuyển sang đăng nhập.",
+        });
+      } else if (msg.includes("rate limit") || msg.includes("over_email_send_rate_limit") || msg.includes("too many")) {
+        toast.error("Quá nhiều yêu cầu. Vui lòng thử lại sau vài phút.");
+      } else if (msg.includes("invalid") && msg.includes("email")) {
+        toast.error("Địa chỉ email không hợp lệ.");
+      } else if (msg.includes("password")) {
+        toast.error("Mật khẩu không đủ mạnh. Vui lòng dùng ít nhất 6 ký tự.");
+      } else {
+        toast.error("Không thể tạo tài khoản. Vui lòng thử lại.");
+        console.error("[SignupPage] authError:", error);
+      }
+    } else {
       toast.success(t("auth.signupSuccess"));
       navigate({ to: accountType === "personal" ? "/me" : "/dashboard" });
     }
