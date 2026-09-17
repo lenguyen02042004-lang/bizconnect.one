@@ -4,7 +4,7 @@ import { slugifyProfile } from "@/lib/personal-card";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, User, Building2 } from "lucide-react";
+import { Loader2, User, Building2, Eye, EyeOff } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 
@@ -19,6 +19,8 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,9 +30,12 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
       toast.error("Vui lòng nhập email");
       return;
     }
+    if (!password || password.length < 6) {
+      toast.error("Mật khẩu phải có ít nhất 6 ký tự");
+      return;
+    }
 
     setLoading(true);
-    const password = "Biz@" + Math.random().toString(36).slice(2, 8); // stronger random password
     const displayName = name.trim() || trimmedEmail.split("@")[0];
 
     // 1. Sign up user
@@ -53,6 +58,8 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
         toast.error("Địa chỉ email không hợp lệ. Vui lòng kiểm tra lại.");
       } else if (msg.includes("rate limit") || msg.includes("over_email_send_rate_limit")) {
         toast.error("Bạn đã thử đăng ký quá nhiều lần. Vui lòng thử lại sau vài phút.");
+      } else if (msg.includes("password")) {
+        toast.error("Mật khẩu không hợp lệ. Vui lòng dùng ít nhất 6 ký tự.");
       } else {
         toast.error("Không thể tạo tài khoản: " + msg);
       }
@@ -119,7 +126,6 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
 
     if (sendError) {
       console.error("send_card_visit error:", sendError);
-      // Still success - card was created, just couldn't send
       toast.success("Đã tạo tài khoản thành công!", { description: "Bạn có thể gửi danh thiếp sau từ trang cá nhân." });
     } else {
       toast.success("Đã tạo tài khoản và trao đổi danh thiếp thành công!");
@@ -134,7 +140,7 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
       <div className="text-center mb-4">
         <h3 className="font-display text-xl font-bold mb-1">Tạo danh thiếp nhanh</h3>
         <p className="text-xs text-muted-foreground">
-          Chọn loại danh thiếp và nhập thông tin để kết nối.
+          Chọn loại tài khoản, nhập thông tin và tạo mật khẩu để kết nối.
         </p>
       </div>
 
@@ -175,6 +181,7 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
             onChange={(e) => setEmail(e.target.value)}
             required
             disabled={loading}
+            autoComplete="email"
           />
           <Input
             placeholder={
@@ -193,14 +200,33 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
             onChange={(e) => setPhone(e.target.value)}
             disabled={loading}
           />
+          {/* Password field */}
+          <div className="relative">
+            <Input
+              type={showPassword ? "text" : "password"}
+              placeholder="Mật khẩu (tối thiểu 6 ký tự)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              disabled={loading}
+              autoComplete="new-password"
+              className="pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              tabIndex={-1}
+            >
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
 
-        <p className="text-[11px] text-muted-foreground italic text-center">
-          * Hệ thống sẽ tạo mật khẩu ngẫu nhiên. Kiểm tra email để đặt lại mật khẩu sau khi đăng ký.
-        </p>
         <Button
           type="submit"
-          className="w-full bg-gradient-vivid text-white border-0 mt-2"
+          className="w-full bg-gradient-vivid text-white border-0 mt-2 h-11"
           disabled={loading}
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
