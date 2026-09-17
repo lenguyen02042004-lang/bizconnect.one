@@ -67,10 +67,6 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
     }
 
     const userId = authData.user.id;
-
-    // Check if email confirmation is required (session is null but user exists)
-    const needsConfirmation = !authData.session;
-
     const slug = slugifyProfile(displayName) + "-" + Math.floor(Math.random() * 9000 + 1000);
 
     // 2. Update profile
@@ -111,26 +107,22 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
       if (bData) createdBusinessId = bData.id;
     }
 
-    // 4. Send card visit (only if we have a session, i.e. auto-confirmed)
-    if (!needsConfirmation) {
-      const { error: sendError } = await supabase.rpc("send_card_visit", {
-        _from_business: createdBusinessId,
-        _to_business: toType === "business" ? toId : null,
-        _from_user: accountType === "personal" ? userId : null,
-        _to_user: toType === "personal" ? toId : null,
-        _subject: "Xin chào, tôi muốn kết nối giao thương",
-        _body: "Tôi vừa quét mã QR của bạn và tạo danh thiếp nhanh để kết nối.",
-      });
+    // 4. Send card visit immediately (email confirmation is disabled)
+    const { error: sendError } = await supabase.rpc("send_card_visit", {
+      _from_business: createdBusinessId,
+      _to_business: toType === "business" ? toId : null,
+      _from_user: accountType === "personal" ? userId : null,
+      _to_user: toType === "personal" ? toId : null,
+      _subject: "Xin chào, tôi muốn kết nối giao thương",
+      _body: "Tôi vừa quét mã QR của bạn và tạo danh thiếp nhanh để kết nối.",
+    });
 
-      if (sendError) {
-        console.error(sendError);
-      }
-
-      toast.success("Đã tạo tài khoản và trao đổi danh thiếp thành công!");
+    if (sendError) {
+      console.error("send_card_visit error:", sendError);
+      // Still success - card was created, just couldn't send
+      toast.success("Đã tạo tài khoản thành công!", { description: "Bạn có thể gửi danh thiếp sau từ trang cá nhân." });
     } else {
-      toast.success("Tài khoản đã được tạo! Vui lòng kiểm tra email để xác nhận tài khoản.", {
-        duration: 6000,
-      });
+      toast.success("Đã tạo tài khoản và trao đổi danh thiếp thành công!");
     }
 
     setLoading(false);
