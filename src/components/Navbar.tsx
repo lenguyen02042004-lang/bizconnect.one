@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { Globe2, Sparkles, LogIn, LayoutDashboard, LogOut, Menu } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -13,6 +14,7 @@ export function Navbar() {
   const { t } = useTranslation();
   const location = useLocation();
   const isHome = location.pathname === "/";
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <header 
@@ -120,7 +122,7 @@ export function Navbar() {
 
           {/* Mobile Menu */}
           <div className="sm:hidden ml-1">
-            <Sheet>
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" aria-label="Menu">
                   <Menu className="w-5 h-5" />
@@ -132,7 +134,7 @@ export function Navbar() {
                 {/* Mobile Auth Buttons */}
                 {!loading && user ? (
                   <div className="flex flex-col gap-3 pb-6 border-b border-border/50">
-                    <Link to="/dashboard" className="w-full">
+                    <Link to="/dashboard" className="w-full" onClick={() => setIsOpen(false)}>
                       <Button className="w-full gap-2 justify-start h-11" variant="secondary">
                         <LayoutDashboard className="w-5 h-5" />
                         <span className="text-base" suppressHydrationWarning>{t("nav.dashboard")}</span>
@@ -141,7 +143,10 @@ export function Navbar() {
                     <Button 
                       variant="outline" 
                       className="w-full gap-2 justify-start h-11"
-                      onClick={() => supabase.auth.signOut()}
+                      onClick={() => {
+                        supabase.auth.signOut();
+                        setIsOpen(false);
+                      }}
                     >
                       <LogOut className="w-5 h-5" />
                       <span className="text-base" suppressHydrationWarning>{t("nav.logout")}</span>
@@ -149,13 +154,13 @@ export function Navbar() {
                   </div>
                 ) : !loading ? (
                   <div className="flex flex-col gap-3 pb-6 border-b border-border/50">
-                    <Link to="/login" className="w-full">
+                    <Link to="/login" className="w-full" onClick={() => setIsOpen(false)}>
                       <Button variant="outline" className="w-full gap-2 justify-start h-11">
                         <LogIn className="w-5 h-5" />
                         <span className="text-base" suppressHydrationWarning>{t("nav.login")}</span>
                       </Button>
                     </Link>
-                    <Link to="/signup" className="w-full">
+                    <Link to="/signup" className="w-full" onClick={() => setIsOpen(false)}>
                       <Button className="w-full gap-2 justify-start h-11 bg-gradient-vivid text-white border-0 shadow-pink">
                         <Sparkles className="w-5 h-5" />
                         <span className="text-base" suppressHydrationWarning>{t("nav.signup")}</span>
@@ -170,6 +175,7 @@ export function Navbar() {
                     activeProps={{ className: "text-primary" }}
                     className="hover:text-primary transition-smooth"
                     suppressHydrationWarning
+                    onClick={() => setIsOpen(false)}
                   >
                     {t("nav.map")}
                   </Link>
@@ -178,6 +184,7 @@ export function Navbar() {
                     activeProps={{ className: "text-primary" }}
                     className="hover:text-primary transition-smooth"
                     suppressHydrationWarning
+                    onClick={() => setIsOpen(false)}
                   >
                     {t("nav.explore")}
                   </Link>
@@ -186,6 +193,7 @@ export function Navbar() {
                     activeProps={{ className: "text-primary" }}
                     className="hover:text-primary transition-smooth"
                     suppressHydrationWarning
+                    onClick={() => setIsOpen(false)}
                   >
                     {t("nav.countries")}
                   </Link>
@@ -194,6 +202,7 @@ export function Navbar() {
                     activeProps={{ className: "text-primary" }}
                     className="hover:text-primary transition-smooth"
                     suppressHydrationWarning
+                    onClick={() => setIsOpen(false)}
                   >
                     {t("nav.pricing")}
                   </Link>
