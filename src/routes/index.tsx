@@ -575,10 +575,18 @@ function HomePage() {
               </div>
               <div className="shrink-0 w-full md:w-1/3">
                 <div className="aspect-video md:aspect-square rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-md relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/20 to-transparent opacity-50"></div>
-                  <MessageSquare className="w-16 h-16 text-white/20 group-hover:scale-110 transition-transform duration-500" />
-                  <div className="absolute bottom-4 left-4 right-4 bg-black/40 backdrop-blur rounded-xl p-3 border border-white/10">
-                     <p className="text-xs text-white/60 mb-1">Gửi từ: Buyer International</p>
+                  <img 
+                    src="/b2b-illustration.png" 
+                    alt="B2B Trade Illustration" 
+                    className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                  
+                  <div className="absolute bottom-4 left-4 right-4 bg-black/40 backdrop-blur-md rounded-xl p-3 border border-white/10 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                     <div className="flex items-center gap-2 mb-1">
+                       <MessageSquare className="w-3 h-3 text-purple-400" />
+                       <p className="text-xs text-white/80 font-medium">Gửi từ: Buyer International</p>
+                     </div>
                      <p className="text-sm font-semibold text-white">"Tôi cần báo giá 10,000 SP..."</p>
                   </div>
                 </div>
