@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, lazy, Suspense } from "react";
+import { useState, useMemo, useEffect, lazy, Suspense, useDeferredValue } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
@@ -230,8 +230,10 @@ function HomePage() {
     return m;
   }, [businesses, stats?.industryCounts]);
 
+  const deferredSearch = useDeferredValue(search);
+
   const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
+    const q = deferredSearch.trim().toLowerCase();
     return businesses.filter((b) => {
       if (industry !== "all" && b.industry_slug !== industry) return false;
       if (country !== "all" && b.country_code !== country) return false;
@@ -244,7 +246,7 @@ function HomePage() {
       }
       return true;
     });
-  }, [industry, country, search, t, businesses, countries]);
+  }, [industry, country, deferredSearch, t, businesses, countries]);
 
   function scrollToExplore() {
     document
@@ -340,6 +342,18 @@ function HomePage() {
                 <Input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && search.trim()) {
+                      navigate({
+                        to: "/explore",
+                        search: {
+                          q: search.trim(),
+                          industry: industry !== "all" ? industry : undefined,
+                          country: country !== "all" ? country : undefined,
+                        },
+                      });
+                    }
+                  }}
                   placeholder={t("home.searchPlaceholder")}
                   className="h-11 pl-10 bg-background/95 border-border/50 text-foreground placeholder:text-muted-foreground rounded-xl focus-visible:ring-2 focus-visible:ring-primary"
                 />

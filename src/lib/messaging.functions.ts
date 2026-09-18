@@ -27,10 +27,10 @@ export const sendCardVisit = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase } = context;
     const { data: msgId, error } = await supabase.rpc("send_card_visit", {
-      _from_business: data.from_business || null,
-      _to_business: data.to_business || null,
-      _from_user: data.from_user || null,
-      _to_user: data.to_user || null,
+      _from_business: data.from_business || undefined,
+      _to_business: data.to_business || undefined,
+      _from_user: data.from_user || undefined,
+      _to_user: data.to_user || undefined,
       _subject: data.subject,
       _body: data.body,
     });

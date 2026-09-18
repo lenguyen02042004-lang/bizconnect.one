@@ -177,7 +177,7 @@ function PricingPage() {
       const { error: rpcErr } = await supabase.rpc("submit_manual_payment", {
         p_plan_id: planId,
         p_receipt_url: receiptUrl ?? "",
-        p_business_id: bizId,
+        p_business_id: bizId ?? undefined,
       });
 
       if (rpcErr) throw rpcErr;
