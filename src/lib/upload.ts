@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import imageCompression from "browser-image-compression";
 
 /**
  * Upload a file to a public Supabase storage bucket under {userId}/{filename}.
@@ -9,12 +10,33 @@ export async function uploadPublicFile(
   file: File,
   userId: string,
 ): Promise<string> {
-  const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+  let fileToUpload = file;
+
+  if (file.type.startsWith("image/")) {
+    try {
+      const options = {
+        maxSizeMB: 0.2,
+        maxWidthOrHeight: 1200,
+        useWebWorker: true,
+        fileType: "image/webp" as string,
+      };
+      
+      const compressedBlob = await imageCompression(file, options);
+      const newName = file.name.replace(/\.[^/.]+$/, ".webp");
+      fileToUpload = new File([compressedBlob], newName, {
+        type: "image/webp",
+      });
+    } catch (error) {
+      console.error("Lỗi khi nén ảnh, sẽ dùng ảnh gốc:", error);
+    }
+  }
+
+  const ext = fileToUpload.name.split(".").pop()?.toLowerCase() || "webp";
   const path = `${userId}/${crypto.randomUUID()}.${ext}`;
-  const { error } = await supabase.storage.from(bucket).upload(path, file, {
+  const { error } = await supabase.storage.from(bucket).upload(path, fileToUpload, {
     cacheControl: "3600",
     upsert: false,
-    contentType: file.type,
+    contentType: fileToUpload.type,
   });
   if (error) throw error;
   const { data } = supabase.storage.from(bucket).getPublicUrl(path);
