@@ -129,10 +129,10 @@ function BusinessDetailPage() {
               <div className="mt-1 bg-amber-500/20 p-2 rounded-full">
                 <Info className="w-5 h-5 text-amber-500" />
               </div>
-              <div>
-                <h3 className="font-semibold text-foreground text-lg">Đây là doanh nghiệp của bạn?</h3>
-                <p className="text-muted-foreground text-sm mt-1">
-                  Nhận quyền quản lý ngay hôm nay để cập nhật thông tin, tương tác với khách hàng B2B và mở rộng mạng lưới giao thương. Hoàn toàn miễn phí.
+              <div className="flex-1">
+                <h3 className="font-semibold text-foreground text-lg">{t("business.claimTitle")}</h3>
+                <p className="text-muted-foreground text-sm mt-1 leading-relaxed">
+                  {t("business.claimDesc")}
                 </p>
               </div>
             </div>
@@ -140,7 +140,7 @@ function BusinessDetailPage() {
               onClick={() => setIsClaimOpen(true)}
               className="whitespace-nowrap bg-amber-500 hover:bg-amber-600 text-white shadow-lg shadow-amber-500/20 gap-2 font-semibold"
             >
-              <ShieldCheck className="w-4 h-4" /> Nhận quyền quản lý
+              <ShieldCheck className="w-4 h-4" /> {t("business.claimBtn")}
             </Button>
           </div>
         )}

@@ -129,7 +129,7 @@ function PricingPage() {
     
     const bizIdStr = businesses?.[0]?.id ?? null;
     if (!bizIdStr && (planTarget.subType === 'b2b_block_500' || planTarget.subType === 'icon_premium')) {
-      toast.error("Vui lòng tạo Danh thiếp Doanh nghiệp trước khi nâng cấp gói này!");
+      toast.error(t("pricing.errorRequireBusiness"));
       return;
     }
     

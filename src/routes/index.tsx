@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, lazy, Suspense } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { useQuery } from "@tanstack/react-query";
 const Globe3D = lazy(() =>
   import("@/components/Globe3D").then((module) => ({ default: module.Globe3D })),
@@ -63,17 +64,17 @@ export const Route = createFileRoute("/")({
   component: HomePage,
   head: () => ({
     meta: [
-      { title: "BizConnect.One — Danh bạ doanh nghiệp toàn cầu 3D" },
+      { title: i18n.t("home.metaTitle") },
       {
         name: "description",
         content:
-          "Danh bạ 3D tương tác kết nối hàng ngàn doanh nghiệp toàn cầu theo quốc gia và ngành nghề. Tạo danh thiếp online, gửi card visit và mở rộng đối tác B2B quốc tế chỉ từ $5/năm.",
+          i18n.t("home.metaDesc"),
       },
-      { property: "og:title", content: "BizConnect.One — Danh bạ doanh nghiệp toàn cầu 3D" },
+      { property: "og:title", content: i18n.t("home.metaTitle") },
       {
         property: "og:description",
         content:
-          "Danh bạ 3D tương tác kết nối doanh nghiệp toàn cầu theo quốc gia & ngành nghề. Tạo danh thiếp online, gửi card visit, mở rộng đối tác B2B quốc tế.",
+          i18n.t("home.metaDesc"),
       },
       { property: "og:url", content: "https://bizconnect.one/" },
       {
@@ -98,8 +99,8 @@ export const Route = createFileRoute("/")({
               "@type": "WebSite",
               "@id": "https://bizconnect.one/#website",
               url: "https://bizconnect.one/",
-              name: "BizConnect.One",
-              description: "Danh bạ 3D tương tác kết nối doanh nghiệp toàn cầu theo quốc gia & ngành nghề.",
+              name: i18n.t("home.schemaTitle"),
+              description: i18n.t("home.schemaDesc"),
               potentialAction: [
                 {
                   "@type": "SearchAction",
@@ -198,7 +199,7 @@ function HomePage() {
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!contactForm.name || !contactForm.email || !contactForm.message) {
-      toast.error("Vui lòng điền đầy đủ các thông tin bắt buộc.");
+      toast.error(t("home.contactErrorFill"));
       return;
     }
     setSubmittingContact(true);
@@ -207,9 +208,9 @@ function HomePage() {
     ]);
     setSubmittingContact(false);
     if (error) {
-      toast.error("Gửi thất bại, vui lòng thử lại sau.");
+      toast.error(t("home.contactErrorFail"));
     } else {
-      toast.success("Đã gửi tin nhắn thành công. Chúng tôi sẽ phản hồi sớm nhất!");
+      toast.success(t("home.contactSuccess"));
       setContactForm({ name: "", email: "", phone: "", message: "" });
     }
   };
@@ -284,13 +285,13 @@ function HomePage() {
             
             {/* Answer-First Summary for AEO / SEO */}
             <p className="sr-only">
-              BizConnect.One là danh bạ doanh nghiệp toàn cầu 3D, giúp kết nối hàng ngàn công ty theo quốc gia và ngành nghề. 
-              Cho phép tạo danh thiếp online, lưu trữ thông tin đối tác an toàn và mở rộng giao thương B2B quốc tế nhanh chóng.
+              {t("home.introP1")} 
+              {t("home.introP2")}
             </p>
 
             <div className="mt-4 inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-base sm:text-lg font-medium text-white backdrop-blur-md shadow-glow">
               <Sparkles className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-              Hướng đến cộng đồng hơn 100k+ doanh nghiệp toàn cầu!
+              {t("home.introStats")}
             </div>
             <p className="mt-5 text-white/80 text-base sm:text-lg max-w-2xl mx-auto">
               {t("home.heroSubtitle", { count: countries.length })}
@@ -492,11 +493,10 @@ function HomePage() {
           {/* Features Section */}
           <div className="mt-20 animate-fade-up" style={{ animationDelay: "0.2s" }}>
             <div className="text-center mb-10">
-              <h2 className="text-2xl sm:text-3xl font-display font-bold text-white mb-3">
-                Danh bạ doanh nghiệp <span className="text-gradient">Ưu việt</span>
+              <h2 className="text-2xl sm:text-3xl font-display font-bold text-white mb-3" dangerouslySetInnerHTML={{ __html: t("home.howItWorksTitle").replace("Ưu việt", '<span class="text-gradient">Ưu việt</span>').replace("Ultimate", '<span class="text-gradient">Ultimate</span>') }}>
               </h2>
               <p className="text-white/70 max-w-2xl mx-auto">
-                Kết nối giao thương nhanh chóng chỉ với 3 bước đơn giản, lưu trữ an toàn không lo thất lạc.
+                {t("home.howItWorksDesc")}
               </p>
             </div>
             
@@ -505,9 +505,9 @@ function HomePage() {
                 <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <UserPlus className="w-6 h-6 text-primary-glow" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">1. Tạo tài khoản</h3>
+                <h3 className="text-xl font-bold text-white mb-2">{t("home.step1Title")}</h3>
                 <p className="text-white/60 text-sm leading-relaxed">
-                  Đăng ký dễ dàng và tạo hồ sơ doanh nghiệp của bạn trong vòng chưa đầy 1 phút.
+                  {t("home.step1Desc")}
                 </p>
               </div>
 
@@ -515,9 +515,9 @@ function HomePage() {
                 <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <QrCode className="w-6 h-6 text-primary-glow" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">2. Quét QR - Gửi danh thiếp</h3>
+                <h3 className="text-xl font-bold text-white mb-2">{t("home.step2Title")}</h3>
                 <p className="text-white/60 text-sm leading-relaxed">
-                  Trao đổi thông tin tức thì qua mã QR, gửi danh thiếp số để kết nối giao thương nhanh chóng.
+                  {t("home.step2Desc")}
                 </p>
               </div>
 
@@ -525,9 +525,9 @@ function HomePage() {
                 <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <FolderLock className="w-6 h-6 text-primary-glow" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">3. Lưu trữ an toàn</h3>
+                <h3 className="text-xl font-bold text-white mb-2">{t("home.step3Title")}</h3>
                 <p className="text-white/60 text-sm leading-relaxed">
-                  Lưu hàng ngàn danh bạ vào một nơi duy nhất. Đảm bảo an toàn, không bao giờ lo thất lạc!
+                  {t("home.step3Desc")}
                 </p>
               </div>
             </div>
@@ -538,7 +538,7 @@ function HomePage() {
             <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border border-white/10 p-8 sm:p-12 text-center md:text-left flex flex-col md:flex-row items-center gap-8 shadow-2xl">
               {/* Coming soon badge */}
               <div className="absolute top-4 right-4 bg-gradient-vivid text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-pink animate-pulse">
-                Sắp triển khai
+                {t("home.upcoming")}
               </div>
               <div className="flex-1">
                 <div className="inline-flex items-center gap-2 mb-4">
@@ -546,24 +546,24 @@ function HomePage() {
                     <Handshake className="w-5 h-5 text-purple-400" />
                   </div>
                   <h2 className="text-2xl sm:text-3xl font-display font-bold text-white">
-                    Giao thương B2B & Yêu cầu Báo giá
+                    {t("home.b2bFeatureTitle")}
                   </h2>
                 </div>
                 <p className="text-white/70 text-lg leading-relaxed mb-6">
-                  Mô hình kết nối thương mại chuẩn quốc tế. Khám phá cơ hội hợp tác, tạo yêu cầu mua hàng (RFQ) và nhận báo giá trực tiếp từ hàng ngàn nhà cung cấp uy tín trên hệ sinh thái BizConnect.One.
+                  {t("home.b2bFeatureDesc")}
                 </p>
                 <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                   <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-lg flex items-center gap-2">
                     <Search className="w-4 h-4 text-purple-400" />
-                    <span className="text-sm text-white/90">Tìm nguồn hàng</span>
+                    <span className="text-sm text-white/90">{t("home.b2bBadge1")}</span>
                   </div>
                   <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-lg flex items-center gap-2">
                     <FileText className="w-4 h-4 text-purple-400" />
-                    <span className="text-sm text-white/90">Đăng yêu cầu RFQ</span>
+                    <span className="text-sm text-white/90">{t("home.b2bBadge2")}</span>
                   </div>
                   <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-lg flex items-center gap-2">
                     <Shield className="w-4 h-4 text-purple-400" />
-                    <span className="text-sm text-white/90">Giao dịch an toàn</span>
+                    <span className="text-sm text-white/90">{t("home.b2bBadge3")}</span>
                   </div>
                 </div>
               </div>
@@ -579,9 +579,9 @@ function HomePage() {
                   <div className="absolute bottom-4 left-4 right-4 bg-black/40 backdrop-blur-md rounded-xl p-3 border border-white/10 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
                      <div className="flex items-center gap-2 mb-1">
                        <MessageSquare className="w-3 h-3 text-purple-400" />
-                       <p className="text-xs text-white/80 font-medium">Gửi từ: Buyer International</p>
+                       <p className="text-xs text-white/80 font-medium">{t("home.b2bSampleSender")}</p>
                      </div>
-                     <p className="text-sm font-semibold text-white">"Tôi cần báo giá 10,000 SP..."</p>
+                     <p className="text-sm font-semibold text-white">{t("home.b2bSampleMessage")}</p>
                   </div>
                 </div>
               </div>
@@ -592,22 +592,22 @@ function HomePage() {
           <div className="mt-24 animate-fade-up max-w-3xl mx-auto">
             <div className="text-center mb-8">
               <h2 className="text-2xl sm:text-3xl font-display font-bold text-white mb-3">
-                Liên hệ với chúng tôi
+                {t("home.contactTitle")}
               </h2>
               <p className="text-white/70">
-                Bạn cần hỗ trợ, tư vấn hay trao đổi hợp tác? Hãy để lại thông tin, đội ngũ Admin sẽ liên hệ lại với bạn sớm nhất.
+                {t("home.contactDesc")}
               </p>
             </div>
             
             <form onSubmit={handleContactSubmit} className="bg-white/5 border border-white/10 rounded-3xl p-6 sm:p-10 backdrop-blur-xl shadow-2xl">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-white/80">Họ và tên *</label>
+                  <label className="text-sm font-medium text-white/80">{t("home.contactName")}</label>
                   <div className="relative">
                     <Users className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                     <Input 
                       required
-                      placeholder="Nhập tên của bạn"
+                      placeholder={t("home.contactNamePlaceholder")}
                       value={contactForm.name}
                       onChange={e => setContactForm(prev => ({...prev, name: e.target.value}))}
                       className="pl-10 h-12 bg-black/20 border-white/10 text-white placeholder:text-white/30 rounded-xl focus-visible:ring-primary focus-visible:border-primary"
@@ -615,11 +615,11 @@ function HomePage() {
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-white/80">Số điện thoại</label>
+                  <label className="text-sm font-medium text-white/80">{t("home.contactPhone")}</label>
                   <div className="relative">
                     <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                     <Input 
-                      placeholder="Nhập số điện thoại"
+                      placeholder={t("home.contactPhonePlaceholder")}
                       value={contactForm.phone}
                       onChange={e => setContactForm(prev => ({...prev, phone: e.target.value}))}
                       className="pl-10 h-12 bg-black/20 border-white/10 text-white placeholder:text-white/30 rounded-xl focus-visible:ring-primary focus-visible:border-primary"
@@ -634,7 +634,7 @@ function HomePage() {
                   <Input 
                     required
                     type="email"
-                    placeholder="Nhập địa chỉ email"
+                    placeholder={t("home.contactEmailPlaceholder")}
                     value={contactForm.email}
                     onChange={e => setContactForm(prev => ({...prev, email: e.target.value}))}
                     className="pl-10 h-12 bg-black/20 border-white/10 text-white placeholder:text-white/30 rounded-xl focus-visible:ring-primary focus-visible:border-primary"
@@ -642,11 +642,11 @@ function HomePage() {
                 </div>
               </div>
               <div className="space-y-1.5 mb-8">
-                <label className="text-sm font-medium text-white/80">Nội dung trao đổi *</label>
+                <label className="text-sm font-medium text-white/80">{t("home.contactMessage")}</label>
                 <textarea 
                   required
                   rows={4}
-                  placeholder="Nhập nội dung cần hỗ trợ..."
+                  placeholder={t("home.contactMessagePlaceholder")}
                   value={contactForm.message}
                   onChange={e => setContactForm(prev => ({...prev, message: e.target.value}))}
                   className="w-full p-4 bg-black/20 border border-white/10 text-white placeholder:text-white/30 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary resize-none transition-smooth"
@@ -657,7 +657,7 @@ function HomePage() {
                 disabled={submittingContact}
                 className="w-full h-12 bg-primary hover:bg-primary/90 text-white rounded-xl font-bold shadow-glow text-base"
               >
-                {submittingContact ? "Đang gửi..." : "Gửi thông tin liên hệ"}
+                {submittingContact ? t("home.contactSending") : t("home.contactSubmit")}
               </Button>
             </form>
           </div>
