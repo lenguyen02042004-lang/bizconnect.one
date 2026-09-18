@@ -302,12 +302,6 @@ function HomePage() {
               >
                 <Search className="w-4 h-4" /> {t("home.exploreBtn")}
               </button>
-              <Link
-                to="/explore"
-                className="px-5 h-11 rounded-xl bg-white/10 backdrop-blur-md border border-white/25 text-white font-semibold hover:bg-white/20 transition-smooth inline-flex items-center gap-2"
-              >
-                <Globe2 className="w-4 h-4" /> {t("home.map2dBtn")}
-              </Link>
             </div>
           </div>
         </div>
@@ -346,12 +340,12 @@ function HomePage() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder={t("home.searchPlaceholder")}
-                  className="h-11 pl-10 bg-white/95 border-white/20 text-foreground placeholder:text-muted-foreground rounded-xl focus-visible:ring-2 focus-visible:ring-primary"
+                  className="h-11 pl-10 bg-background/95 border-border/50 text-foreground placeholder:text-muted-foreground rounded-xl focus-visible:ring-2 focus-visible:ring-primary"
                 />
               </div>
               <div className="md:col-span-3">
                 <Select value={industry} onValueChange={setIndustry}>
-                  <SelectTrigger className="h-11 bg-white/95 border-white/20 text-foreground rounded-xl">
+                  <SelectTrigger className="h-11 bg-background/95 border-border/50 text-foreground rounded-xl">
                     <SelectValue placeholder={t("common.industry")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -366,7 +360,7 @@ function HomePage() {
               </div>
               <div className="md:col-span-3 flex gap-2">
                 <Select value={country} onValueChange={setCountry}>
-                  <SelectTrigger className="h-11 bg-white/95 border-white/20 text-foreground rounded-xl flex-1">
+                  <SelectTrigger className="h-11 bg-background/95 border-border/50 text-foreground rounded-xl flex-1">
                     <SelectValue placeholder={t("common.country")} />
                   </SelectTrigger>
                   <SelectContent>
