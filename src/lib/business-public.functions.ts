@@ -84,34 +84,19 @@ export const getExploreBusinesses = createServerFn({ method: "GET" })
   .handler(async ({ data: input }) => {
     const { supabase } = await import("@/integrations/supabase/client");
     let query = supabase
-      .from("businesses")
+      .rpc("get_randomized_explore_businesses", {
+        p_country: input.country || "all",
+        p_industry_slug: input.industry || "all",
+        p_search: input.q || ""
+      }, { count: "exact" })
       .select(
-        "id, name, slug, logo_url, country_code, lat, lng, views_count, icon_tier, status, short_intro, website, industries(name, slug), countries(name)",
-        { count: 'exact' }
-      )
-      .eq("status", "public");
-
-    if (input.country && input.country !== "all") {
-      query = query.eq("country_code", input.country);
-    }
-    
-    if (input.industry && input.industry !== "all") {
-      const { data: ind } = await supabase.from("industries").select("id").eq("slug", input.industry).maybeSingle();
-      if (ind) {
-        query = query.eq("industry_id", ind.id);
-      }
-    }
-    
-    if (input.q) {
-      query = query.ilike("name", `%${input.q}%`);
-    }
+        "id, name, slug, logo_url, country_code, lat, lng, views_count, icon_tier, status, short_intro, website, industries(name, slug), countries(name)"
+      );
 
     const from = (input.page - 1) * input.limit;
     const to = from + input.limit - 1;
 
-    const { data: bizes, error, count } = await query
-      .order("created_at", { ascending: false })
-      .range(from, to);
+    const { data: bizes, error, count } = await query.range(from, to);
   
     if (error) throw new Error(error.message);
   
