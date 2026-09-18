@@ -37,33 +37,39 @@ function NotFoundComponent() {
 }
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  console.error(error);
+  console.error("UI Boundary caught error:", error);
   const router = useRouter();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
+    <div className="flex min-h-[80vh] items-center justify-center px-4">
+      <div className="max-w-md text-center bg-card p-8 rounded-3xl border border-border shadow-pink">
+        <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          Đã có lỗi xảy ra
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+        <p className="mt-3 text-sm text-muted-foreground">
+          Rất tiếc, hệ thống gặp sự cố khi tải trang này. Vui lòng thử lại hoặc quay về trang chủ.
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <div className="mt-4 p-3 bg-muted rounded-xl text-xs text-left overflow-auto max-h-32 font-mono text-muted-foreground border border-border">
+          {error.message || "Lỗi không xác định"}
+        </div>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
           <button
             onClick={() => {
               router.invalidate();
               reset();
             }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center justify-center rounded-xl bg-gradient-vivid px-6 py-2.5 text-sm font-semibold text-white shadow-pink transition-all hover:opacity-90"
           >
-            Try again
+            Thử lại
           </button>
           <a
             href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+            className="inline-flex items-center justify-center rounded-xl border border-input bg-background px-6 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-accent"
           >
-            Go home
+            Về trang chủ
           </a>
         </div>
       </div>

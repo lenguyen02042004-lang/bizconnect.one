@@ -131,7 +131,18 @@ export const getExploreBusinesses = createServerFn({ method: "GET" })
   };
 });
 
+let globalListsCache: {
+  timestamp: number;
+  data: { countries: any[]; industries: any[] };
+} | null = null;
+
+const CACHE_TTL = 1000 * 60 * 15; // 15 mins
+
 export const getGlobalLists = createServerFn({ method: "GET" }).handler(async () => {
+  if (globalListsCache && Date.now() - globalListsCache.timestamp < CACHE_TTL) {
+    return globalListsCache.data;
+  }
+
   const { supabase } = await import("@/integrations/supabase/client");
   
   // Get all countries and industries
@@ -149,5 +160,12 @@ export const getGlobalLists = createServerFn({ method: "GET" }).handler(async ()
   const activeCodes = new Set(activeBizes?.map(b => b.country_code) || []);
   const activeCountries = (countries ?? []).filter(c => activeCodes.has(c.code));
 
-  return { countries: activeCountries, industries: industries ?? [] };
+  const result = { countries: activeCountries, industries: industries ?? [] };
+  
+  globalListsCache = {
+    timestamp: Date.now(),
+    data: result,
+  };
+
+  return result;
 });

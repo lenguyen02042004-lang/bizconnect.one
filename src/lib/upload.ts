@@ -15,7 +15,7 @@ export async function uploadPublicFile(
   if (file.type.startsWith("image/")) {
     try {
       const options = {
-        maxSizeMB: 0.2,
+        maxSizeMB: 0.1,
         maxWidthOrHeight: 1200,
         useWebWorker: true,
         fileType: "image/webp" as string,
