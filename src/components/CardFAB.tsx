@@ -5,6 +5,8 @@ import { QRScannerDialog } from "@/components/QRScannerDialog";
 import { MyCardModal, type CardData } from "@/components/MyCardModal";
 import { supabase } from "@/integrations/supabase/client";
 
+import { useLocation } from "@tanstack/react-router";
+
 /**
  * CardFAB — Floating Action Button visible on all pages for logged-in users.
  * Expands to reveal two actions:
@@ -13,11 +15,18 @@ import { supabase } from "@/integrations/supabase/client";
  */
 export function CardFAB() {
   const { user, accountType } = useAuth();
+  const location = useLocation();
   const [expanded, setExpanded] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [showCard, setShowCard] = useState(false);
   const [cardData, setCardData] = useState<CardData | null>(null);
   const [loadingCard, setLoadingCard] = useState(false);
+
+  // Hide FAB on specific routes to prevent UI collision
+  const hideFabRoutes = ["/business/", "/p/", "/login", "/signup"];
+  const shouldHide = hideFabRoutes.some((route) => location.pathname.startsWith(route));
+
+  if (shouldHide) return null;
 
   const openMyCard = async () => {
     setExpanded(false);

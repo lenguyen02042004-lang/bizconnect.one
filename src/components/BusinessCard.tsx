@@ -179,7 +179,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
       <div
         className={
           mode === "modal"
-            ? "relative w-full max-w-md md:max-w-2xl max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-2rem)] rounded-3xl bg-background/95 backdrop-blur-xl shadow-2xl border border-white/10 flex flex-col overflow-hidden ring-1 ring-black/5"
+            ? "relative w-full h-[100dvh] sm:h-auto max-w-md md:max-w-2xl max-h-[100dvh] sm:max-h-[calc(100dvh-2rem)] rounded-none sm:rounded-3xl bg-background/95 backdrop-blur-xl shadow-2xl border-0 sm:border sm:border-white/10 flex flex-col overflow-hidden ring-0 sm:ring-1 sm:ring-black/5"
             : "relative w-full max-w-md md:max-w-2xl mx-auto rounded-3xl bg-background/95 backdrop-blur-xl shadow-2xl border border-white/10 flex flex-col overflow-hidden ring-1 ring-black/5"
         }
       >
@@ -497,7 +497,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                     {t("businessCard.about")}
                   </p>
                 </div>
-                <p className="text-sm leading-relaxed text-foreground/85 whitespace-pre-line bg-accent/30 rounded-2xl p-4 border border-border/40">
+                <p className="text-sm leading-relaxed text-foreground/85 whitespace-pre-line break-words bg-accent/30 rounded-2xl p-4 border border-border/40">
                   {description}
                 </p>
               </div>
@@ -680,7 +680,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
   return (
     <>
       {mode === "modal" ? (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-3 sm:p-4 animate-fade-up">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4 animate-fade-up">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
           {innerContent}
         </div>
