@@ -232,6 +232,45 @@ function HomePage() {
 
   const deferredSearch = useDeferredValue(search);
 
+  const [liveResults, setLiveResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  useEffect(() => {
+    const q = deferredSearch.trim().toLowerCase();
+    if (!q) {
+      setLiveResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    let isMounted = true;
+    const fetchSearch = async () => {
+      setIsSearching(true);
+      const { data } = await supabase
+        .rpc("get_randomized_explore_businesses", {
+          p_country: country || "all",
+          p_industry_slug: industry || "all",
+          p_search: q
+        })
+        .select("id, name, slug, logo_url, country_code, lat, lng, views_count, icon_tier, status, short_intro, website, industries(name, slug), countries(name)")
+        .limit(6);
+
+      if (isMounted) {
+        setLiveResults(data || []);
+        setIsSearching(false);
+      }
+    };
+    
+    const timer = setTimeout(() => {
+      fetchSearch();
+    }, 300);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+  }, [deferredSearch, industry, country]);
+
   const filtered = useMemo(() => {
     const q = deferredSearch.trim().toLowerCase();
     return businesses.filter((b) => {
@@ -364,13 +403,17 @@ function HomePage() {
                   />
                   {search.trim().length > 0 && (
                     <div className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-xl shadow-xl z-50 max-h-[300px] overflow-y-auto">
-                      {filtered.length === 0 ? (
+                      {isSearching ? (
+                        <div className="p-4 text-sm text-muted-foreground text-center">
+                          {t("common.loading", { defaultValue: "Đang tìm kiếm..." })}
+                        </div>
+                      ) : liveResults.length === 0 ? (
                         <div className="p-4 text-sm text-muted-foreground text-center">
                           {t("explore.noResult")}
                         </div>
                       ) : (
                         <div className="flex flex-col">
-                          {filtered.slice(0, 5).map((b) => (
+                          {liveResults.slice(0, 5).map((b) => (
                             <button
                               key={b.id}
                               onClick={() => {
@@ -400,7 +443,7 @@ function HomePage() {
                               </div>
                             </button>
                           ))}
-                          {filtered.length > 5 && (
+                          {liveResults.length > 5 && (
                             <button
                               onClick={() =>
                                 navigate({
@@ -414,7 +457,7 @@ function HomePage() {
                               }
                               className="p-3 text-center text-xs font-semibold text-primary hover:bg-primary/10 transition-colors w-full"
                             >
-                              {t("explore.loadMoreBtn")} ({filtered.length - 5})
+                              {t("explore.loadMoreBtn")}
                             </button>
                           )}
                         </div>
@@ -456,8 +499,9 @@ function HomePage() {
             </div>
 
             <div className="mt-3 text-sm text-white/70">
-              <span className="font-semibold text-primary-glow">{filtered.length}</span>{" "}
-              {t("home.matchedBusinesses")}
+              {industry === "all" && country === "all" && !search ? null : (
+                <span className="italic">Nhấn <strong>Enter</strong> để tìm kiếm toàn bộ cơ sở dữ liệu.</span>
+              )}
               {(industry !== "all" || country !== "all" || search) && (
                 <button
                   onClick={() => {
