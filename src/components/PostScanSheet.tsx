@@ -79,10 +79,11 @@ export function PostScanSheet({ preview, onClose, onSendCard }: PostScanSheetPro
         note: null,
       };
 
-      const payload: Database["public"]["Tables"]["saved_contacts"]["Insert"] =
+      const payload = (
         preview.type === "business"
           ? { ...base, business_id: preview.id }
-          : { ...base, personal_profile_id: preview.id };
+          : { ...base, personal_profile_id: preview.id, business_id: null as any }
+      ) as Database["public"]["Tables"]["saved_contacts"]["Insert"];
 
       const { error } = await supabase.from("saved_contacts").upsert(payload, {
         onConflict:

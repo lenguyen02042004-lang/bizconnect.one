@@ -337,26 +337,91 @@ function HomePage() {
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-2 p-2 bg-white/10 backdrop-blur-xl border border-white/15 rounded-2xl shadow-glow">
-              <div className="relative md:col-span-6">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && search.trim()) {
-                      navigate({
-                        to: "/explore",
-                        search: {
-                          q: search.trim(),
-                          industry: industry !== "all" ? industry : undefined,
-                          country: country !== "all" ? country : undefined,
-                        },
-                      });
-                    }
-                  }}
-                  placeholder={t("home.searchPlaceholder")}
-                  className="h-11 pl-10 bg-background/95 border-border/50 text-foreground placeholder:text-muted-foreground rounded-xl focus-visible:ring-2 focus-visible:ring-primary"
-                />
+              <div className="relative md:col-span-6 flex flex-col">
+                <div className="relative w-full">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && search.trim()) {
+                        navigate({
+                          to: "/explore",
+                          search: {
+                            q: search.trim(),
+                            industry: industry !== "all" ? industry : undefined,
+                            country: country !== "all" ? country : undefined,
+                          },
+                        });
+                      }
+                    }}
+                    placeholder={t("home.searchPlaceholder")}
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="none"
+                    spellCheck={false}
+                    className="h-11 pl-10 bg-background/95 border-border/50 text-foreground placeholder:text-muted-foreground rounded-xl focus-visible:ring-2 focus-visible:ring-primary w-full"
+                  />
+                  {search.trim().length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-xl shadow-xl z-50 max-h-[300px] overflow-y-auto">
+                      {filtered.length === 0 ? (
+                        <div className="p-4 text-sm text-muted-foreground text-center">
+                          {t("explore.noResult")}
+                        </div>
+                      ) : (
+                        <div className="flex flex-col">
+                          {filtered.slice(0, 5).map((b) => (
+                            <button
+                              key={b.id}
+                              onClick={() => {
+                                setSelected(b);
+                                setSearch("");
+                              }}
+                              className="flex items-center gap-3 p-3 hover:bg-accent/50 text-left border-b border-border/50 last:border-0 transition-colors"
+                            >
+                              {b.logo_url ? (
+                                <img
+                                  src={b.logo_url}
+                                  alt={b.name}
+                                  className="w-10 h-10 rounded-lg object-cover bg-muted flex-shrink-0"
+                                />
+                              ) : (
+                                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                  <Building2 className="w-5 h-5 text-primary" />
+                                </div>
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-semibold text-sm text-foreground truncate">
+                                  {b.name}
+                                </h4>
+                                <p className="text-xs text-muted-foreground truncate">
+                                  {t("industry." + b.industry_slug)}
+                                </p>
+                              </div>
+                            </button>
+                          ))}
+                          {filtered.length > 5 && (
+                            <button
+                              onClick={() =>
+                                navigate({
+                                  to: "/explore",
+                                  search: {
+                                    q: search.trim(),
+                                    industry: industry !== "all" ? industry : undefined,
+                                    country: country !== "all" ? country : undefined,
+                                  },
+                                })
+                              }
+                              className="p-3 text-center text-xs font-semibold text-primary hover:bg-primary/10 transition-colors w-full"
+                            >
+                              {t("explore.loadMoreBtn")} ({filtered.length - 5})
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="md:col-span-3">
                 <Select value={industry} onValueChange={setIndustry}>

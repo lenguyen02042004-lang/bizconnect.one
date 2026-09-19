@@ -30,10 +30,10 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
   const sendCardVisit = async (userId: string, businessId: string | null) => {
     try {
       await supabase.rpc("send_card_visit", {
-        _from_business: businessId,
-        _to_business: toType === "business" ? toId : null,
-        _from_user: businessId ? null : userId,
-        _to_user: toType === "personal" ? toId : null,
+        _from_business: businessId ?? undefined,
+        _to_business: toType === "business" ? toId : undefined,
+        _from_user: businessId ? undefined : userId,
+        _to_user: toType === "personal" ? toId : undefined,
         _subject: "Xin chào, tôi muốn kết nối giao thương",
         _body: "Tôi vừa quét mã QR của bạn và tạo danh thiếp nhanh để kết nối.",
       });

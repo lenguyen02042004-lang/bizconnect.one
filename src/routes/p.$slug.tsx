@@ -172,7 +172,7 @@ function PublicPersonalCard() {
       const { error } = await supabase.from("saved_contacts").upsert(
         {
           user_id: user.id,
-          business_id: null,
+          business_id: null as any,
           business_name: profile.full_name,
           business_slug: profile.slug,
           phone: profile.phone ?? null,

@@ -59,8 +59,8 @@ export function MyCardModal({ card, isOpen, onClose }: MyCardModalProps) {
   const profileUrl =
     typeof window !== "undefined"
       ? card.type === "business"
-        ? `https://bizconnect.one/business/${card.id}`
-        : `https://bizconnect.one/p/${card.id}`
+        ? `https://bizconnect.one/business/${card.slug}`
+        : `https://bizconnect.one/p/${card.slug}`
       : "";
 
   useEffect(() => {

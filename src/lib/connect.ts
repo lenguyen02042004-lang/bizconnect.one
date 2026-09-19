@@ -82,7 +82,7 @@ export async function getMyWallet(): Promise<WalletLimits | null> {
 }
 
 export async function buyContactBlock() {
-  const { data, error } = await supabase.rpc("buy_contact_block");
+  const { data, error } = await supabase.rpc("buy_contact_block" as any);
   if (error) return { ok: false as const, message: error.message };
   return { ok: true as const, wallet: data as unknown as WalletLimits };
 }

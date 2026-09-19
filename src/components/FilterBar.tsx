@@ -39,6 +39,10 @@ export function FilterBar({
           placeholder={t("common.search")}
           value={search}
           onChange={(e) => onSearch(e.target.value)}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="none"
+          spellCheck={false}
           className="pl-9 bg-background/70 border-border/60"
         />
       </div>

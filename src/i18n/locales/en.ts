@@ -195,6 +195,7 @@ export default {
     requireReceipt: "Please upload receipt first",
     upgradeSuccess: "Upgrade successful! Wishing you smooth business.",
     generalError: "An error occurred",
+    errorRequireBusiness: "You must create a business profile before purchasing this plan.",
     headerTag: "Simple, transparent pricing",
     headerTitle: "Start for just",
     headerPrice: "150k/year",

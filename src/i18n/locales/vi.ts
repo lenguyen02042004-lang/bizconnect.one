@@ -196,6 +196,7 @@ export default {
     requireReceipt: "Vui lòng tải lên biên lai trước",
     upgradeSuccess: "Nâng cấp thành công! Chúc bạn kinh doanh thuận lợi.",
     generalError: "Đã xảy ra lỗi",
+    errorRequireBusiness: "Bạn cần tạo danh thiếp doanh nghiệp trước khi nâng cấp gói này.",
     headerTag: "Bảng giá đơn giản, minh bạch",
     headerTitle: "Bắt đầu chỉ với",
     headerPrice: "150k/năm",
