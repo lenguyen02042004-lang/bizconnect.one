@@ -365,7 +365,7 @@ function HomePage() {
       <section id="explore-panel" className="relative z-10 px-4 sm:px-6 py-10 sm:py-14">
         <div className="max-w-6xl mx-auto">
           {/* Search row */}
-          <div className="animate-fade-up">
+          <div className="animate-fade-up relative z-50">
             <h2 className="text-2xl sm:text-3xl font-display font-bold text-white mb-1">
               {t("home.searchFilterTitle")}{" "}
               <span className="text-gradient">{t("home.searchFilterGradient")}</span>
