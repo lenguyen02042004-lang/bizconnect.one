@@ -376,7 +376,7 @@ function HomePage() {
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-2 p-2 bg-white/10 backdrop-blur-xl border border-white/15 rounded-2xl shadow-glow">
-              <div className="relative md:col-span-6 flex flex-col">
+              <div className="relative md:col-span-6 flex flex-col z-50">
                 <div className="relative w-full">
                   <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
