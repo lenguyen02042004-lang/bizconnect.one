@@ -402,13 +402,13 @@ function HomePage() {
                     className="h-11 pl-10 bg-background/95 border-border/50 text-foreground placeholder:text-muted-foreground rounded-xl focus-visible:ring-2 focus-visible:ring-primary w-full"
                   />
                   {search.trim().length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-xl shadow-xl z-50 max-h-[300px] overflow-y-auto">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-black/95 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl z-50 max-h-[300px] overflow-y-auto">
                       {isSearching ? (
-                        <div className="p-4 text-sm text-muted-foreground text-center">
+                        <div className="p-4 text-sm text-white/60 text-center">
                           {t("common.loading", { defaultValue: "Đang tìm kiếm..." })}
                         </div>
                       ) : liveResults.length === 0 ? (
-                        <div className="p-4 text-sm text-muted-foreground text-center">
+                        <div className="p-4 text-sm text-white/60 text-center">
                           {t("explore.noResult")}
                         </div>
                       ) : (
@@ -420,24 +420,24 @@ function HomePage() {
                                 setSelected(b);
                                 setSearch("");
                               }}
-                              className="flex items-center gap-3 p-3 hover:bg-accent/50 text-left border-b border-border/50 last:border-0 transition-colors"
+                              className="flex items-center gap-3 p-3 hover:bg-white/10 text-left border-b border-white/10 last:border-0 transition-colors"
                             >
                               {b.logo_url ? (
                                 <img
                                   src={b.logo_url}
                                   alt={b.name}
-                                  className="w-10 h-10 rounded-lg object-cover bg-muted flex-shrink-0"
+                                  className="w-10 h-10 rounded-lg object-cover bg-black/50 flex-shrink-0"
                                 />
                               ) : (
-                                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                  <Building2 className="w-5 h-5 text-primary" />
+                                <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
+                                  <Building2 className="w-5 h-5 text-white/70" />
                                 </div>
                               )}
                               <div className="flex-1 min-w-0">
-                                <h4 className="font-semibold text-sm text-foreground truncate">
+                                <h4 className="font-semibold text-sm text-white truncate">
                                   {b.name}
                                 </h4>
-                                <p className="text-xs text-muted-foreground truncate">
+                                <p className="text-xs text-white/60 truncate">
                                   {t("industry." + b.industry_slug)}
                                 </p>
                               </div>
@@ -455,7 +455,7 @@ function HomePage() {
                                   },
                                 })
                               }
-                              className="p-3 text-center text-xs font-semibold text-primary hover:bg-primary/10 transition-colors w-full"
+                              className="p-3 text-center text-xs font-semibold text-white/80 hover:bg-white/10 hover:text-white transition-colors w-full"
                             >
                               {t("explore.loadMoreBtn")}
                             </button>
