@@ -40,24 +40,24 @@ export function SubscriptionWidget() {
     let active = true;
     const load = () => {
       getFn()
-        .then((res) => { if (active) setData(res); })
+        .then((res) => {
+          if (active) setData(res);
+        })
         .catch(() => {})
-        .finally(() => { if (active) setLoading(false); });
+        .finally(() => {
+          if (active) setLoading(false);
+        });
     };
 
     load();
 
     const channel = supabase
       .channel("sub_widget_changes")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "subscriptions" },
-        () => load()
+      .on("postgres_changes", { event: "*", schema: "public", table: "subscriptions" }, () =>
+        load(),
       )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "message_quotas" },
-        () => load()
+      .on("postgres_changes", { event: "*", schema: "public", table: "message_quotas" }, () =>
+        load(),
       )
       .subscribe();
 

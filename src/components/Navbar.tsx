@@ -17,10 +17,10 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header 
+    <header
       className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
-        isHome 
-          ? "bg-transparent border-transparent" 
+        isHome
+          ? "bg-transparent border-transparent"
           : "bg-background/80 backdrop-blur-md border-b border-border/40"
       }`}
     >
@@ -128,20 +128,25 @@ export function Navbar() {
                   <Menu className="w-5 h-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[280px] sm:w-[320px] flex flex-col gap-6 pt-12">
+              <SheetContent
+                side="right"
+                className="w-[280px] sm:w-[320px] flex flex-col gap-6 pt-12"
+              >
                 <SheetTitle className="sr-only">Menu</SheetTitle>
-                
+
                 {/* Mobile Auth Buttons */}
                 {!loading && user ? (
                   <div className="flex flex-col gap-3 pb-6 border-b border-border/50">
                     <Link to="/dashboard" className="w-full" onClick={() => setIsOpen(false)}>
                       <Button className="w-full gap-2 justify-start h-11" variant="secondary">
                         <LayoutDashboard className="w-5 h-5" />
-                        <span className="text-base" suppressHydrationWarning>{t("nav.dashboard")}</span>
+                        <span className="text-base" suppressHydrationWarning>
+                          {t("nav.dashboard")}
+                        </span>
                       </Button>
                     </Link>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className="w-full gap-2 justify-start h-11"
                       onClick={() => {
                         supabase.auth.signOut();
@@ -149,7 +154,9 @@ export function Navbar() {
                       }}
                     >
                       <LogOut className="w-5 h-5" />
-                      <span className="text-base" suppressHydrationWarning>{t("nav.logout")}</span>
+                      <span className="text-base" suppressHydrationWarning>
+                        {t("nav.logout")}
+                      </span>
                     </Button>
                   </div>
                 ) : !loading ? (
@@ -157,13 +164,17 @@ export function Navbar() {
                     <Link to="/login" className="w-full" onClick={() => setIsOpen(false)}>
                       <Button variant="outline" className="w-full gap-2 justify-start h-11">
                         <LogIn className="w-5 h-5" />
-                        <span className="text-base" suppressHydrationWarning>{t("nav.login")}</span>
+                        <span className="text-base" suppressHydrationWarning>
+                          {t("nav.login")}
+                        </span>
                       </Button>
                     </Link>
                     <Link to="/signup" className="w-full" onClick={() => setIsOpen(false)}>
                       <Button className="w-full gap-2 justify-start h-11 bg-gradient-vivid text-white border-0 shadow-pink">
                         <Sparkles className="w-5 h-5" />
-                        <span className="text-base" suppressHydrationWarning>{t("nav.signup")}</span>
+                        <span className="text-base" suppressHydrationWarning>
+                          {t("nav.signup")}
+                        </span>
                       </Button>
                     </Link>
                   </div>

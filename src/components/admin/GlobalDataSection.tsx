@@ -25,7 +25,9 @@ export function GlobalDataSection({
       if (!countryCode || !countryName || !countryFlag) {
         throw new Error("Vui lòng điền đầy đủ Mã, Tên và Cờ quốc gia");
       }
-      return await createCountryFn({ data: { code: countryCode, name: countryName, flag: countryFlag } });
+      return await createCountryFn({
+        data: { code: countryCode, name: countryName, flag: countryFlag },
+      });
     },
     onSuccess: () => {
       toast.success("Thêm quốc gia thành công!");
@@ -43,7 +45,9 @@ export function GlobalDataSection({
       if (!industrySlug || !industryName) {
         throw new Error("Vui lòng điền đầy đủ Slug và Tên danh mục");
       }
-      return await createIndustryFn({ data: { slug: industrySlug, name: industryName, icon: industryIcon || undefined } });
+      return await createIndustryFn({
+        data: { slug: industrySlug, name: industryName, icon: industryIcon || undefined },
+      });
     },
     onSuccess: () => {
       toast.success("Thêm danh mục thành công!");
@@ -72,7 +76,9 @@ export function GlobalDataSection({
           </div>
           <div className="space-y-3">
             <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Mã (Code, 2 ký tự)</label>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                Mã (Code, 2 ký tự)
+              </label>
               <Input
                 placeholder="VD: VN, US, JP"
                 maxLength={2}
@@ -81,7 +87,9 @@ export function GlobalDataSection({
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Tên hiển thị</label>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                Tên hiển thị
+              </label>
               <Input
                 placeholder="VD: Việt Nam, Hoa Kỳ"
                 value={countryName}
@@ -89,7 +97,9 @@ export function GlobalDataSection({
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Cờ (Emoji)</label>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                Cờ (Emoji)
+              </label>
               <Input
                 placeholder="VD: 🇻🇳, 🇺🇸"
                 value={countryFlag}
@@ -101,7 +111,13 @@ export function GlobalDataSection({
               onClick={() => countryMut.mutate()}
               disabled={countryMut.isPending}
             >
-              {countryMut.isPending ? "Đang xử lý..." : <><Plus className="w-4 h-4 mr-1.5" /> Thêm Quốc gia</>}
+              {countryMut.isPending ? (
+                "Đang xử lý..."
+              ) : (
+                <>
+                  <Plus className="w-4 h-4 mr-1.5" /> Thêm Quốc gia
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -114,15 +130,21 @@ export function GlobalDataSection({
           </div>
           <div className="space-y-3">
             <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">URL Slug (không dấu, cách bằng -)</label>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                URL Slug (không dấu, cách bằng -)
+              </label>
               <Input
                 placeholder="VD: cong-nghe, fnb, ban-le"
                 value={industrySlug}
-                onChange={(e) => setIndustrySlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
+                onChange={(e) =>
+                  setIndustrySlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))
+                }
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Tên ngành nghề</label>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                Tên ngành nghề
+              </label>
               <Input
                 placeholder="VD: Công nghệ, F&B, Bán lẻ"
                 value={industryName}
@@ -130,7 +152,9 @@ export function GlobalDataSection({
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Icon (Emoji - Tuỳ chọn)</label>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                Icon (Emoji - Tuỳ chọn)
+              </label>
               <Input
                 placeholder="VD: 💻, 🍽️, 🛍️"
                 value={industryIcon}
@@ -142,7 +166,13 @@ export function GlobalDataSection({
               onClick={() => industryMut.mutate()}
               disabled={industryMut.isPending}
             >
-              {industryMut.isPending ? "Đang xử lý..." : <><Plus className="w-4 h-4 mr-1.5" /> Thêm Danh mục</>}
+              {industryMut.isPending ? (
+                "Đang xử lý..."
+              ) : (
+                <>
+                  <Plus className="w-4 h-4 mr-1.5" /> Thêm Danh mục
+                </>
+              )}
             </Button>
           </div>
         </div>

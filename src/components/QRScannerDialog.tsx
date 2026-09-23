@@ -120,7 +120,7 @@ export function QRScannerDialog({ onClose }: QRScannerDialogProps) {
           );
         if (isUuid) query = query.eq("id", slug);
         else query = query.eq("slug", slug);
-        
+
         const { data } = await query.maybeSingle();
 
         if (!data) {
@@ -146,7 +146,7 @@ export function QRScannerDialog({ onClose }: QRScannerDialogProps) {
           .from("personal_profiles")
           .select("id, full_name, slug, avatar_url, job_title, company_name, phone, email")
           .eq("is_public", true);
-          
+
         if (isUuid) query = query.eq("id", slug);
         else query = query.eq("slug", slug);
 

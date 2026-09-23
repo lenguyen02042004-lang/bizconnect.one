@@ -94,7 +94,7 @@ function PricingPage() {
       .single()
       .then(({ data }) => {
         if (data?.value) {
-          const val = data.value as any;
+          const val = data.value as Record<string, string | undefined>;
           setBankInfo({
             ...BANK,
             name: val.bank_name || BANK.name,
@@ -119,20 +119,23 @@ function PricingPage() {
       navigate({ to: "/login" });
       return;
     }
-    
+
     // Check for business ID
     const { data: businesses } = await supabase
       .from("businesses")
       .select("id")
       .eq("owner_id", user.id)
       .limit(1);
-    
+
     const bizIdStr = businesses?.[0]?.id ?? null;
-    if (!bizIdStr && (planTarget.subType === 'b2b_block_500' || planTarget.subType === 'icon_premium')) {
+    if (
+      !bizIdStr &&
+      (planTarget.subType === "b2b_block_500" || planTarget.subType === "icon_premium")
+    ) {
       toast.error(t("pricing.errorRequireBusiness"));
       return;
     }
-    
+
     setUserId(user.id);
     setBizId(bizIdStr);
     setTarget(planTarget);
@@ -161,8 +164,8 @@ function PricingPage() {
   };
 
   const handleSubmit = async () => {
-    if (!receiptUrl || !target) {
-      toast.error(t("pricing.requireReceipt"));
+    if (!target) {
+      toast.error(t("pricing.generalError"));
       return;
     }
     const {
@@ -173,20 +176,21 @@ function PricingPage() {
     try {
       const planId = target.subType ?? "membership";
 
-      // Sử dụng hàm RPC bảo mật (Trust First) thay vì insert trực tiếp
+      // Create a pending payment intent. SePay webhook completes it after the bank transfer.
       const { error: rpcErr } = await supabase.rpc("submit_manual_payment", {
         p_plan_id: planId,
+        p_amount: target.price,
         p_receipt_url: receiptUrl ?? "",
         p_business_id: bizId ?? undefined,
       });
 
       if (rpcErr) throw rpcErr;
 
-      toast.success(t("pricing.upgradeSuccess"));
+      toast.success(t("pricing.paymentPending"));
       setShowModal(false);
       navigate({ to: "/dashboard" });
-    } catch (err: any) {
-      toast.error(err.message ?? t("pricing.generalError"));
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : t("pricing.generalError"));
     } finally {
       setSubmitting(false);
     }
@@ -195,17 +199,18 @@ function PricingPage() {
   const generatePaymentContent = () => {
     if (!target || !userId) return "";
     const rawPlan = target.subType ?? "membership";
-    
+
     const PLAN_SHORT_CODES: Record<string, string> = {
       contact_block_addon: "CBA",
       b2b_block_500: "B2B",
-      icon_premium: "ICO"
+      icon_premium: "ICO",
     };
-    
-    const planId = PLAN_SHORT_CODES[rawPlan] || rawPlan.toUpperCase().replace(/_/g, "").substring(0, 5);
+
+    const planId =
+      PLAN_SHORT_CODES[rawPlan] || rawPlan.toUpperCase().replace(/_/g, "").substring(0, 5);
     const shortUser = userId.substring(0, 8).toUpperCase();
     const shortBiz = bizId ? bizId.substring(0, 8).toUpperCase() : "";
-    
+
     return `BIZC ${planId} ${shortUser} ${shortBiz}`.trim();
   };
 
@@ -302,7 +307,13 @@ function PricingPage() {
     },
   ];
 
-  const BUSINESS_ADDONS: Array<any> = [];
+  const BUSINESS_ADDONS: Array<{
+    id: string;
+    name: string;
+    price: number;
+    desc: string;
+    block?: boolean;
+  }> = [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -616,7 +627,7 @@ function PricingPage() {
               <Button
                 className="flex-1 bg-gradient-vivid text-white border-0"
                 onClick={handleSubmit}
-                disabled={!receiptUrl || submitting || isUploading}
+                disabled={submitting || isUploading}
               >
                 {submitting ? (
                   <>

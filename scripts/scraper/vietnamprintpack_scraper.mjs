@@ -1,12 +1,12 @@
 import "dotenv/config";
 import { chromium } from "playwright";
-import { 
-  supabase, 
-  getCountryCode, 
-  slugify, 
+import {
+  supabase,
+  getCountryCode,
+  slugify,
   randomDelay,
-  setupSystemAccount, 
-  setupIndustry 
+  setupSystemAccount,
+  setupIndustry,
 } from "./utils.mjs";
 
 (async () => {
@@ -24,10 +24,13 @@ import {
       let pageLoaded = false;
       for (let retries = 0; retries < 3; retries++) {
         try {
-          await page.goto(`https://vietnamprintpack.chanchao.com.tw/VisitorExhibitor?page=${pageNum}`, {
-            waitUntil: "domcontentloaded",
-            timeout: 45000,
-          });
+          await page.goto(
+            `https://vietnamprintpack.chanchao.com.tw/VisitorExhibitor?page=${pageNum}`,
+            {
+              waitUntil: "domcontentloaded",
+              timeout: 45000,
+            },
+          );
           await page.waitForTimeout(4000);
           await randomDelay(2000, 5000); // Thêm delay ngẫu nhiên 2-5 giây khi chuyển trang
           pageLoaded = true;

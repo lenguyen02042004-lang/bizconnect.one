@@ -44,11 +44,23 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     <div className="flex min-h-[80vh] items-center justify-center px-4">
       <div className="max-w-md text-center bg-card p-8 rounded-3xl border border-border shadow-pink">
         <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Đã có lỗi xảy ra
-        </h1>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">Đã có lỗi xảy ra</h1>
         <p className="mt-3 text-sm text-muted-foreground">
           Rất tiếc, hệ thống gặp sự cố khi tải trang này. Vui lòng thử lại hoặc quay về trang chủ.
         </p>

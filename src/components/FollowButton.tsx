@@ -27,10 +27,7 @@ export function FollowButton({ businessId, initialCount, variant = "full", class
   useEffect(() => {
     let active = true;
     (async () => {
-      const [
-        { data: biz },
-        sessionData
-      ] = await Promise.all([
+      const [{ data: biz }, sessionData] = await Promise.all([
         supabase.from("businesses").select("followers_count").eq("id", businessId).maybeSingle(),
         supabase.auth.getSession(),
       ]);

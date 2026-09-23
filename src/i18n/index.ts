@@ -4,15 +4,8 @@ import vi from "./locales/vi";
 import en from "./locales/en";
 
 const getInitialLanguage = () => {
-  if (typeof window !== "undefined") {
-    const stored = localStorage.getItem("lang");
-    if (stored) return stored;
-
-    // Auto detect from browser
-    const browserLang = navigator.language.toLowerCase();
-    if (browserLang.startsWith("vi")) return "vi";
-    return "en"; // Default to English for international users
-  }
+  // Keep SSR and the first client render identical. Browser preferences are
+  // applied after hydration by the language switcher.
   return "vi";
 };
 

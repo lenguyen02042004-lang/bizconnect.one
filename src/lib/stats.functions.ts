@@ -3,32 +3,17 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 export const getPublicStats = createServerFn({ method: "GET" }).handler(async () => {
   try {
-    const [{ count: connections }, { count: businesses }, { data: industryData }] = await Promise.all([
-      supabaseAdmin.from("connect_messages").select("*", { count: "exact", head: true }),
-      supabaseAdmin
-        .from("businesses")
-        .select("*", { count: "exact", head: true })
-        .eq("status", "public"),
-      supabaseAdmin
-        .from("businesses")
-        .select("industries(slug)")
-        .eq("status", "public"),
-    ]);
-
-    const industryCounts: Record<string, number> = {};
-    if (industryData) {
-      for (const row of industryData as any[]) {
-        const slug = row.industries?.slug;
-        if (slug) {
-          industryCounts[slug] = (industryCounts[slug] || 0) + 1;
-        }
-      }
-    }
-
+    const { data, error } = await supabaseAdmin.rpc("get_public_stats");
+    if (error) throw error;
+    const stats = (data ?? {}) as {
+      connections?: number;
+      businesses?: number;
+      industryCounts?: Record<string, number>;
+    };
     return {
-      connections: connections ?? 0,
-      businesses: businesses ?? 0,
-      industryCounts,
+      connections: stats.connections ?? 0,
+      businesses: stats.businesses ?? 0,
+      industryCounts: stats.industryCounts ?? {},
     };
   } catch (e) {
     // Fail gracefully — show demo data if DB is unreachable or keys are missing

@@ -70,8 +70,14 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedEmail = email.trim().toLowerCase();
-    if (!trimmedEmail) { toast.error("Vui lòng nhập email"); return; }
-    if (!password || password.length < 6) { toast.error("Mật khẩu phải có ít nhất 6 ký tự"); return; }
+    if (!trimmedEmail) {
+      toast.error("Vui lòng nhập email");
+      return;
+    }
+    if (!password || password.length < 6) {
+      toast.error("Mật khẩu phải có ít nhất 6 ký tự");
+      return;
+    }
 
     setLoading(true);
     const displayName = name.trim() || trimmedEmail.split("@")[0];
@@ -101,7 +107,11 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
         setLoading(false);
         return;
       }
-      if (msg.includes("rate limit") || msg.includes("over_email_send_rate_limit") || msg.includes("too many")) {
+      if (
+        msg.includes("rate limit") ||
+        msg.includes("over_email_send_rate_limit") ||
+        msg.includes("too many")
+      ) {
         toast.error("Quá nhiều yêu cầu. Vui lòng thử lại sau vài phút.");
         setLoading(false);
         return;
@@ -129,23 +139,36 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
       return;
     }
 
+    if (!authData.session) {
+      toast.success("Tài khoản đã được tạo. Vui lòng xác nhận email để tiếp tục.", {
+        description: "Sau khi xác nhận, hãy đăng nhập để hoàn tất kết nối.",
+      });
+      setMode("login");
+      setLoading(false);
+      return;
+    }
+
     const userId = authData.user.id;
     const slug = slugifyProfile(displayName) + "-" + Math.floor(Math.random() * 90000 + 10000);
 
     // 2. Update profile (non-fatal)
-    try {
-      await supabase
+    const { error: profileError } = await supabase
         .from("profiles")
         .update({ display_name: displayName, account_type: accountType as any })
         .eq("id", userId);
-    } catch (_) {}
+    if (profileError) {
+      toast.error("Không thể lưu thông tin tài khoản. Vui lòng thử lại.");
+      setLoading(false);
+      return;
+    }
 
     let createdBusinessId: string | null = null;
 
     // 3. Create profile card (non-fatal)
+    let cardError: string | null = null;
     try {
       if (accountType === "personal") {
-        await supabase.from("personal_profiles").upsert({
+        const { error } = await supabase.from("personal_profiles").upsert({
           user_id: userId,
           full_name: displayName,
           slug,
@@ -153,8 +176,9 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
           phone: phone.trim() || null,
           job_title: "Thành viên mới",
         });
+        if (error) cardError = error.message;
       } else {
-        const { data: bData } = await supabase
+        const { data: bData, error } = await supabase
           .from("businesses")
           .insert({
             owner_id: userId,
@@ -166,9 +190,20 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
           })
           .select("id")
           .single();
+        if (error) cardError = error.message;
         if (bData) createdBusinessId = bData.id;
       }
-    } catch (_) {}
+    } catch (error) {
+      cardError = error instanceof Error ? error.message : String(error);
+    }
+    if (cardError || (accountType === "business" && !createdBusinessId)) {
+      toast.error("Tài khoản đã tạo nhưng chưa tạo được danh thiếp. Vui lòng mở Dashboard để thử lại.", {
+        description: cardError ?? undefined,
+      });
+      setLoading(false);
+      onSuccess();
+      return;
+    }
 
     // 4. Send card visit (non-fatal)
     await sendCardVisit(userId, createdBusinessId);
@@ -221,21 +256,48 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
           >
             <div>
               <RadioGroupItem value="personal" id="type-personal" className="peer sr-only" />
-              <Label htmlFor="type-personal" className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-transparent p-3 hover:bg-accent peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer text-sm">
-                <User className="mb-1.5 h-4 w-4" />Cá nhân
+              <Label
+                htmlFor="type-personal"
+                className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-transparent p-3 hover:bg-accent peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer text-sm"
+              >
+                <User className="mb-1.5 h-4 w-4" />
+                Cá nhân
               </Label>
             </div>
             <div>
               <RadioGroupItem value="business" id="type-business" className="peer sr-only" />
-              <Label htmlFor="type-business" className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-transparent p-3 hover:bg-accent peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer text-sm">
-                <Building2 className="mb-1.5 h-4 w-4" />Doanh nghiệp
+              <Label
+                htmlFor="type-business"
+                className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-transparent p-3 hover:bg-accent peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer text-sm"
+              >
+                <Building2 className="mb-1.5 h-4 w-4" />
+                Doanh nghiệp
               </Label>
             </div>
           </RadioGroup>
 
-          <Input type="email" placeholder="Email (bắt buộc)" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={loading} autoComplete="email" />
-          <Input placeholder={accountType === "business" ? "Tên doanh nghiệp" : "Họ và tên"} value={name} onChange={(e) => setName(e.target.value)} disabled={loading} />
-          <Input type="tel" placeholder="Số điện thoại (không bắt buộc)" value={phone} onChange={(e) => setPhone(e.target.value)} disabled={loading} />
+          <Input
+            type="email"
+            placeholder="Email (bắt buộc)"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            disabled={loading}
+            autoComplete="email"
+          />
+          <Input
+            placeholder={accountType === "business" ? "Tên doanh nghiệp" : "Họ và tên"}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            disabled={loading}
+          />
+          <Input
+            type="tel"
+            placeholder="Số điện thoại (không bắt buộc)"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            disabled={loading}
+          />
           <div className="relative">
             <Input
               type={showPassword ? "text" : "password"}
@@ -248,18 +310,35 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
               autoComplete="new-password"
               className="pr-10"
             />
-            <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" tabIndex={-1}>
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              tabIndex={-1}
+            >
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
-          <Button type="submit" className="w-full bg-gradient-vivid text-white border-0 h-11" disabled={loading}>
+          <Button
+            type="submit"
+            className="w-full bg-gradient-vivid text-white border-0 h-11"
+            disabled={loading}
+          >
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
             Kết nối ngay
           </Button>
         </form>
       ) : (
         <form onSubmit={handleLogin} className="space-y-3">
-          <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={loading} autoComplete="email" />
+          <Input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            disabled={loading}
+            autoComplete="email"
+          />
           <div className="relative">
             <Input
               type={showPassword ? "text" : "password"}
@@ -271,11 +350,20 @@ export function QuickSignupExchange({ toId, toType, onSuccess }: Props) {
               autoComplete="current-password"
               className="pr-10"
             />
-            <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" tabIndex={-1}>
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              tabIndex={-1}
+            >
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
-          <Button type="submit" className="w-full bg-gradient-vivid text-white border-0 h-11" disabled={loading}>
+          <Button
+            type="submit"
+            className="w-full bg-gradient-vivid text-white border-0 h-11"
+            disabled={loading}
+          >
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
             Đăng nhập & Kết nối
           </Button>

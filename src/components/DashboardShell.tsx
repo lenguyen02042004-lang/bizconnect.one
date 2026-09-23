@@ -198,7 +198,6 @@ export function DashboardShell({ title, subtitle, actions, children, maxWidth = 
 
   return (
     <div className="min-h-screen bg-background">
-
       <div className="pt-16 flex">
         {/* Desktop sidebar */}
         <aside className="hidden lg:flex flex-col w-60 shrink-0 border-r border-border bg-card/40 sticky top-16 h-[calc(100vh-4rem)] py-6 px-3 overflow-y-auto">

@@ -152,13 +152,11 @@ function ContactsPage() {
           // Refresh only the wallet when subscription changes
           const newWallet = await getMyWallet();
           if (active) setWallet(newWallet);
-        }
+        },
       )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "message_quotas" },
-        () => { doLoad(); }
-      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "message_quotas" }, () => {
+        doLoad();
+      })
       .subscribe();
 
     return () => {
@@ -208,7 +206,6 @@ function ContactsPage() {
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
-    setCurrentPage(1); // Reset to first page on search
     if (!s) return items;
     return items.filter((c) =>
       [c.business_name, c.industry, c.country_name, c.province, c.email, c.phone, c.note]
@@ -216,6 +213,10 @@ function ContactsPage() {
         .some((v) => String(v).toLowerCase().includes(s)),
     );
   }, [items, q]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [q]);
 
   const totalPages = Math.ceil(filtered.length / pageSize);
   const paginatedItems = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -494,7 +495,11 @@ function ContactsPage() {
                   </div>
                 )}
                 <img
-                  src={vietQrUrl(150000, `BIZC CBA ${userId.substring(0, 8).toUpperCase()}`, bankInfo)}
+                  src={vietQrUrl(
+                    150000,
+                    `BIZC CBA ${userId.substring(0, 8).toUpperCase()}`,
+                    bankInfo,
+                  )}
                   className={`w-56 h-56 object-contain rounded-xl ${qrLoaded ? "block" : "hidden"}`}
                   onLoad={() => setQrLoaded(true)}
                   onError={() => setQrLoaded(true)}
@@ -504,7 +509,9 @@ function ContactsPage() {
               <div className="text-center space-y-1 text-sm text-muted-foreground">
                 <p>Quét mã bằng ứng dụng ngân hàng.</p>
                 <p>Hệ thống tự động cộng hạn mức ngay lập tức!</p>
-                <p className="text-xs text-primary font-medium">Sau khi chuyển khoản, đóng cửa sổ này để làm mới hạn mức.</p>
+                <p className="text-xs text-primary font-medium">
+                  Sau khi chuyển khoản, đóng cửa sổ này để làm mới hạn mức.
+                </p>
               </div>
               <Button
                 variant="outline"

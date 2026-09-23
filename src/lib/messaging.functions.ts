@@ -77,12 +77,12 @@ export const getInbox = createServerFn({ method: "GET" })
     const { data: users } = uIds.length
       ? await supabase
           .from("personal_profiles")
-          .select("id, full_name, avatar_url, slug, job_title, company_name")
-          .in("id", uIds)
+          .select("id, user_id, full_name, avatar_url, slug, job_title, company_name")
+          .in("user_id", uIds)
       : { data: [] };
 
     const bMap = new Map((bizes ?? []).map((b) => [b.id, b]));
-    const uMap = new Map((users ?? []).map((u) => [u.id, u]));
+    const uMap = new Map((users ?? []).map((u) => [u.user_id, u]));
 
     return {
       messages: (messages ?? []).map((m) => ({
@@ -118,13 +118,13 @@ export const getMyQuota = createServerFn({ method: "GET" })
       .eq("period_year", year)
       .maybeSingle();
 
-    // Count active b2b_block_500 and contact_block_addon subscriptions
+    // Only B2B blocks increase the send-card quota. Contact blocks belong to the saved-contact wallet.
     const { data: subs } = await context.supabase
       .from("subscriptions")
       .select("status, sub_type, current_period_end")
       .eq("user_id", context.userId)
       .eq("status", "active")
-      .in("sub_type", ["b2b_block_500", "contact_block_addon"]);
+      .eq("sub_type", "b2b_block_500");
 
     let activeBlocks = 0;
     if (subs) {

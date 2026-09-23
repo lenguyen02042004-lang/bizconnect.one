@@ -74,7 +74,9 @@ export function ImageUpload({
             ) : (
               <ImageIcon className="w-6 h-6" />
             )}
-            <span className="text-xs mt-1.5">{busy ? "Đang nén & tải lên..." : "Bấm để tải lên"}</span>
+            <span className="text-xs mt-1.5">
+              {busy ? "Đang nén & tải lên..." : "Bấm để tải lên"}
+            </span>
           </button>
         )}
       </div>

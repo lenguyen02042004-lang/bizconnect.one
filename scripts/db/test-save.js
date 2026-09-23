@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import 'dotenv/config';
+import "dotenv/config";
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -35,24 +35,27 @@ async function testSave() {
     console.error("Login error:", loginErr);
     return;
   }
-  
+
   console.log("Calling my_wallet_limits to create row...");
   const { error: rpcErr } = await supabase.rpc("my_wallet_limits");
   if (rpcErr) console.error("RPC Error:", rpcErr);
 
   console.log("Creating business...");
   const businessId = "00000000-0000-0000-0000-000000000001";
-  
+
   console.log("Upserting contact...");
-  const { error: insertErr } = await supabase.from("saved_contacts").upsert({
-    user_id: userId,
-    business_id: businessId,
-    business_name: "Test Business",
-    business_slug: "test-biz",
-    industry: "tech",
-    country_name: "Vietnam",
-    province: "Hanoi",
-  }, { onConflict: "user_id,business_id" });
+  const { error: insertErr } = await supabase.from("saved_contacts").upsert(
+    {
+      user_id: userId,
+      business_id: businessId,
+      business_name: "Test Business",
+      business_slug: "test-biz",
+      industry: "tech",
+      country_name: "Vietnam",
+      province: "Hanoi",
+    },
+    { onConflict: "user_id,business_id" },
+  );
 
   if (insertErr) {
     console.error("UPSERT ERROR:", insertErr);

@@ -1,7 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { randomBytes } from "crypto";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Database } from "@/integrations/supabase/types";
 
 function generateStrongPassword(length = 20): string {
   // URL-safe random string, mixed case + digits, no ambiguous chars
@@ -39,7 +41,7 @@ const BizRow = z.object({
   icon_tier: z.enum(["standard", "premium"]).optional().default("standard"),
 });
 
-async function requireAdmin(supabase: any, userId: string) {
+async function requireAdmin(supabase: SupabaseClient<Database>, userId: string) {
   const { data } = await supabase
     .from("user_roles")
     .select("role")
@@ -56,7 +58,7 @@ export const bulkImportBusinesses = createServerFn({ method: "POST" })
   .inputValidator((input) =>
     z
       .object({
-        rows: z.array(z.record(z.string(), z.any())).max(2000),
+        rows: z.array(z.record(z.string(), z.unknown())).max(2000),
         create_missing_owners: z.boolean().optional().default(true),
       })
       .parse(input),
@@ -69,7 +71,7 @@ export const bulkImportBusinesses = createServerFn({ method: "POST" })
 
     // Load industry map
     const { data: industries } = await supabaseAdmin.from("industries").select("id, slug");
-    const indMap = new Map((industries ?? []).map((i: any) => [i.slug, i.id]));
+    const indMap = new Map((industries ?? []).map((i) => [i.slug, i.id]));
 
     // Cache existing users by email (single fetch)
     const { data: listed } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
@@ -153,11 +155,12 @@ export const bulkImportBusinesses = createServerFn({ method: "POST" })
           slug: parsed.slug,
           created: createdNow,
         });
-      } catch (e: any) {
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
         results.failed.push({
           row: i + 2,
-          error: e.message ?? String(e),
-          slug: data.rows[i]?.slug,
+          error: message,
+          slug: typeof data.rows[i]?.slug === "string" ? (data.rows[i]?.slug as string) : undefined,
         });
       }
     }
@@ -269,14 +272,15 @@ export const seedDemoAccounts = createServerFn({ method: "POST" })
           .eq("slug", slug);
         if (uErr) throw uErr;
         results.push({ slug, email, password, created, ok: true });
-      } catch (e: any) {
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
         results.push({
           slug,
           email,
           password: "",
           created: false,
           ok: false,
-          error: e.message ?? String(e),
+          error: message,
         });
       }
     }
@@ -340,6 +344,7 @@ export const adminUpdatePaymentStatus = createServerFn({ method: "POST" })
       .eq("id", data.payment_id)
       .single();
     if (pErr || !payment) throw new Error(pErr?.message ?? "Payment not found");
+    if (payment.status !== "pending") throw new Error("Payment has already been reviewed");
 
     // Update payment status
     const { error } = await supabaseAdmin
@@ -348,7 +353,7 @@ export const adminUpdatePaymentStatus = createServerFn({ method: "POST" })
       .eq("id", data.payment_id);
     if (error) throw new Error(error.message);
 
-    const ownerId: string | null = payment.user_id ?? (payment.businesses as any)?.owner_id ?? null;
+    const ownerId: string | null = payment.user_id ?? payment.businesses?.owner_id ?? null;
     const bizId: string | null = data.business_id ?? payment.business_id ?? null;
 
     // Map payment_log type back to exact subscription plan ID
@@ -359,29 +364,38 @@ export const adminUpdatePaymentStatus = createServerFn({ method: "POST" })
     else if (paymentLogType === "extra_quota") subType = "contact_block_addon";
 
     if (data.status === "verified" && ownerId) {
-      const now = new Date();
+      const { error: subscriptionError } = await supabaseAdmin.from("subscriptions").insert({
+        user_id: ownerId,
+        business_id: bizId,
+        provider: "manual" as const,
+        provider_subscription_id: payment.id,
+        status: "active" as const,
+        sub_type: subType,
+        current_period_end: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+      });
+      if (subscriptionError) throw new Error(subscriptionError.message);
 
-      if (subType === "b2b_block_500" || subType === "icon_premium") {
-        // Trải nghiệm nhanh đã được cấp trong bảng subscriptions ở frontend.
-        // Ở đây admin duyệt chỉ mang tính chất ghi nhận hoặc cập nhật thêm icon_tier.
-
-        // For icon_premium: also update icon_tier on the business
-        if (subType === "icon_premium" && bizId) {
-          await supabaseAdmin
-            .from("businesses")
-            .update({
-              icon_tier: "premium",
-              premium_until: new Date(
-                now.getFullYear() + 1,
-                now.getMonth(),
-                now.getDate(),
-              ).toISOString(),
-            })
-            .eq("id", bizId);
-        }
+      if (subType === "icon_premium" && bizId) {
+        const { error: businessError } = await supabaseAdmin
+          .from("businesses")
+          .update({
+            icon_tier: "premium",
+            premium_until: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+          })
+          .eq("id", bizId);
+        if (businessError) throw new Error(businessError.message);
+      } else if (subType === "b2b_block_500" && bizId) {
+        const { error: quotaError } = await supabaseAdmin.rpc("admin_add_quota_bonus", {
+          _business_id: bizId,
+          _credits: 500,
+        });
+        if (quotaError) throw new Error(quotaError.message);
+      } else if (subType === "contact_block_addon") {
+        const { error: walletError } = await supabaseAdmin.rpc("admin_add_wallet_block", {
+          _user_id: ownerId,
+        });
+        if (walletError) throw new Error(walletError.message);
       }
-      // Note: Nếu là contact_block_addon, subscription cũng đã được tạo ở frontend nên wallet_limits tự động tăng thông qua logic tính tổng active blocks!
-      // Không cần phải upsert wallet_limits thủ công ở đây nữa, vì get_my_wallet_limits quét bảng subscriptions.
     }
 
     if (data.status === "rejected" && bizId) {
@@ -450,10 +464,10 @@ export const adminListSubscriptions = createServerFn({ method: "GET" })
 
     // Resolve user emails
     const { data: users } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-    const emailMap = new Map((users?.users ?? []).map((u: any) => [u.id, u.email ?? ""]));
+    const emailMap = new Map((users?.users ?? []).map((u) => [u.id, u.email ?? ""]));
 
     return {
-      subscriptions: (data ?? []).map((s: any) => ({
+      subscriptions: (data ?? []).map((s) => ({
         ...s,
         owner_email: emailMap.get(s.user_id) ?? "",
       })),
@@ -561,7 +575,11 @@ export const adminCreateIndustry = createServerFn({ method: "POST" })
   .inputValidator((input) =>
     z
       .object({
-        slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/),
+        slug: z
+          .string()
+          .min(1)
+          .max(100)
+          .regex(/^[a-z0-9-]+$/),
         name: z.string().min(1).max(100),
         icon: z.string().max(20).optional().nullable(),
       })
@@ -587,15 +605,15 @@ export const adminListContacts = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
     await requireAdmin(supabase, userId);
-    
+
     // Use the backend admin client just in case RLS on the main client has issues,
     // though requireAdmin and the RLS policy should allow it anyway.
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin
-      .from("platform_contacts" as any)
+      .from("platform_contacts" as never)
       .select("*")
       .order("created_at", { ascending: false });
-      
+
     if (error) throw new Error(error.message);
     return { contacts: data ?? [] };
   });
@@ -604,20 +622,22 @@ export const adminListContacts = createServerFn({ method: "GET" })
 export const adminMarkContactRead = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
-    z.object({
-      id: z.string().uuid(),
-    }).parse(input),
+    z
+      .object({
+        id: z.string().uuid(),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     await requireAdmin(supabase, userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    
+
     const { error } = await supabaseAdmin
       .from("platform_contacts" as any)
       .update({ is_read: true })
       .eq("id", data.id);
-      
+
     if (error) throw new Error(error.message);
     return { ok: true };
   });

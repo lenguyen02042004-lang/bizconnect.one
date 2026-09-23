@@ -14,9 +14,11 @@ export const Route = createFileRoute("/business/$slug")({
   loader: async ({ params }) => {
     const res = await getBusinessBySlug({ data: { slug: params.slug } });
     if (!res.business) throw notFound();
-    
+
     // Redirect UUID access to friendly slug
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.slug);
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      params.slug,
+    );
     if (isUuid && res.business.slug !== params.slug) {
       throw redirect({
         to: "/business/$slug",
@@ -24,7 +26,7 @@ export const Route = createFileRoute("/business/$slug")({
         replace: true,
       });
     }
-    
+
     return { business: res.business };
   },
   head: ({ loaderData, params }) => {
@@ -101,7 +103,7 @@ function BusinessDetailPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [isClaimOpen, setIsClaimOpen] = useState(false);
-  
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Animated Mesh-like Background */}
@@ -110,7 +112,6 @@ function BusinessDetailPage() {
         className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-pink-500/20 rounded-full blur-[100px] translate-x-1/2 translate-y-1/2 animate-pulse"
         style={{ animationDelay: "2s" }}
       />
-
 
       <main className="relative pt-24 pb-16 px-4 z-10">
         <div className="max-w-4xl mx-auto mb-4 flex items-center justify-between">
@@ -130,13 +131,15 @@ function BusinessDetailPage() {
                 <Info className="w-5 h-5 text-amber-500" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-foreground text-lg">{t("business.claimTitle")}</h3>
+                <h3 className="font-semibold text-foreground text-lg">
+                  {t("business.claimTitle")}
+                </h3>
                 <p className="text-muted-foreground text-sm mt-1 leading-relaxed">
                   {t("business.claimDesc")}
                 </p>
               </div>
             </div>
-            <Button 
+            <Button
               onClick={() => setIsClaimOpen(true)}
               className="whitespace-nowrap bg-amber-500 hover:bg-amber-600 text-white shadow-lg shadow-amber-500/20 gap-2 font-semibold"
             >
@@ -146,8 +149,8 @@ function BusinessDetailPage() {
         )}
 
         <BusinessCard business={business as any} mode="inline" />
-        
-        <ClaimBusinessDialog 
+
+        <ClaimBusinessDialog
           businessId={business.id}
           businessName={business.name}
           isOpen={isClaimOpen}

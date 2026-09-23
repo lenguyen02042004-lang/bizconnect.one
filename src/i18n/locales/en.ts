@@ -26,7 +26,8 @@ export default {
   },
   home: {
     metaTitle: "BizConnect.One — 3D Global Business Directory",
-    metaDesc: "An interactive 3D directory connecting thousands of global businesses by country and industry. Create digital business cards, expand B2B networking from just $5/year.",
+    metaDesc:
+      "An interactive 3D directory connecting thousands of global businesses by country and industry. Create digital business cards, expand B2B networking from just $5/year.",
     schemaTitle: "BizConnect.One",
     schemaDesc: "Interactive 3D global business directory by country & industry.",
     tagline: "Global Business Directory",
@@ -53,11 +54,14 @@ export default {
     footerCtaRegister: "Register your business",
     scrollHint: "Search & Industries",
     loadingGlobe: "Loading globe...",
-    introP1: "BizConnect.One is a 3D global business directory, connecting thousands of companies by country and industry.",
-    introP2: "Create digital business cards, securely store partner info, and expand international B2B trade instantly.",
+    introP1:
+      "BizConnect.One is a 3D global business directory, connecting thousands of companies by country and industry.",
+    introP2:
+      "Create digital business cards, securely store partner info, and expand international B2B trade instantly.",
     introStats: "Aiming for a community of 100k+ global businesses!",
     howItWorksTitle: "Ultimate Business Directory",
-    howItWorksDesc: "Connect quickly in just 3 simple steps. Store securely and never lose a contact.",
+    howItWorksDesc:
+      "Connect quickly in just 3 simple steps. Store securely and never lose a contact.",
     step1Title: "1. Create Account",
     step1Desc: "Register easily and build your business profile in less than a minute.",
     step2Title: "2. Scan QR & Send Card",
@@ -66,14 +70,16 @@ export default {
     step3Desc: "Save thousands of contacts in one place. Guaranteed secure, never lose them!",
     upcoming: "Coming Soon",
     b2bFeatureTitle: "B2B Trade & RFQ",
-    b2bFeatureDesc: "International trade connection model. Discover opportunities, create requests for quotation (RFQ), and get direct quotes from thousands of trusted suppliers on BizConnect.One.",
+    b2bFeatureDesc:
+      "International trade connection model. Discover opportunities, create requests for quotation (RFQ), and get direct quotes from thousands of trusted suppliers on BizConnect.One.",
     b2bBadge1: "Source Products",
     b2bBadge2: "Post RFQs",
     b2bBadge3: "Secure Trade",
     b2bSampleSender: "From: Buyer International",
-    b2bSampleMessage: "\"I need a quote for 10,000 units...\"",
+    b2bSampleMessage: '"I need a quote for 10,000 units..."',
     contactTitle: "Contact Us",
-    contactDesc: "Need support, advice, or want to discuss a partnership? Leave your info and our admin team will contact you shortly.",
+    contactDesc:
+      "Need support, advice, or want to discuss a partnership? Leave your info and our admin team will contact you shortly.",
     contactName: "Full Name *",
     contactNamePlaceholder: "Enter your name",
     contactPhone: "Phone Number",
@@ -194,6 +200,8 @@ export default {
     uploadError: "Error uploading image. Please try again.",
     requireReceipt: "Please upload receipt first",
     upgradeSuccess: "Upgrade successful! Wishing you smooth business.",
+    paymentPending:
+      "Payment request recorded. Access will activate after SePay confirms the transfer.",
     generalError: "An error occurred",
     errorRequireBusiness: "You must create a business profile before purchasing this plan.",
     headerTag: "Simple, transparent pricing",
@@ -399,7 +407,8 @@ export default {
   },
   business: {
     claimTitle: "Is this your business?",
-    claimDesc: "Claim management today to update info, engage with B2B customers, and expand your trade network. Completely free.",
+    claimDesc:
+      "Claim management today to update info, engage with B2B customers, and expand your trade network. Completely free.",
     claimBtn: "Claim Business",
   },
 };

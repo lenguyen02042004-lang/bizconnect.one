@@ -67,7 +67,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const profileUrl =
-    typeof window !== "undefined" ? `https://bizconnect.one/business/${business.id}` : "";
+    typeof window !== "undefined" ? `https://bizconnect.one/business/${business.slug}` : "";
 
   const description = business.description || business.short_intro || "";
   const certifications = business.certifications || [];
@@ -115,7 +115,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
     if (UUID_RE.test(business.id)) {
       supabase.rpc("increment_business_shares", { _id: business.id });
     }
-    
+
     let shared = false;
     if (navigator.share) {
       try {
@@ -130,7 +130,7 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
         console.error("Web Share API failed", err);
       }
     }
-    
+
     if (!shared) {
       try {
         await navigator.clipboard.writeText(profileUrl);
@@ -389,7 +389,9 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                       <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1 group-hover:text-primary/70 transition-colors">
                         {t("businessCard.phone")}
                       </p>
-                      <p className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{business.phone}</p>
+                      <p className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+                        {business.phone}
+                      </p>
                     </div>
                   </a>
                 ) : (
@@ -422,7 +424,9 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
                       <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1 group-hover:text-primary/70 transition-colors">
                         {t("businessCard.email")}
                       </p>
-                      <p className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">{business.email}</p>
+                      <p className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">
+                        {business.email}
+                      </p>
                     </div>
                   </a>
                 ) : (
@@ -601,7 +605,8 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
             }}
             className="flex-1 bg-gradient-vivid hover:opacity-90 text-white border-0 shadow-pink h-11 gap-1.5 font-semibold text-xs sm:text-sm px-2 sm:px-4"
           >
-            <Send className="w-4 h-4 shrink-0" /> <span className="truncate">{t("businessCard.sendCard")}</span>
+            <Send className="w-4 h-4 shrink-0" />{" "}
+            <span className="truncate">{t("businessCard.sendCard")}</span>
           </Button>
           <Button
             onClick={handleSaveContact}
@@ -610,9 +615,15 @@ export function BusinessCard({ business, onClose, mode = "modal" }: Props) {
             className={`flex-1 h-11 px-2 sm:px-4 gap-1.5 font-semibold text-xs sm:text-sm ${saved ? "bg-green-500/15 text-green-600 border-green-500/30 hover:bg-green-500/20" : ""}`}
             title={saved ? t("businessCard.savedToContacts") : t("businessCard.saveToContacts")}
           >
-            {saved ? <BookmarkCheck className="w-4 h-4 shrink-0" /> : <BookmarkPlus className="w-4 h-4 shrink-0" />}
+            {saved ? (
+              <BookmarkCheck className="w-4 h-4 shrink-0" />
+            ) : (
+              <BookmarkPlus className="w-4 h-4 shrink-0" />
+            )}
             <span className="truncate">
-              {saved ? t("businessCard.savedToContacts") || "Đã lưu" : t("businessCard.saveToContacts") || "Lưu danh bạ"}
+              {saved
+                ? t("businessCard.savedToContacts") || "Đã lưu"
+                : t("businessCard.saveToContacts") || "Lưu danh bạ"}
             </span>
           </Button>
           <Button

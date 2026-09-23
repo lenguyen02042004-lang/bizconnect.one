@@ -67,14 +67,12 @@ export const Route = createFileRoute("/")({
       { title: i18n.t("home.metaTitle") },
       {
         name: "description",
-        content:
-          i18n.t("home.metaDesc"),
+        content: i18n.t("home.metaDesc"),
       },
       { property: "og:title", content: i18n.t("home.metaTitle") },
       {
         property: "og:description",
-        content:
-          i18n.t("home.metaDesc"),
+        content: i18n.t("home.metaDesc"),
       },
       { property: "og:url", content: "https://bizconnect.one/" },
       {
@@ -118,14 +116,12 @@ export const Route = createFileRoute("/")({
               name: "BizConnect.One",
               url: "https://bizconnect.one/",
               logo: "https://bizconnect.one/logo.png",
-              sameAs: [
-                "https://www.facebook.com/BizConnect.One",
-              ]
-            }
-          ]
+              sameAs: ["https://www.facebook.com/BizConnect.One"],
+            },
+          ],
         }),
-      }
-    ]
+      },
+    ],
   }),
   loader: async () => {
     const [bizRes, listRes] = await Promise.all([getExploreBusinesses(), getGlobalLists()]);
@@ -189,6 +185,7 @@ function HomePage() {
   const [country, setCountry] = useState("all");
   const [search, setSearch] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [contactForm, setContactForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [submittingContact, setSubmittingContact] = useState(false);
 
@@ -203,9 +200,9 @@ function HomePage() {
       return;
     }
     setSubmittingContact(true);
-    const { error } = await (supabase as any).from("contact_submissions").insert([
-      { ...contactForm, company: "" }
-    ]);
+    const { error } = await (supabase as any)
+      .from("contact_submissions")
+      .insert([{ ...contactForm, company: "" }]);
     setSubmittingContact(false);
     if (error) {
       toast.error(t("home.contactErrorFail"));
@@ -221,7 +218,14 @@ function HomePage() {
     staleTime: 60_000,
   });
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    const media = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
 
   const counts = useMemo(() => {
     if (stats?.industryCounts) return stats.industryCounts;
@@ -250,9 +254,11 @@ function HomePage() {
         .rpc("get_randomized_explore_businesses", {
           p_country: country || "all",
           p_industry_slug: industry || "all",
-          p_search: q
+          p_search: q,
         })
-        .select("id, name, slug, logo_url, country_code, lat, lng, views_count, icon_tier, status, short_intro, website, industries(name, slug), countries(name)")
+        .select(
+          "id, name, slug, logo_url, country_code, lat, lng, views_count, icon_tier, status, short_intro, website, industries(name, slug), countries(name)",
+        )
         .limit(6);
 
       if (isMounted) {
@@ -260,7 +266,7 @@ function HomePage() {
         setIsSearching(false);
       }
     };
-    
+
     const timer = setTimeout(() => {
       fetchSearch();
     }, 300);
@@ -302,7 +308,7 @@ function HomePage() {
       {/* ===== Hero: full-viewport globe ===== */}
       <section className="relative w-full h-screen overflow-hidden">
         <div className="absolute inset-0" suppressHydrationWarning>
-          {mounted && (
+          {mounted && !isMobile && (
             <Suspense
               fallback={
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
@@ -323,10 +329,10 @@ function HomePage() {
               {t("home.heroTitlePrefix")}{" "}
               <span className="text-gradient">{t("home.heroTitleGradient")}</span>
             </h1>
-            
+
             {/* Answer-First Summary for AEO / SEO */}
             <p className="sr-only">
-              {t("home.introP1")} 
+              {t("home.introP1")}
               {t("home.introP2")}
             </p>
 
@@ -500,7 +506,9 @@ function HomePage() {
 
             <div className="mt-3 text-sm text-white/70">
               {industry === "all" && country === "all" && !search ? null : (
-                <span className="italic">Nhấn <strong>Enter</strong> để tìm kiếm toàn bộ cơ sở dữ liệu.</span>
+                <span className="italic">
+                  Nhấn <strong>Enter</strong> để tìm kiếm toàn bộ cơ sở dữ liệu.
+                </span>
               )}
               {(industry !== "all" || country !== "all" || search) && (
                 <button
@@ -616,22 +624,24 @@ function HomePage() {
           {/* Features Section */}
           <div className="mt-20 animate-fade-up" style={{ animationDelay: "0.2s" }}>
             <div className="text-center mb-10">
-              <h2 className="text-2xl sm:text-3xl font-display font-bold text-white mb-3" dangerouslySetInnerHTML={{ __html: t("home.howItWorksTitle").replace("Ưu việt", '<span class="text-gradient">Ưu việt</span>').replace("Ultimate", '<span class="text-gradient">Ultimate</span>') }}>
-              </h2>
-              <p className="text-white/70 max-w-2xl mx-auto">
-                {t("home.howItWorksDesc")}
-              </p>
+              <h2
+                className="text-2xl sm:text-3xl font-display font-bold text-white mb-3"
+                dangerouslySetInnerHTML={{
+                  __html: t("home.howItWorksTitle")
+                    .replace("Ưu việt", '<span class="text-gradient">Ưu việt</span>')
+                    .replace("Ultimate", '<span class="text-gradient">Ultimate</span>'),
+                }}
+              ></h2>
+              <p className="text-white/70 max-w-2xl mx-auto">{t("home.howItWorksDesc")}</p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-smooth group">
                 <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <UserPlus className="w-6 h-6 text-primary-glow" />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">{t("home.step1Title")}</h3>
-                <p className="text-white/60 text-sm leading-relaxed">
-                  {t("home.step1Desc")}
-                </p>
+                <p className="text-white/60 text-sm leading-relaxed">{t("home.step1Desc")}</p>
               </div>
 
               <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-smooth group">
@@ -639,9 +649,7 @@ function HomePage() {
                   <QrCode className="w-6 h-6 text-primary-glow" />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">{t("home.step2Title")}</h3>
-                <p className="text-white/60 text-sm leading-relaxed">
-                  {t("home.step2Desc")}
-                </p>
+                <p className="text-white/60 text-sm leading-relaxed">{t("home.step2Desc")}</p>
               </div>
 
               <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-smooth group">
@@ -649,9 +657,7 @@ function HomePage() {
                   <FolderLock className="w-6 h-6 text-primary-glow" />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">{t("home.step3Title")}</h3>
-                <p className="text-white/60 text-sm leading-relaxed">
-                  {t("home.step3Desc")}
-                </p>
+                <p className="text-white/60 text-sm leading-relaxed">{t("home.step3Desc")}</p>
               </div>
             </div>
           </div>
@@ -692,19 +698,21 @@ function HomePage() {
               </div>
               <div className="shrink-0 w-full md:w-1/3">
                 <div className="aspect-video md:aspect-square rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-md relative overflow-hidden group">
-                  <img 
-                    src="/b2b-illustration.png" 
-                    alt="B2B Trade Illustration" 
+                  <img
+                    src="/b2b-illustration.png"
+                    alt="B2B Trade Illustration"
                     className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                  
+
                   <div className="absolute bottom-4 left-4 right-4 bg-black/40 backdrop-blur-md rounded-xl p-3 border border-white/10 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                     <div className="flex items-center gap-2 mb-1">
-                       <MessageSquare className="w-3 h-3 text-purple-400" />
-                       <p className="text-xs text-white/80 font-medium">{t("home.b2bSampleSender")}</p>
-                     </div>
-                     <p className="text-sm font-semibold text-white">{t("home.b2bSampleMessage")}</p>
+                    <div className="flex items-center gap-2 mb-1">
+                      <MessageSquare className="w-3 h-3 text-purple-400" />
+                      <p className="text-xs text-white/80 font-medium">
+                        {t("home.b2bSampleSender")}
+                      </p>
+                    </div>
+                    <p className="text-sm font-semibold text-white">{t("home.b2bSampleMessage")}</p>
                   </div>
                 </div>
               </div>
@@ -717,34 +725,43 @@ function HomePage() {
               <h2 className="text-2xl sm:text-3xl font-display font-bold text-white mb-3">
                 {t("home.contactTitle")}
               </h2>
-              <p className="text-white/70">
-                {t("home.contactDesc")}
-              </p>
+              <p className="text-white/70">{t("home.contactDesc")}</p>
             </div>
-            
-            <form onSubmit={handleContactSubmit} className="bg-white/5 border border-white/10 rounded-3xl p-6 sm:p-10 backdrop-blur-xl shadow-2xl">
+
+            <form
+              onSubmit={handleContactSubmit}
+              className="bg-white/5 border border-white/10 rounded-3xl p-6 sm:p-10 backdrop-blur-xl shadow-2xl"
+            >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-white/80">{t("home.contactName")}</label>
+                  <label className="text-sm font-medium text-white/80">
+                    {t("home.contactName")}
+                  </label>
                   <div className="relative">
                     <Users className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-                    <Input 
+                    <Input
                       required
                       placeholder={t("home.contactNamePlaceholder")}
                       value={contactForm.name}
-                      onChange={e => setContactForm(prev => ({...prev, name: e.target.value}))}
+                      onChange={(e) =>
+                        setContactForm((prev) => ({ ...prev, name: e.target.value }))
+                      }
                       className="pl-10 h-12 bg-black/20 border-white/10 text-white placeholder:text-white/30 rounded-xl focus-visible:ring-primary focus-visible:border-primary"
                     />
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-white/80">{t("home.contactPhone")}</label>
+                  <label className="text-sm font-medium text-white/80">
+                    {t("home.contactPhone")}
+                  </label>
                   <div className="relative">
                     <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-                    <Input 
+                    <Input
                       placeholder={t("home.contactPhonePlaceholder")}
                       value={contactForm.phone}
-                      onChange={e => setContactForm(prev => ({...prev, phone: e.target.value}))}
+                      onChange={(e) =>
+                        setContactForm((prev) => ({ ...prev, phone: e.target.value }))
+                      }
                       className="pl-10 h-12 bg-black/20 border-white/10 text-white placeholder:text-white/30 rounded-xl focus-visible:ring-primary focus-visible:border-primary"
                     />
                   </div>
@@ -754,29 +771,31 @@ function HomePage() {
                 <label className="text-sm font-medium text-white/80">Email *</label>
                 <div className="relative">
                   <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-                  <Input 
+                  <Input
                     required
                     type="email"
                     placeholder={t("home.contactEmailPlaceholder")}
                     value={contactForm.email}
-                    onChange={e => setContactForm(prev => ({...prev, email: e.target.value}))}
+                    onChange={(e) => setContactForm((prev) => ({ ...prev, email: e.target.value }))}
                     className="pl-10 h-12 bg-black/20 border-white/10 text-white placeholder:text-white/30 rounded-xl focus-visible:ring-primary focus-visible:border-primary"
                   />
                 </div>
               </div>
               <div className="space-y-1.5 mb-8">
-                <label className="text-sm font-medium text-white/80">{t("home.contactMessage")}</label>
-                <textarea 
+                <label className="text-sm font-medium text-white/80">
+                  {t("home.contactMessage")}
+                </label>
+                <textarea
                   required
                   rows={4}
                   placeholder={t("home.contactMessagePlaceholder")}
                   value={contactForm.message}
-                  onChange={e => setContactForm(prev => ({...prev, message: e.target.value}))}
+                  onChange={(e) => setContactForm((prev) => ({ ...prev, message: e.target.value }))}
                   className="w-full p-4 bg-black/20 border border-white/10 text-white placeholder:text-white/30 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary resize-none transition-smooth"
                 />
               </div>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={submittingContact}
                 className="w-full h-12 bg-primary hover:bg-primary/90 text-white rounded-xl font-bold shadow-glow text-base"
               >

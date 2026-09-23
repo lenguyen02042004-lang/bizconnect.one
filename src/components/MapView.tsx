@@ -6,7 +6,6 @@ import type { BusinessProfile } from "@/types/business";
 
 // Country centroid coordinates for fallback when business has no lat/lng
 
-
 function getMarkerPosition(b: BusinessProfile): [number, number] | null {
   const lat = b.lat;
   const lng = b.lng;

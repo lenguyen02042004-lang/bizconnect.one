@@ -76,11 +76,21 @@ function AdminPage() {
 
       <Tabs defaultValue="businesses" className="w-full space-y-6">
         <TabsList className="bg-background border border-border w-full flex-wrap h-auto justify-start p-1 gap-1">
-          <TabsTrigger value="businesses" className="data-[state=active]:bg-muted">Doanh nghiệp</TabsTrigger>
-          <TabsTrigger value="claims" className="data-[state=active]:bg-muted">Yêu cầu xác thực</TabsTrigger>
-          <TabsTrigger value="payments" className="data-[state=active]:bg-muted">Giao dịch & Gói cước</TabsTrigger>
-          <TabsTrigger value="contacts" className="data-[state=active]:bg-muted">Tin nhắn liên hệ</TabsTrigger>
-          <TabsTrigger value="settings" className="data-[state=active]:bg-muted">Cài đặt hệ thống</TabsTrigger>
+          <TabsTrigger value="businesses" className="data-[state=active]:bg-muted">
+            Doanh nghiệp
+          </TabsTrigger>
+          <TabsTrigger value="claims" className="data-[state=active]:bg-muted">
+            Yêu cầu xác thực
+          </TabsTrigger>
+          <TabsTrigger value="payments" className="data-[state=active]:bg-muted">
+            Giao dịch & Gói cước
+          </TabsTrigger>
+          <TabsTrigger value="contacts" className="data-[state=active]:bg-muted">
+            Tin nhắn liên hệ
+          </TabsTrigger>
+          <TabsTrigger value="settings" className="data-[state=active]:bg-muted">
+            Cài đặt hệ thống
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="businesses" className="space-y-6">
@@ -97,12 +107,18 @@ function AdminPage() {
         </TabsContent>
 
         <TabsContent value="contacts" className="space-y-6">
-          <PlatformContactsSection listFn={listContactsFn as any} markReadFn={markContactReadFn as any} />
+          <PlatformContactsSection
+            listFn={listContactsFn as any}
+            markReadFn={markContactReadFn as any}
+          />
         </TabsContent>
 
         <TabsContent value="settings" className="space-y-6">
           <DemoAccountsSection seedFn={seedFn as any} />
-          <GlobalDataSection createCountryFn={createCountryFn as any} createIndustryFn={createIndustryFn as any} />
+          <GlobalDataSection
+            createCountryFn={createCountryFn as any}
+            createIndustryFn={createIndustryFn as any}
+          />
           <BankSettingsSection />
           <BulkImportSection importFn={importFn as any} />
         </TabsContent>

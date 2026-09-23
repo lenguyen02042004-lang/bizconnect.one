@@ -32,7 +32,7 @@ export const Route = createFileRoute("/print/$type/$slug")({
         extra: profile.zalo ? `Zalo: ${profile.zalo}` : "",
         tagline: "",
         image: profile.avatar_url ?? "",
-        path: `/p/${profile.id}`,
+        path: `/p/${profile.slug}`,
       };
     }
     const { business } = await getBusinessBySlug({ data: { slug: params.slug } });
@@ -49,7 +49,7 @@ export const Route = createFileRoute("/print/$type/$slug")({
         .join(", "),
       tagline: business.short_intro ?? "",
       image: business.logo_url,
-      path: `/business/${business.id}`,
+      path: `/business/${business.slug}`,
     };
   },
   head: () => ({

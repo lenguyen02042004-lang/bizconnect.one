@@ -26,7 +26,8 @@ export default {
   },
   home: {
     metaTitle: "BizConnect.One — Danh bạ doanh nghiệp toàn cầu 3D",
-    metaDesc: "Danh bạ 3D tương tác kết nối hàng ngàn doanh nghiệp toàn cầu theo quốc gia và ngành nghề. Tạo danh thiếp online, gửi card visit và mở rộng đối tác B2B quốc tế chỉ từ $5/năm.",
+    metaDesc:
+      "Danh bạ 3D tương tác kết nối hàng ngàn doanh nghiệp toàn cầu theo quốc gia và ngành nghề. Tạo danh thiếp online, gửi card visit và mở rộng đối tác B2B quốc tế chỉ từ $5/năm.",
     schemaTitle: "BizConnect.One",
     schemaDesc: "Danh bạ 3D tương tác kết nối doanh nghiệp toàn cầu theo quốc gia & ngành nghề.",
     tagline: "Danh bạ doanh nghiệp toàn cầu",
@@ -54,27 +55,34 @@ export default {
     footerCtaRegister: "Đăng ký doanh nghiệp của bạn",
     scrollHint: "Tìm kiếm & Ngành nghề",
     loadingGlobe: "Đang tải quả địa cầu...",
-    introP1: "BizConnect.One là danh bạ doanh nghiệp toàn cầu 3D, giúp kết nối hàng ngàn công ty theo quốc gia và ngành nghề.",
-    introP2: "Cho phép tạo danh thiếp online, lưu trữ thông tin đối tác an toàn và mở rộng giao thương B2B quốc tế nhanh chóng.",
+    introP1:
+      "BizConnect.One là danh bạ doanh nghiệp toàn cầu 3D, giúp kết nối hàng ngàn công ty theo quốc gia và ngành nghề.",
+    introP2:
+      "Cho phép tạo danh thiếp online, lưu trữ thông tin đối tác an toàn và mở rộng giao thương B2B quốc tế nhanh chóng.",
     introStats: "Hướng đến cộng đồng hơn 100k+ doanh nghiệp toàn cầu!",
     howItWorksTitle: "Danh bạ doanh nghiệp Ưu việt",
-    howItWorksDesc: "Kết nối giao thương nhanh chóng chỉ với 3 bước đơn giản, lưu trữ an toàn không lo thất lạc.",
+    howItWorksDesc:
+      "Kết nối giao thương nhanh chóng chỉ với 3 bước đơn giản, lưu trữ an toàn không lo thất lạc.",
     step1Title: "1. Tạo tài khoản",
     step1Desc: "Đăng ký dễ dàng và tạo hồ sơ doanh nghiệp của bạn trong vòng chưa đầy 1 phút.",
     step2Title: "2. Quét QR - Gửi danh thiếp",
-    step2Desc: "Trao đổi thông tin tức thì qua mã QR, gửi danh thiếp số để kết nối giao thương nhanh chóng.",
+    step2Desc:
+      "Trao đổi thông tin tức thì qua mã QR, gửi danh thiếp số để kết nối giao thương nhanh chóng.",
     step3Title: "3. Lưu trữ an toàn",
-    step3Desc: "Lưu hàng ngàn danh bạ vào một nơi duy nhất. Đảm bảo an toàn, không bao giờ lo thất lạc!",
+    step3Desc:
+      "Lưu hàng ngàn danh bạ vào một nơi duy nhất. Đảm bảo an toàn, không bao giờ lo thất lạc!",
     upcoming: "Sắp triển khai",
     b2bFeatureTitle: "Giao thương B2B & Yêu cầu Báo giá",
-    b2bFeatureDesc: "Mô hình kết nối thương mại chuẩn quốc tế. Khám phá cơ hội hợp tác, tạo yêu cầu mua hàng (RFQ) và nhận báo giá trực tiếp từ hàng ngàn nhà cung cấp uy tín trên hệ sinh thái BizConnect.One.",
+    b2bFeatureDesc:
+      "Mô hình kết nối thương mại chuẩn quốc tế. Khám phá cơ hội hợp tác, tạo yêu cầu mua hàng (RFQ) và nhận báo giá trực tiếp từ hàng ngàn nhà cung cấp uy tín trên hệ sinh thái BizConnect.One.",
     b2bBadge1: "Tìm nguồn hàng",
     b2bBadge2: "Đăng yêu cầu RFQ",
     b2bBadge3: "Giao dịch an toàn",
     b2bSampleSender: "Gửi từ: Buyer International",
-    b2bSampleMessage: "\"Tôi cần báo giá 10,000 SP...\"",
+    b2bSampleMessage: '"Tôi cần báo giá 10,000 SP..."',
     contactTitle: "Liên hệ với chúng tôi",
-    contactDesc: "Bạn cần hỗ trợ, tư vấn hay trao đổi hợp tác? Hãy để lại thông tin, đội ngũ Admin sẽ liên hệ lại với bạn sớm nhất.",
+    contactDesc:
+      "Bạn cần hỗ trợ, tư vấn hay trao đổi hợp tác? Hãy để lại thông tin, đội ngũ Admin sẽ liên hệ lại với bạn sớm nhất.",
     contactName: "Họ và tên *",
     contactNamePlaceholder: "Nhập tên của bạn",
     contactPhone: "Số điện thoại",
@@ -195,6 +203,8 @@ export default {
     uploadError: "Lỗi tải ảnh lên. Vui lòng thử lại.",
     requireReceipt: "Vui lòng tải lên biên lai trước",
     upgradeSuccess: "Nâng cấp thành công! Chúc bạn kinh doanh thuận lợi.",
+    paymentPending:
+      "Đã ghi nhận yêu cầu. Quyền sẽ được kích hoạt sau khi SePay xác nhận giao dịch.",
     generalError: "Đã xảy ra lỗi",
     errorRequireBusiness: "Bạn cần tạo danh thiếp doanh nghiệp trước khi nâng cấp gói này.",
     headerTag: "Bảng giá đơn giản, minh bạch",
@@ -402,15 +412,19 @@ export default {
   },
   business: {
     claimTitle: "Đây là doanh nghiệp của bạn?",
-    claimDesc: "Nhận quyền quản lý ngay hôm nay để cập nhật thông tin, tương tác với khách hàng B2B và mở rộng mạng lưới giao thương. Hoàn toàn miễn phí.",
+    claimDesc:
+      "Nhận quyền quản lý ngay hôm nay để cập nhật thông tin, tương tác với khách hàng B2B và mở rộng mạng lưới giao thương. Hoàn toàn miễn phí.",
     claimBtn: "Nhận quyền quản lý",
   },
   explore: {
     metaTitle: "Khám phá doanh nghiệp trên danh bạ - BizConnect.One",
-    metaDesc: "Danh bạ 2D doanh nghiệp toàn cầu - lọc theo quốc gia, ngành nghề, tìm kiếm nhanh và theo dõi các doanh nghiệp phù hợp với bạn.",
+    metaDesc:
+      "Danh bạ 2D doanh nghiệp toàn cầu - lọc theo quốc gia, ngành nghề, tìm kiếm nhanh và theo dõi các doanh nghiệp phù hợp với bạn.",
     schemaTitle: "Khám phá danh bạ doanh nghiệp toàn cầu - BizConnect.One",
-    schemaDesc: "Khám phá danh bạ hơn 100,000+ doanh nghiệp trên toàn cầu. Lọc nhanh theo quốc gia, ngành nghề để tìm kiếm đối tác B2B phù hợp nhất.",
-    intro: "Khám phá danh bạ hơn 100,000+ doanh nghiệp trên toàn cầu. Lọc nhanh theo quốc gia, ngành nghề để tìm kiếm đối tác B2B phù hợp nhất trên hệ sinh thái BizConnect.One.",
+    schemaDesc:
+      "Khám phá danh bạ hơn 100,000+ doanh nghiệp trên toàn cầu. Lọc nhanh theo quốc gia, ngành nghề để tìm kiếm đối tác B2B phù hợp nhất.",
+    intro:
+      "Khám phá danh bạ hơn 100,000+ doanh nghiệp trên toàn cầu. Lọc nhanh theo quốc gia, ngành nghề để tìm kiếm đối tác B2B phù hợp nhất trên hệ sinh thái BizConnect.One.",
     noResult: "Không tìm thấy doanh nghiệp nào phù hợp với tiêu chí lọc.",
     loadMoreBtn: "Tải thêm",
   },

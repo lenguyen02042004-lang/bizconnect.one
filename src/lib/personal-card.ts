@@ -26,7 +26,7 @@ export function slugifyProfile(name: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 60);
-  
+
   // Use a numeric suffix for cleaner looking URLs (e.g. 5 random digits)
   const suffix = Math.floor(10000 + Math.random() * 90000).toString();
   return `${base || "card"}-${suffix}`;

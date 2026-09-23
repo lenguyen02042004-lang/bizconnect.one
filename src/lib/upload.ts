@@ -20,7 +20,7 @@ export async function uploadPublicFile(
         useWebWorker: true,
         fileType: "image/webp" as string,
       };
-      
+
       const compressedBlob = await imageCompression(file, options);
       const newName = file.name.replace(/\.[^/.]+$/, ".webp");
       fileToUpload = new File([compressedBlob], newName, {

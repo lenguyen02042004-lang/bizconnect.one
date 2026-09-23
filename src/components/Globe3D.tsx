@@ -14,10 +14,29 @@ export function Globe3D({ onSelect, businesses = [] }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const globeRef = useRef<any>(null);
   const [GlobeComp, setGlobeComp] = useState<any>(null);
+  const [webglAvailable, setWebglAvailable] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [size, setSize] = useState({ w: 800, h: 600 });
 
   useEffect(() => {
-    import("react-globe.gl").then((mod) => setGlobeComp(() => mod.default));
+    try {
+      const canvas = document.createElement("canvas");
+      const available = Boolean(
+        canvas.getContext("webgl") || canvas.getContext("experimental-webgl"),
+      );
+      setWebglAvailable(available);
+      if (!available) return;
+    } catch {
+      setWebglAvailable(false);
+      return;
+    }
+
+    import("react-globe.gl")
+      .then((mod) => setGlobeComp(() => mod.default))
+      .catch((error) => {
+        console.warn("[Globe3D] WebGL globe unavailable:", error);
+        setLoadFailed(true);
+      });
   }, []);
 
   useEffect(() => {
@@ -56,7 +75,7 @@ export function Globe3D({ onSelect, businesses = [] }: Props) {
 
   return (
     <div ref={containerRef} className="w-full h-full relative">
-      {GlobeComp && (
+      {GlobeComp && webglAvailable && !loadFailed && (
         <GlobeComp
           ref={globeRef}
           width={size.w}
@@ -79,9 +98,9 @@ export function Globe3D({ onSelect, businesses = [] }: Props) {
           enablePointerInteraction
         />
       )}
-      {!GlobeComp && (
+      {(!GlobeComp || !webglAvailable || loadFailed) && (
         <div className="w-full h-full flex items-center justify-center text-white/60">
-          {t("home.loadingGlobe")}
+          {t("home.globeUnavailable", "Interactive globe unavailable")}
         </div>
       )}
     </div>

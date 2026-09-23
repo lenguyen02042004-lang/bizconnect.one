@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export function PlatformContactsSection({ listFn, markReadFn }: { listFn: any, markReadFn: any }) {
+export function PlatformContactsSection({ listFn, markReadFn }: { listFn: any; markReadFn: any }) {
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
@@ -22,7 +22,7 @@ export function PlatformContactsSection({ listFn, markReadFn }: { listFn: any, m
     },
     onError: (e: any) => {
       toast.error(e.message ?? "Lỗi khi cập nhật");
-    }
+    },
   });
 
   const contacts = data?.contacts || [];
@@ -48,11 +48,11 @@ export function PlatformContactsSection({ listFn, markReadFn }: { listFn: any, m
         ) : (
           <div className="space-y-4">
             {contacts.map((c: any) => (
-              <div 
-                key={c.id} 
+              <div
+                key={c.id}
                 className={`p-5 rounded-xl border transition-all ${
-                  c.is_read 
-                    ? "bg-muted/20 border-border opacity-70" 
+                  c.is_read
+                    ? "bg-muted/20 border-border opacity-70"
                     : "bg-background border-primary/20 shadow-sm"
                 }`}
               >
@@ -67,7 +67,12 @@ export function PlatformContactsSection({ listFn, markReadFn }: { listFn: any, m
                       )}
                     </div>
                     <div className="text-sm text-muted-foreground flex flex-wrap gap-x-4 gap-y-1">
-                      <span>Email: <a href={`mailto:${c.email}`} className="text-primary hover:underline">{c.email}</a></span>
+                      <span>
+                        Email:{" "}
+                        <a href={`mailto:${c.email}`} className="text-primary hover:underline">
+                          {c.email}
+                        </a>
+                      </span>
                       {c.phone && <span>SĐT: {c.phone}</span>}
                     </div>
                     <div className="text-xs text-muted-foreground mt-1">
@@ -75,9 +80,9 @@ export function PlatformContactsSection({ listFn, markReadFn }: { listFn: any, m
                     </div>
                   </div>
                   {!c.is_read && (
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => markMutation.mutate(c.id)}
                       disabled={markMutation.isPending}
                       className="shrink-0"
@@ -87,7 +92,7 @@ export function PlatformContactsSection({ listFn, markReadFn }: { listFn: any, m
                     </Button>
                   )}
                 </div>
-                
+
                 <div className="mt-4 p-4 bg-muted/30 rounded-lg text-sm whitespace-pre-wrap leading-relaxed border border-border/50">
                   {c.message}
                 </div>

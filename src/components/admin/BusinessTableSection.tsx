@@ -114,27 +114,28 @@ export function BusinessTableSection({
           {totalPages > 1 && (
             <div className="flex items-center justify-between p-3 border-t border-border bg-muted/20">
               <span className="text-xs text-muted-foreground">
-                Đang hiển thị {((page - 1) * pageSize) + 1} - {Math.min(page * pageSize, filtered.length)} trên tổng {filtered.length}
+                Đang hiển thị {(page - 1) * pageSize + 1} -{" "}
+                {Math.min(page * pageSize, filtered.length)} trên tổng {filtered.length}
               </span>
               <div className="flex gap-1">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   className="h-7 px-2"
-                  disabled={page <= 1} 
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page <= 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
                 >
                   <ChevronLeft className="w-3 h-3" />
                 </Button>
                 <span className="text-xs font-medium px-2 py-1">
                   Trang {page} / {totalPages}
                 </span>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   className="h-7 px-2"
-                  disabled={page >= totalPages} 
-                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={page >= totalPages}
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 >
                   <ChevronRight className="w-3 h-3" />
                 </Button>

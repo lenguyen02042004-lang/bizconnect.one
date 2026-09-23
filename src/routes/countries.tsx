@@ -44,32 +44,30 @@ function CountriesPage() {
     if (!search.trim()) return countries;
     const lower = search.toLowerCase();
     return countries.filter(
-      (c) => c.name.toLowerCase().includes(lower) || c.code.toLowerCase().includes(lower)
+      (c) => c.name.toLowerCase().includes(lower) || c.code.toLowerCase().includes(lower),
     );
   }, [countries, search]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-
       {/* Hero Section */}
       <section className="relative pt-28 pb-20 overflow-hidden shrink-0 border-b border-border/40">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background" />
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-        
+
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6 ring-1 ring-primary/20">
             <Globe2 className="w-4 h-4" /> Danh bạ B2B Toàn cầu
           </div>
-          
+
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold tracking-tight text-foreground mb-6">
             Khám phá Đối tác <br className="hidden sm:block" />
-            <span className="text-primary">
-              Trên Toàn Thế Giới
-            </span>
+            <span className="text-primary">Trên Toàn Thế Giới</span>
           </h1>
-          
+
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-            Duyệt danh mục hàng ngàn doanh nghiệp theo từng quốc gia và khu vực. Chọn thị trường chiến lược để mở rộng mạng lưới kết nối của bạn.
+            Duyệt danh mục hàng ngàn doanh nghiệp theo từng quốc gia và khu vực. Chọn thị trường
+            chiến lược để mở rộng mạng lưới kết nối của bạn.
           </p>
 
           <div className="max-w-xl mx-auto relative group">
@@ -89,14 +87,15 @@ function CountriesPage() {
       {/* Main Content */}
       <main className="flex-1 py-12 pb-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
           {filteredCountries.length === 0 ? (
             <div className="text-center py-20">
               <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
                 <MapPin className="w-8 h-8 text-muted-foreground opacity-50" />
               </div>
               <h3 className="text-lg font-semibold mb-2">Không tìm thấy quốc gia nào</h3>
-              <p className="text-muted-foreground">Thử tìm kiếm với từ khóa khác (ví dụ: tên tiếng Anh hoặc mã quốc gia).</p>
+              <p className="text-muted-foreground">
+                Thử tìm kiếm với từ khóa khác (ví dụ: tên tiếng Anh hoặc mã quốc gia).
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 animate-fade-up">
@@ -125,7 +124,9 @@ function CountriesPage() {
                     {/* Country name + code */}
                     <div>
                       <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-[10px] font-bold text-primary/70 bg-primary/8 px-1.5 py-0.5 rounded font-mono tracking-widest">{c.code}</span>
+                        <span className="text-[10px] font-bold text-primary/70 bg-primary/8 px-1.5 py-0.5 rounded font-mono tracking-widest">
+                          {c.code}
+                        </span>
                       </div>
                       <h3 className="font-display font-bold text-base text-foreground group-hover:text-primary transition-colors">
                         {c.name}

@@ -66,7 +66,7 @@ function SignupPage() {
       },
     });
     setLoading(false);
-    
+
     if (error) {
       const msg = (error.message ?? "").toLowerCase();
       if (
@@ -79,7 +79,11 @@ function SignupPage() {
         toast.error("Email này đã có tài khoản.", {
           description: "Vui lòng chuyển sang đăng nhập.",
         });
-      } else if (msg.includes("rate limit") || msg.includes("over_email_send_rate_limit") || msg.includes("too many")) {
+      } else if (
+        msg.includes("rate limit") ||
+        msg.includes("over_email_send_rate_limit") ||
+        msg.includes("too many")
+      ) {
         toast.error("Quá nhiều yêu cầu. Vui lòng thử lại sau vài phút.");
       } else if (msg.includes("invalid") && msg.includes("email")) {
         toast.error("Địa chỉ email không hợp lệ.");
@@ -131,14 +135,20 @@ function SignupPage() {
             <form onSubmit={handleSignup} className="space-y-4">
               <div>
                 <Label htmlFor="name">
-                  {accountType === "business" ? "Tên người đại diện / Tên doanh nghiệp" : t("auth.fullName")}
+                  {accountType === "business"
+                    ? "Tên người đại diện / Tên doanh nghiệp"
+                    : t("auth.fullName")}
                 </Label>
                 <Input
                   id="name"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder={accountType === "business" ? "Nhập tên công ty hoặc tên của bạn" : t("auth.namePlaceholder")}
+                  placeholder={
+                    accountType === "business"
+                      ? "Nhập tên công ty hoặc tên của bạn"
+                      : t("auth.namePlaceholder")
+                  }
                 />
               </div>
               <div>
@@ -169,7 +179,9 @@ function SignupPage() {
                 <Alert className="bg-primary/5 border-primary/20">
                   <Info className="w-4 h-4 text-primary" />
                   <AlertDescription className="text-xs ml-2 text-primary/90">
-                    Ngay sau khi tạo tài khoản, bạn sẽ được hệ thống hướng dẫn khai báo <strong>Hồ sơ Doanh nghiệp</strong> chi tiết (ngành nghề, quốc gia, logo,...) ở màn hình Dashboard.
+                    Ngay sau khi tạo tài khoản, bạn sẽ được hệ thống hướng dẫn khai báo{" "}
+                    <strong>Hồ sơ Doanh nghiệp</strong> chi tiết (ngành nghề, quốc gia, logo,...) ở
+                    màn hình Dashboard.
                   </AlertDescription>
                 </Alert>
               )}

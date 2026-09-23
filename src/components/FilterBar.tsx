@@ -73,7 +73,9 @@ export function FilterBar({
             <SelectItem value="all">{t("common.allIndustries")}</SelectItem>
             {industries.map((i) => (
               <SelectItem key={i.slug} value={i.slug}>
-                <span className="truncate">{t(`industry.${i.slug}`, { defaultValue: i.name })}</span>
+                <span className="truncate">
+                  {t(`industry.${i.slug}`, { defaultValue: i.name })}
+                </span>
               </SelectItem>
             ))}
           </SelectContent>

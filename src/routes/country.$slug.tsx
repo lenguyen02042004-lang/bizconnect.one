@@ -34,19 +34,19 @@ export const Route = createFileRoute("/country/$slug")({
     const country = listRes.countries.find(
       (c) => c.code.toLowerCase() === key || c.name.toLowerCase().replace(/\s+/g, "-") === key,
     );
-    
+
     if (!country) throw notFound();
 
     const bizRes = await getExploreBusinesses({
-      data: { page: 1, limit: 20, country: country.code, industry: deps.industry, q: deps.q }
+      data: { page: 1, limit: 20, country: country.code, industry: deps.industry, q: deps.q },
     });
 
-    return { 
-      country, 
-      initialBusinesses: bizRes.businesses, 
+    return {
+      country,
+      initialBusinesses: bizRes.businesses,
       totalCount: bizRes.total,
-      industries: listRes.industries, 
-      countries: listRes.countries 
+      industries: listRes.industries,
+      countries: listRes.countries,
     };
   },
   head: ({ loaderData }) => {
@@ -211,11 +211,14 @@ function CountryPage() {
                 <Input
                   placeholder="Tìm kiếm..."
                   value={search}
-                  onChange={(e) => handleFilter('q', e.target.value)}
+                  onChange={(e) => handleFilter("q", e.target.value)}
                   className="pl-9 bg-background/70 border-border/60"
                 />
               </div>
-              <Select value={industry} onValueChange={(v) => handleFilter('industry', v === 'all' ? '' : v)}>
+              <Select
+                value={industry}
+                onValueChange={(v) => handleFilter("industry", v === "all" ? "" : v)}
+              >
                 <SelectTrigger className="sm:w-[250px] bg-background/70">
                   <SelectValue placeholder="Tất cả ngành nghề" />
                 </SelectTrigger>

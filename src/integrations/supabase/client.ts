@@ -34,6 +34,7 @@ let _supabase: ReturnType<typeof createSupabaseClient> | undefined;
 // Graceful no-op auth stub returned when Supabase is not configured
 const _noopAuth = {
   getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+  getUser: () => Promise.resolve({ data: { user: null }, error: null }),
   onAuthStateChange: (_evt: unknown, _cb: unknown) => ({
     data: { subscription: { unsubscribe: () => {} } },
   }),

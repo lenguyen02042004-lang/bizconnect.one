@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 // Initialize Supabase Client
 export const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
 );
 
 /**
@@ -97,7 +97,7 @@ export async function setupIndustry(industryName) {
     .select("*")
     .eq("slug", slug)
     .single();
-  
+
   if (existing) return existing.id;
 
   const { data: newInd, error: insErr } = await supabase
@@ -105,7 +105,7 @@ export async function setupIndustry(industryName) {
     .insert([{ name: industryName, slug: slug, icon: "Factory" }])
     .select()
     .single();
-    
+
   if (insErr) throw insErr;
   return newInd.id;
 }

@@ -33,14 +33,15 @@ export function PaymentReviewSection() {
   });
 
   const payments = query.data?.payments ?? [];
-  
+
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 10;
-  
+
   const filtered = payments.filter((p: any) => {
     const q = search.toLowerCase();
-    const matchesSearch = !q || 
+    const matchesSearch =
+      !q ||
       (p.receipt_url && p.receipt_url.toLowerCase().includes(q)) ||
       (p.provider_payment_id && p.provider_payment_id.toLowerCase().includes(q)) ||
       (p.businesses?.name && p.businesses.name.toLowerCase().includes(q)) ||
@@ -69,7 +70,7 @@ export function PaymentReviewSection() {
             Bao gồm thanh toán tự động (sePay) và thủ công.
           </p>
         </div>
-        
+
         <div className="relative">
           <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -112,15 +113,19 @@ export function PaymentReviewSection() {
                     {p.provider}
                   </td>
                   <td className="p-2 font-mono text-[10px]">
-                    {p.user_id?.slice(0, 8)}…<br/>
-                    <span className="font-sans text-xs font-medium text-foreground">{p.businesses?.name || "—"}</span>
+                    {p.user_id?.slice(0, 8)}…<br />
+                    <span className="font-sans text-xs font-medium text-foreground">
+                      {p.businesses?.name || "—"}
+                    </span>
                   </td>
                   <td className="p-2">
                     <span className="px-2 py-0.5 rounded bg-primary/10 text-primary font-medium">
                       {SUB_TYPE_LABELS[p.type] ?? p.type ?? "?"}
                     </span>
                   </td>
-                  <td className="p-2 font-mono text-[11px] whitespace-nowrap">{Number(p.amount).toLocaleString()} {p.currency}</td>
+                  <td className="p-2 font-mono text-[11px] whitespace-nowrap">
+                    {Number(p.amount).toLocaleString()} {p.currency}
+                  </td>
                   <td className="p-2">{new Date(p.created_at).toLocaleDateString("vi-VN")}</td>
                   <td className="p-2">
                     {p.receipt_url || p.provider_payment_id ? (
@@ -141,14 +146,14 @@ export function PaymentReviewSection() {
                       className={`px-2 py-1 rounded-full text-[10px] font-bold ${
                         p.status === "pending"
                           ? "bg-yellow-500/20 text-yellow-600"
-                          : (p.status === "verified" || p.status === "completed")
+                          : p.status === "verified" || p.status === "completed"
                             ? "bg-green-500/20 text-green-600"
                             : "bg-red-500/20 text-red-600"
                       }`}
                     >
                       {p.status === "pending"
                         ? "⏳ CHỜ DUYỆT"
-                        : (p.status === "verified" || p.status === "completed")
+                        : p.status === "verified" || p.status === "completed"
                           ? "✅ HOÀN TẤT"
                           : "❌ TỪ CHỐI"}
                     </span>
@@ -199,31 +204,32 @@ export function PaymentReviewSection() {
               )}
             </tbody>
           </table>
-          
+
           {totalPages > 1 && (
             <div className="flex items-center justify-between p-3 border-t border-border bg-muted/20">
               <span className="text-xs text-muted-foreground">
-                Đang hiển thị {((page - 1) * pageSize) + 1} - {Math.min(page * pageSize, filtered.length)} trên tổng {filtered.length}
+                Đang hiển thị {(page - 1) * pageSize + 1} -{" "}
+                {Math.min(page * pageSize, filtered.length)} trên tổng {filtered.length}
               </span>
               <div className="flex gap-1">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   className="h-7 px-2"
-                  disabled={page <= 1} 
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page <= 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
                 >
                   <ChevronLeft className="w-3 h-3" />
                 </Button>
                 <span className="text-xs font-medium px-2 py-1">
                   Trang {page} / {totalPages}
                 </span>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   className="h-7 px-2"
-                  disabled={page >= totalPages} 
-                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={page >= totalPages}
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 >
                   <ChevronRight className="w-3 h-3" />
                 </Button>

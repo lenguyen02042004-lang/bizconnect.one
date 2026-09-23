@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,7 +22,12 @@ interface ClaimBusinessDialogProps {
   onClose: () => void;
 }
 
-export function ClaimBusinessDialog({ businessId, businessName, isOpen, onClose }: ClaimBusinessDialogProps) {
+export function ClaimBusinessDialog({
+  businessId,
+  businessName,
+  isOpen,
+  onClose,
+}: ClaimBusinessDialogProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -29,14 +40,14 @@ export function ClaimBusinessDialog({ businessId, businessName, isOpen, onClose 
       navigate({ to: "/login" });
       return;
     }
-    
+
     if (!proofText.trim()) {
       toast.error("Vui lòng cung cấp thông tin chứng minh.");
       return;
     }
 
     setLoading(true);
-    
+
     // Check if user already has a pending claim for this business
     const { data: existingClaim } = await supabase
       .from("business_claims")
@@ -45,7 +56,7 @@ export function ClaimBusinessDialog({ businessId, businessName, isOpen, onClose 
       .eq("user_id", user.id)
       .eq("status", "pending")
       .maybeSingle();
-      
+
     if (existingClaim) {
       setLoading(false);
       toast.error("Bạn đã gửi yêu cầu cho doanh nghiệp này. Vui lòng chờ admin phê duyệt.");
@@ -65,7 +76,9 @@ export function ClaimBusinessDialog({ businessId, businessName, isOpen, onClose 
       console.error(error);
       toast.error("Gửi yêu cầu thất bại. Vui lòng thử lại sau.");
     } else {
-      toast.success("Yêu cầu nhận quyền quản lý đã được gửi thành công! Admin sẽ kiểm tra và phê duyệt sớm nhất.");
+      toast.success(
+        "Yêu cầu nhận quyền quản lý đã được gửi thành công! Admin sẽ kiểm tra và phê duyệt sớm nhất.",
+      );
       onClose();
       setProofText("");
     }
@@ -100,7 +113,11 @@ export function ClaimBusinessDialog({ businessId, businessName, isOpen, onClose 
             <Button type="button" variant="outline" onClick={onClose}>
               Hủy
             </Button>
-            <Button type="submit" disabled={loading} className="bg-primary text-primary-foreground hover:bg-primary/90">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
               {loading ? "Đang gửi..." : "Gửi yêu cầu"}
             </Button>
           </div>

@@ -1,12 +1,6 @@
 import "dotenv/config";
 import { chromium } from "playwright";
-import { 
-  supabase, 
-  getCountryCode, 
-  slugify, 
-  setupSystemAccount, 
-  setupIndustry 
-} from "./utils.mjs";
+import { supabase, getCountryCode, slugify, setupSystemAccount, setupIndustry } from "./utils.mjs";
 
 (async () => {
   try {

@@ -1,85 +1,121 @@
-// @ts-nocheck
+// @ts-ignore
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+// @ts-ignore
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
-const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-const supabaseServiceRole = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-// Optional: SEPAY_API_KEY if we want to verify webhook signature, but here we just process.
-// Ideally, check some auth headers if configured in SePay.
+declare const Deno: { env: { get(name: string): string | undefined } };
 
-const supabase = createClient(supabaseUrl, supabaseServiceRole);
+type SePayPayload = {
+  id: number;
+  accountNumber?: string;
+  content: string;
+  transferType: "in" | "out";
+  transferAmount: number;
+};
 
-serve(async (req: Request) => {
-  if (req.method !== "POST") {
-    return new Response("Method not allowed", { status: 405 });
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL") ?? "",
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+);
+
+function json(data: Record<string, unknown>, status = 200): Response {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { "content-type": "application/json" },
+  });
+}
+
+function equalStrings(left: string, right: string): boolean {
+  if (left.length !== right.length) return false;
+  let result = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    result |= left.charCodeAt(index) ^ right.charCodeAt(index);
+  }
+  return result === 0;
+}
+
+async function hmacHex(secret: string, value: string): Promise<string> {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const signature = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(signature), (byte) => byte.toString(16).padStart(2, "0")).join(
+    "",
+  );
+}
+
+async function verifyRequest(req: Request, rawBody: string): Promise<boolean> {
+  const secret = Deno.env.get("SEPAY_WEBHOOK_SECRET") ?? Deno.env.get("SEPAY_SECRET");
+  const apiKey = Deno.env.get("SEPAY_API_KEY");
+  const authorization = req.headers.get("authorization") ?? "";
+
+  if (apiKey) return equalStrings(authorization, `Apikey ${apiKey}`);
+  if (!secret) return false;
+
+  const timestamp = Number(req.headers.get("x-sepay-timestamp"));
+  const signature = req.headers.get("x-sepay-signature") ?? "";
+  if (!Number.isInteger(timestamp) || Math.abs(Math.floor(Date.now() / 1000) - timestamp) > 300) {
+    return false;
   }
 
+  const expected = `sha256=${await hmacHex(secret, `${timestamp}.${rawBody}`)}`;
+  return equalStrings(signature, expected);
+}
+
+serve(async (req: Request) => {
+  if (req.method !== "POST") return json({ success: false, error: "Method not allowed" }, 405);
+
+  const rawBody = await req.text();
+  if (!(await verifyRequest(req, rawBody)))
+    return json({ success: false, error: "Unauthorized" }, 401);
+
   try {
-    const payload = await req.json();
-    
-    // SePay Webhook payload format
-    // { gateway: "TPBank", transferAmount: 150000, referenceCode: "MB...123", content: "BIZC b2b_block_500 ...", ... }
-    const content = (payload.content || "").toUpperCase();
-    const amount = payload.transferAmount || 0;
-    const ref = payload.referenceCode;
-
-    if (!ref) {
-      return new Response(JSON.stringify({ error: "No reference code" }), { status: 400 });
+    const payload = JSON.parse(rawBody) as Partial<SePayPayload>;
+    if (
+      !Number.isInteger(payload.id) ||
+      typeof payload.content !== "string" ||
+      payload.transferType !== "in" ||
+      typeof payload.transferAmount !== "number" ||
+      payload.transferAmount <= 0
+    ) {
+      return json({ success: false, error: "Invalid payload" }, 400);
     }
 
-    // Parse BIZC {PLAN_ID} {USER_SHORT_ID} [BIZ_SHORT_ID]
-    // Example 1: BIZC MEMBERSHIP 550E8400
-    // Example 2: BIZC ICON_PREMIUM 550E8400 AABBCCDD
-    // Example 3: BIZC B2B_BLOCK_500 550E8400
-    
-    // We strictly match 8 characters for user ID and optional 8 characters for biz ID.
+    const content = payload.content.toUpperCase();
     const match = content.match(/BIZC\s+([A-Z0-9_]+)\s+([A-Z0-9]{8})(?:\s+([A-Z0-9]{8})\b)?/i);
-    
-    if (!match) {
-      console.log("Ignoring non-bizconnect transfer:", content);
-      return new Response(JSON.stringify({ success: true, ignored: true, reason: "Not a BIZC transaction" }), { status: 200 });
-    }
+    if (!match) return json({ success: true });
 
-    let planId = match[1].toLowerCase(); // e.g. b2b_block_500, cba, b2b, ico
-    
-    // Map short codes back to DB plan IDs (backward compatibility included)
+    let planId = match[1].toLowerCase();
     if (planId === "cba" || planId === "contactblockaddon") planId = "contact_block_addon";
     if (planId === "b2b" || planId === "b2bblock500") planId = "b2b_block_500";
     if (planId === "ico" || planId === "iconpremium") planId = "icon_premium";
 
-    const shortUserId = match[2].toLowerCase(); // 8 chars
-    const shortBizId = match[3] ? match[3].toLowerCase() : null; // 8 chars
-
-    console.log(`Processing SePay: Plan=${planId}, User=${shortUserId}, Biz=${shortBizId}, Ref=${ref}, Amount=${amount}`);
-
-    // Optionally check if amount is sufficient (e.g. >= 150000)
-    // Could vary by plan. Assuming all plans are 150000 currently.
-    if (amount < 150000) {
-      console.log("Amount too low:", amount);
-      return new Response(JSON.stringify({ success: true, ignored: true, reason: "amount < 150000" }), { status: 200 });
+    const configuredAccount = Deno.env.get("SEPAY_ACCOUNT_NUMBER");
+    if (configuredAccount && payload.accountNumber !== configuredAccount) {
+      return json({ success: false, error: "Unexpected account" }, 400);
     }
 
-    // Call RPC
-    const { data, error } = await supabase.rpc("process_sepay_payment", {
-      p_short_user_id: shortUserId,
-      p_short_biz_id: shortBizId,
+    const { error } = await supabase.rpc("process_sepay_payment", {
+      p_short_user_id: match[2].toLowerCase(),
+      p_short_biz_id: match[3]?.toLowerCase() ?? null,
       p_plan_id: planId,
-      p_amount: amount,
-      p_ref: ref,
-      p_raw_content: content
+      p_amount: payload.transferAmount,
+      p_ref: String(payload.id),
+      p_raw_content: rawBody,
     });
 
     if (error) {
-      console.error("RPC Error:", error);
-      return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+      console.error("SePay payment processing failed:", error.message);
+      return json({ success: false, error: "Payment could not be processed" }, 422);
     }
 
-    console.log("Success:", data);
-    return new Response(JSON.stringify({ success: true, result: data }), {
-      headers: { "Content-Type": "application/json" },
-    });
-  } catch (err) {
-    console.error("Error processing webhook:", err);
-    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 });
+    return json({ success: true });
+  } catch (error) {
+    console.error("SePay webhook error:", error);
+    return json({ success: false, error: "Invalid request" }, 400);
   }
 });

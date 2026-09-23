@@ -26,8 +26,10 @@ export const Route = createFileRoute("/explore")({
   }),
   loader: async ({ deps }) => {
     const [bizRes, listRes] = await Promise.all([
-      getExploreBusinesses({ data: { page: 1, limit: 20, country: deps.country, industry: deps.industry, q: deps.q } }),
-      getGlobalLists()
+      getExploreBusinesses({
+        data: { page: 1, limit: 20, country: deps.country, industry: deps.industry, q: deps.q },
+      }),
+      getGlobalLists(),
     ]);
     return {
       initialBusinesses: bizRes.businesses,
@@ -50,14 +52,12 @@ export const Route = createFileRoute("/explore")({
         { title: i18n.t("explore.metaTitle") },
         {
           name: "description",
-          content:
-            i18n.t("explore.metaDesc"),
+          content: i18n.t("explore.metaDesc"),
         },
         { property: "og:title", content: i18n.t("explore.metaTitle") },
         {
           property: "og:description",
-          content:
-            i18n.t("explore.metaDesc"),
+          content: i18n.t("explore.metaDesc"),
         },
         { property: "og:url", content: "https://bizconnect.one/explore" },
       ],
@@ -70,7 +70,12 @@ export const Route = createFileRoute("/explore")({
 function ExplorePage() {
   const sp = Route.useSearch();
   const navigate = Route.useNavigate();
-  const { initialBusinesses, totalCount, countries: dbCountries, industries: dbIndustries } = Route.useLoaderData();
+  const {
+    initialBusinesses,
+    totalCount,
+    countries: dbCountries,
+    industries: dbIndustries,
+  } = Route.useLoaderData();
   const { t } = useTranslation();
 
   const country = sp.country ?? "all";
@@ -130,15 +135,13 @@ function ExplorePage() {
                 {t("nav.explore")}
               </h1>
               {/* Answer-First Summary for AEO / SEO */}
-              <p className="sr-only">
-                {t("explore.intro")}
-              </p>
+              <p className="sr-only">{t("explore.intro")}</p>
               <p className="text-muted-foreground text-sm">
                 {totalCount} {t("home.matchedBusinesses")}
               </p>
             </div>
           </div>
-          
+
           <div className="max-w-4xl mx-auto md:mx-0">
             <FilterBar
               countries={dbCountries as any}
@@ -146,9 +149,9 @@ function ExplorePage() {
               country={country}
               industry={industry}
               search={search}
-              onCountry={(v) => handleFilter('country', v === 'all' ? '' : v)}
-              onIndustry={(v) => handleFilter('industry', v === 'all' ? '' : v)}
-              onSearch={(v) => handleFilter('q', v)}
+              onCountry={(v) => handleFilter("country", v === "all" ? "" : v)}
+              onIndustry={(v) => handleFilter("industry", v === "all" ? "" : v)}
+              onSearch={(v) => handleFilter("q", v)}
             />
           </div>
         </div>

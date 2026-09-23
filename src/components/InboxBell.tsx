@@ -27,16 +27,21 @@ export function InboxBell() {
       if (cancelled) return;
       const ids = (bizes ?? []).map((b) => b.id);
       setBizIds(ids);
-      if (ids.length === 0) {
-        setUnread(0);
-        return;
-      }
-      const { count } = await supabase
-        .from("connect_messages")
-        .select("*", { count: "exact", head: true })
-        .in("to_business_id", ids)
-        .is("read_at", null);
-      if (!cancelled) setUnread(count ?? 0);
+      const [{ count: businessUnread }, { count: personalUnread }] = await Promise.all([
+        ids.length
+          ? supabase
+              .from("connect_messages")
+              .select("*", { count: "exact", head: true })
+              .in("to_business_id", ids)
+              .is("read_at", null)
+          : Promise.resolve({ count: 0 }),
+        supabase
+          .from("connect_messages")
+          .select("*", { count: "exact", head: true })
+          .eq("to_user_id", user.id)
+          .is("read_at", null),
+      ]);
+      if (!cancelled) setUnread((businessUnread ?? 0) + (personalUnread ?? 0));
     })();
     return () => {
       cancelled = true;
@@ -45,7 +50,7 @@ export function InboxBell() {
 
   // Realtime subscription
   useEffect(() => {
-    if (!user || bizIds.length === 0) return;
+    if (!user) return;
     const idSet = new Set(bizIds);
     const channel = supabase
       .channel(`inbox-${user.id}`)
@@ -54,11 +59,13 @@ export function InboxBell() {
         { event: "INSERT", schema: "public", table: "connect_messages" },
         (payload) => {
           const row = payload.new as {
-            to_business_id: string;
+            to_business_id?: string;
+            to_user_id?: string;
             subject?: string;
             from_business_id?: string;
           };
-          if (!idSet.has(row.to_business_id)) return;
+          if (row.to_user_id !== user.id && !row.to_business_id) return;
+          if (row.to_business_id && !idSet.has(row.to_business_id)) return;
           setUnread((u) => u + 1);
           toast("📩 Lời ngỏ giao thương mới", {
             description: row.subject ?? "Bạn có yêu cầu kết nối mới.",
@@ -70,9 +77,14 @@ export function InboxBell() {
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "connect_messages" },
         (payload) => {
-          const row = payload.new as { to_business_id: string; read_at: string | null };
+          const row = payload.new as {
+            to_business_id?: string;
+            to_user_id?: string;
+            read_at: string | null;
+          };
           const old = payload.old as { read_at: string | null };
-          if (!idSet.has(row.to_business_id)) return;
+          if (row.to_user_id !== user.id && (!row.to_business_id || !idSet.has(row.to_business_id)))
+            return;
           // Transition from unread -> read: decrement
           if (!old.read_at && row.read_at) setUnread((u) => Math.max(0, u - 1));
         },

@@ -10,13 +10,15 @@ export const getPersonalBySlug = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(data.slug);
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      data.slug,
+    );
     let query = supabaseAdmin
       .from("personal_profiles")
       .select(
         "id, user_id, slug, full_name, job_title, company_name, phone, zalo, email, avatar_url, facebook_url, linkedin_url, is_public",
       );
-      
+
     if (isUuid) {
       query = query.eq("id", data.slug);
     } else {

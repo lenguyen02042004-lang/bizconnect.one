@@ -34,7 +34,7 @@ export function PrintableQRModal({ business, qrUrl, isOpen, onClose }: Printable
         console.error("Error sharing:", err);
       }
     }
-    
+
     if (!shared) {
       try {
         await navigator.clipboard.writeText(profileUrl);

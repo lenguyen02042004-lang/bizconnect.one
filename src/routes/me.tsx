@@ -16,7 +16,19 @@ import {
 import { SubscriptionWidget } from "@/components/SubscriptionWidget";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { Loader2, Save, Eye, Printer, Share2, Copy, Phone, Mail, MessageCircle, Facebook, Linkedin } from "lucide-react";
+import {
+  Loader2,
+  Save,
+  Eye,
+  Printer,
+  Share2,
+  Copy,
+  Phone,
+  Mail,
+  MessageCircle,
+  Facebook,
+  Linkedin,
+} from "lucide-react";
 
 export const Route = createFileRoute("/me")({
   component: MePage,
@@ -58,7 +70,7 @@ function MePage() {
   const { t } = useTranslation();
 
   const publicUrl =
-    profile && typeof window !== "undefined" ? `https://bizconnect.one/p/${profile.id}` : "";
+    profile && typeof window !== "undefined" ? `https://bizconnect.one/p/${profile.slug}` : "";
 
   useEffect(() => {
     (async () => {
@@ -141,16 +153,16 @@ function MePage() {
     if (navigator.share) {
       try {
         await navigator.share({ title: form.full_name, url: publicUrl });
-      } catch {}
+      } catch (error) {
+        if (error instanceof Error && error.name !== "AbortError") {
+          console.warn("[PersonalCard] share failed:", error);
+        }
+      }
     } else copy();
   };
 
   return (
-    <DashboardShell
-      title={t("me.title")}
-      subtitle={t("me.subtitle")}
-      maxWidth="5xl"
-    >
+    <DashboardShell title={t("me.title")} subtitle={t("me.subtitle")} maxWidth="5xl">
       {loading ? (
         <div className="grid lg:grid-cols-[1fr_360px] gap-8 items-start animate-pulse">
           <div className="rounded-2xl border border-border bg-card p-6 space-y-6">
@@ -329,7 +341,11 @@ function MePage() {
                 disabled={saving || loading}
                 className="gap-1.5 h-11 px-6 bg-gradient-vivid text-white border-0 shadow-pink text-base"
               >
-                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}{" "}
+                {saving ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}{" "}
                 {t("me.save")}
               </Button>
             </div>
