@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -36,7 +36,7 @@ export type BankInfo = {
 export function vietQrUrl(amount: number, content: string, bankInfo: BankInfo) {
   const vnd = amount * bankInfo.vndRate;
   const cleanAccount = bankInfo.account.replace(/\s+/g, "");
-  return `https://img.vietqr.io/image/${bankInfo.bin}-${cleanAccount}-compact2.png?amount=${vnd}&addInfo=${encodeURIComponent(content)}&accountName=${encodeURIComponent(bankInfo.owner)}`;
+  return `https://img.vietqr.io/image/${encodeURIComponent(bankInfo.bin)}-${encodeURIComponent(cleanAccount)}-compact2.png?amount=${vnd}&addInfo=${encodeURIComponent(content)}&accountName=${encodeURIComponent(bankInfo.owner)}`;
 }
 
 interface PaymentModalProps {
@@ -66,6 +66,15 @@ export function PaymentModal({
   const [qrLoaded, setQrLoaded] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (open) {
+      setReceiptUrl(null);
+      setQrLoaded(false);
+      setIsUploading(false);
+      setSubmitting(false);
+    }
+  }, [open, target]);
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -94,7 +103,7 @@ export function PaymentModal({
         p_plan_id: planId,
         p_amount: target.price,
         p_receipt_url: receiptUrl ?? "",
-        p_business_id: bizId ?? undefined,
+        p_business_id: bizId ?? null,
       });
 
       if (rpcErr) throw rpcErr;

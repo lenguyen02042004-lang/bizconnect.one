@@ -1,12 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Check, Sparkles, Crown, Plus, QrCode, Copy, Upload, Loader2, X } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { Check, Sparkles, Crown, Plus } from "lucide-react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PaymentModal, PaymentTarget } from "@/components/PaymentModal";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
 

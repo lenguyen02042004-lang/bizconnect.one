@@ -140,7 +140,7 @@ function BusinessDetailPage() {
         }
       }
     });
-  }, [search.invite]);
+  }, [search.invite, navigate, router]);
 
   const processInvite = async (inviteId: string) => {
     try {
@@ -149,9 +149,10 @@ function BusinessDetailPage() {
       
       // Clean up URL
       navigate({ to: "/business/$slug", params: { slug: business.slug }, search: { invite: undefined }, replace: true });
-      setShowWelcomeOffer(true);
+      
       // Reload router to fetch updated business data (claimed_at etc)
-      router.invalidate();
+      await router.invalidate();
+      setShowWelcomeOffer(true);
     } catch (err: any) {
       toast.error(err.message || "Failed to process invite link");
       navigate({ to: "/business/$slug", params: { slug: business.slug }, search: { invite: undefined }, replace: true });
@@ -164,7 +165,8 @@ function BusinessDetailPage() {
       const { data: inviteId, error } = await supabase.rpc('create_business_invite' as any, { p_business_id: business.id });
       if (error) throw error;
       
-      const link = `https://bizconnect.one/business/${business.slug}?invite=${inviteId}`;
+      const baseUrl = window.location.origin;
+      const link = `${baseUrl}/business/${business.slug}?invite=${inviteId}`;
       await navigator.clipboard.writeText(link);
       toast.success("Đã copy link bàn giao vào bộ nhớ tạm!");
     } catch (err: any) {
