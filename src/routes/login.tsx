@@ -63,6 +63,8 @@ function LoginPage() {
       setLoading(false);
       toast.error(getAuthErrorMessage(error));
     } else {
+      const searchParams = new URLSearchParams(window.location.search);
+      const redirectTo = searchParams.get('redirectTo') || '/dashboard';
       // Determine account type to route correctly
       if (data.user) {
         const { data: profile } = await supabase
@@ -71,17 +73,14 @@ function LoginPage() {
           .eq("id", data.user.id)
           .single();
 
+        setLoading(false);
         if (profile) {
-          setLoading(false);
           toast.success(t("auth.loginSuccess"));
-          navigate({ to: "/dashboard" });
-        } else {
-          setLoading(false);
-          navigate({ to: "/dashboard" });
         }
+        navigate({ to: redirectTo as any });
       } else {
         setLoading(false);
-        navigate({ to: "/dashboard" });
+        navigate({ to: redirectTo as any });
       }
     }
   };

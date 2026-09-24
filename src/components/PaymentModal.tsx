@@ -60,35 +60,30 @@ export function PaymentModal({
 }: PaymentModalProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [isUploading, setIsUploading] = useState(false);
-  const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [qrLoaded, setQrLoaded] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [orderCode, setOrderCode] = useState<string | null>(null);
 
   useEffect(() => {
-    if (open) {
-      setReceiptUrl(null);
+    if (open && target && userId) {
       setQrLoaded(false);
-      setIsUploading(false);
       setSubmitting(false);
+      setOrderCode(null);
+      
+      const planId = target.subType ?? "membership";
+      supabase.rpc("create_payment_order", {
+        p_plan_id: planId,
+        p_amount: target.price,
+        p_business_id: bizId ?? undefined,
+      }).then(({ data, error }) => {
+        if (!error && data) {
+          setOrderCode(data);
+        } else {
+          toast.error(t("pricing.generalError"));
+        }
+      });
     }
-  }, [open, target]);
-
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setIsUploading(true);
-    try {
-      const url = await uploadPublicFile("receipts", file, userId);
-      setReceiptUrl(url);
-      toast.success(t("pricing.uploadSuccess"));
-    } catch {
-      toast.error(t("pricing.uploadError"));
-    } finally {
-      setIsUploading(false);
-    }
-  };
+  }, [open, target, userId, bizId, t]);
 
   const handleSubmit = async () => {
     if (!target) {
@@ -102,8 +97,8 @@ export function PaymentModal({
       const { error: rpcErr } = await supabase.rpc("submit_manual_payment", {
         p_plan_id: planId,
         p_amount: target.price,
-        p_receipt_url: receiptUrl ?? "",
-        p_business_id: bizId ?? null,
+        p_receipt_url: "",
+        p_business_id: bizId ?? undefined,
       });
 
       if (rpcErr) throw rpcErr;
@@ -122,30 +117,12 @@ export function PaymentModal({
     }
   };
 
-  const generatePaymentContent = () => {
-    if (!target || !userId) return "";
-    const rawPlan = target.subType ?? "membership";
-
-    const PLAN_SHORT_CODES: Record<string, string> = {
-      contact_block_addon: "CBA",
-      b2b_block_500: "B2B",
-      icon_premium: "ICO",
-    };
-
-    const planId =
-      PLAN_SHORT_CODES[rawPlan] || rawPlan.toUpperCase().replace(/_/g, "").substring(0, 5);
-    const shortUser = userId.substring(0, 8).toUpperCase();
-    const shortBiz = bizId ? bizId.substring(0, 8).toUpperCase() : "";
-
-    return `BIZC ${planId} ${shortUser} ${shortBiz}`.trim();
-  };
-
-  const paymentContent = generatePaymentContent();
-  const qrSrc = target ? vietQrUrl(target.price, paymentContent, bankInfo) : "";
+  const paymentContent = orderCode || "";
+  const qrSrc = target && orderCode ? vietQrUrl(target.price, paymentContent, bankInfo) : "";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg p-0 overflow-hidden rounded-3xl">
+      <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-3xl">
         <div className="bg-gradient-vivid p-6 text-white">
           <DialogHeader>
             <div className="flex items-center gap-2 mb-1">
@@ -196,51 +173,7 @@ export function PaymentModal({
             {t("pricing.transferNotice")}
           </div>
 
-          {/* Upload receipt */}
-          <div>
-            <Label className="text-sm font-semibold mb-2 block">
-              {t("pricing.uploadReceipt")}
-            </Label>
-            <div
-              className="border-2 border-dashed border-border rounded-xl p-4 text-center cursor-pointer hover:border-primary/50 transition-smooth"
-              onClick={() => fileRef.current?.click()}
-            >
-              {receiptUrl ? (
-                <div className="relative inline-block">
-                  <img
-                    src={receiptUrl}
-                    alt="Biên lai"
-                    className="h-24 object-contain rounded-lg mx-auto"
-                  />
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setReceiptUrl(null);
-                    }}
-                    className="absolute -top-2 -right-2 bg-destructive text-white rounded-full p-0.5"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              ) : isUploading ? (
-                <div className="py-4">
-                  <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto" />
-                </div>
-              ) : (
-                <div className="py-4 text-muted-foreground text-sm">
-                  <Upload className="w-6 h-6 mx-auto mb-2 opacity-50" />
-                  {t("pricing.clickToUpload")}
-                </div>
-              )}
-            </div>
-            <Input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleUpload}
-            />
-          </div>
+
 
           {/* Actions */}
           <div className="flex gap-3 pt-1">
@@ -255,7 +188,7 @@ export function PaymentModal({
             <Button
               className="flex-1 bg-gradient-vivid text-white border-0"
               onClick={handleSubmit}
-              disabled={submitting || isUploading}
+              disabled={submitting}
             >
               {submitting ? (
                 <>
@@ -293,7 +226,7 @@ function InfoRow({
       className={`rounded-lg px-3 py-1.5 flex items-center justify-between gap-2 ${highlight ? "bg-primary/10 border border-primary/20" : "bg-muted/40"}`}
     >
       <span className="text-muted-foreground text-xs flex-shrink-0">{label}</span>
-      <span className={`font-semibold text-right truncate ${highlight ? "text-primary" : ""}`}>
+      <span className={`font-semibold text-right break-all sm:break-words flex-1 ${highlight ? "text-primary" : ""}`}>
         {value}
       </span>
       {copyable && (
