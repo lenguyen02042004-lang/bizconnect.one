@@ -71,13 +71,14 @@ export function PaymentModal({
       setOrderCode(null);
       
       const planId = target.subType ?? "membership";
+      // @ts-expect-error Types not updated yet
       supabase.rpc("create_payment_order", {
         p_plan_id: planId,
         p_amount: target.price,
         p_business_id: bizId ?? undefined,
       }).then(({ data, error }) => {
         if (!error && data) {
-          setOrderCode(data);
+          setOrderCode(data as string);
         } else {
           toast.error(t("pricing.generalError"));
         }
