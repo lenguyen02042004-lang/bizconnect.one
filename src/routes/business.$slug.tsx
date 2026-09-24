@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/business/$slug")({
-  validateSearch: (search: Record<string, unknown>) => {
+  validateSearch: (search: Record<string, unknown>): { invite?: string } => {
     return {
       invite: search.invite as string | undefined,
     };
