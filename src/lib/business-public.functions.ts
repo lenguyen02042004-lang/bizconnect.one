@@ -66,6 +66,8 @@ export const getBusinessBySlug = createServerFn({ method: "GET" })
         views_count: biz.views_count ?? 0,
         icon_tier: biz.icon_tier as "standard" | "premium",
         is_claimed: biz.is_claimed ?? false,
+        claimed_at: (biz as any).claimed_at ?? null,
+        premium_until: (biz as any).premium_until ?? null,
         socials: Object.fromEntries((socials ?? []).map((s) => [s.platform, s.url])),
         gallery: (gallery ?? []).map((g) => g.image_url),
       },

@@ -1,15 +1,21 @@
-import { createFileRoute, notFound, useNavigate, redirect } from "@tanstack/react-router";
+import { createFileRoute, notFound, useNavigate, redirect, useRouter } from "@tanstack/react-router";
 import { BusinessCard } from "@/components/BusinessCard";
 import { useTranslation } from "react-i18next";
-
 import { getBusinessBySlug } from "@/lib/business-public.functions";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Info, Share2, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ClaimBusinessDialog } from "@/components/ClaimBusinessDialog";
-import { ShieldCheck, Info } from "lucide-react";
-import { useState } from "react";
+import { WelcomeOfferModal } from "@/components/WelcomeOfferModal";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/business/$slug")({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      invite: search.invite as string | undefined,
+    };
+  },
   component: BusinessDetailPage,
   loader: async ({ params }) => {
     const res = await getBusinessBySlug({ data: { slug: params.slug } });
@@ -23,6 +29,7 @@ export const Route = createFileRoute("/business/$slug")({
       throw redirect({
         to: "/business/$slug",
         params: { slug: res.business.slug },
+        search: { invite: undefined },
         replace: true,
       });
     }
@@ -100,9 +107,91 @@ export const Route = createFileRoute("/business/$slug")({
 
 function BusinessDetailPage() {
   const { business } = Route.useLoaderData();
+  const search = Route.useSearch();
   const navigate = useNavigate();
+  const router = useRouter();
   const { t } = useTranslation();
+  
   const [isClaimOpen, setIsClaimOpen] = useState(false);
+  const [showWelcomeOffer, setShowWelcomeOffer] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [generatingLink, setGeneratingLink] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      const uid = data.user?.id;
+      if (uid) {
+        setUserId(uid);
+        supabase.from("user_roles").select("role").eq("user_id", uid).eq("role", "admin").maybeSingle().then(({ data: roleData }) => {
+          setIsAdmin(!!roleData);
+        });
+      }
+
+      // Handle invite link
+      if (search.invite) {
+        if (!uid) {
+          // Not logged in -> Redirect to login with redirectTo current url
+          const currentUrl = window.location.pathname + window.location.search;
+          navigate({ to: "/login", search: { redirectTo: currentUrl } });
+        } else {
+          // Process invite
+          processInvite(search.invite);
+        }
+      }
+    });
+  }, [search.invite]);
+
+  const processInvite = async (inviteId: string) => {
+    try {
+      const { error } = await supabase.rpc('accept_business_invite' as any, { p_invite_id: inviteId });
+      if (error) throw error;
+      
+      // Clean up URL
+      navigate({ to: "/business/$slug", params: { slug: business.slug }, search: { invite: undefined }, replace: true });
+      setShowWelcomeOffer(true);
+      // Reload router to fetch updated business data (claimed_at etc)
+      router.invalidate();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to process invite link");
+      navigate({ to: "/business/$slug", params: { slug: business.slug }, search: { invite: undefined }, replace: true });
+    }
+  };
+
+  const generateInviteLink = async () => {
+    setGeneratingLink(true);
+    try {
+      const { data: inviteId, error } = await supabase.rpc('create_business_invite' as any, { p_business_id: business.id });
+      if (error) throw error;
+      
+      const link = `https://bizconnect.one/business/${business.slug}?invite=${inviteId}`;
+      await navigator.clipboard.writeText(link);
+      toast.success("Đã copy link bàn giao vào bộ nhớ tạm!");
+    } catch (err: any) {
+      toast.error("Lỗi tạo link bàn giao: " + err.message);
+    } finally {
+      setGeneratingLink(false);
+    }
+  };
+
+  // Logic Trial 30 days & Blur
+  const claimedAt = (business as any).claimed_at ? new Date((business as any).claimed_at) : null;
+  const premiumUntil = (business as any).premium_until ? new Date((business as any).premium_until) : null;
+  const now = new Date();
+  
+  let isTrialExpired = false;
+  let hasPremium = false;
+
+  if (premiumUntil && premiumUntil > now) {
+    hasPremium = true;
+  }
+  
+  if (claimedAt && !hasPremium) {
+    const trialEndsAt = new Date(claimedAt.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days
+    if (trialEndsAt < now) {
+      isTrialExpired = true;
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -122,9 +211,22 @@ function BusinessDetailPage() {
           >
             <ArrowLeft className="w-4 h-4" /> {t("businessCard.back")}
           </Button>
+
+          {isAdmin && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={generateInviteLink}
+              disabled={generatingLink}
+              className="gap-2 bg-background shadow-sm hover:bg-accent border-primary/20"
+            >
+              <Share2 className="w-4 h-4 text-primary" />
+              Tạo Link Bàn Giao
+            </Button>
+          )}
         </div>
 
-        {business.is_claimed === false && (
+        {business.is_claimed === false && !search.invite && (
           <div className="max-w-4xl mx-auto mb-6 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-start gap-3">
               <div className="mt-1 bg-amber-500/20 p-2 rounded-full">
@@ -148,7 +250,26 @@ function BusinessDetailPage() {
           </div>
         )}
 
-        <BusinessCard business={business as any} mode="inline" />
+        <div className="relative max-w-4xl mx-auto">
+          <div className={isTrialExpired ? "filter blur-md pointer-events-none opacity-50 transition-all duration-500" : ""}>
+            <BusinessCard business={business as any} mode="inline" />
+          </div>
+          
+          {isTrialExpired && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-background/40 rounded-3xl z-20">
+              <div className="bg-background border border-border shadow-xl rounded-2xl p-6 sm:p-8 max-w-md">
+                <div className="mx-auto bg-amber-100 dark:bg-amber-900/30 w-12 h-12 flex items-center justify-center rounded-full mb-4">
+                  <Info className="w-6 h-6 text-amber-600 dark:text-amber-500" />
+                </div>
+                <h3 className="text-xl font-bold mb-2">Hết hạn dùng thử 30 ngày</h3>
+                <p className="text-muted-foreground text-sm mb-6">
+                  Doanh nghiệp này đã hết hạn dùng thử miễn phí. Chủ doanh nghiệp vui lòng nâng cấp Gói Thành Viên để mở khóa hiển thị hồ sơ cho cộng đồng.
+                </p>
+                {/* Notice: A real owner would log in and go to dashboard to pay. For public visitors, they just see this. */}
+              </div>
+            </div>
+          )}
+        </div>
 
         <ClaimBusinessDialog
           businessId={business.id}
@@ -156,6 +277,15 @@ function BusinessDetailPage() {
           isOpen={isClaimOpen}
           onClose={() => setIsClaimOpen(false)}
         />
+
+        {userId && (
+          <WelcomeOfferModal
+            open={showWelcomeOffer}
+            onOpenChange={setShowWelcomeOffer}
+            bizId={business.id}
+            userId={userId}
+          />
+        )}
       </main>
     </div>
   );
