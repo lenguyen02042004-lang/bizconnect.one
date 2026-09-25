@@ -29,6 +29,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { getMyWallet, buyContactBlock, type WalletLimits } from "@/lib/connect";
+import { PaymentModal } from "@/components/PaymentModal";
 
 const BANK = {
   name: "TPBank (Tiên Phong Bank)",
@@ -464,7 +465,7 @@ function ContactsPage() {
         />
       )}
 
-      <Dialog
+      <PaymentModal
         open={showModal}
         onOpenChange={async (open) => {
           setShowModal(open);
@@ -474,60 +475,15 @@ function ContactsPage() {
             setWallet(newWallet);
           }
         }}
-      >
-        <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-3xl">
-          <div className="bg-gradient-vivid p-6 text-white text-center">
-            <DialogHeader>
-              <DialogTitle className="text-white text-xl flex justify-center items-center gap-2">
-                <QrCode className="w-5 h-5" /> Thanh toán gói mở rộng
-              </DialogTitle>
-              <DialogDescription className="text-white/90 text-sm mt-2">
-                Gói: <strong>Mở rộng 500 liên hệ</strong> - <strong>150.000 VNĐ</strong>
-              </DialogDescription>
-            </DialogHeader>
-          </div>
-          <div className="p-6">
-            <div className="flex flex-col items-center justify-center gap-4">
-              <div className="bg-white p-2 rounded-2xl border-2 border-primary/20 shadow-sm relative">
-                {!qrLoaded && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-white rounded-2xl">
-                    <Loader2 className="w-8 h-8 animate-spin text-primary/40" />
-                  </div>
-                )}
-                <img
-                  src={vietQrUrl(
-                    150000,
-                    `BIZC CBA ${userId.substring(0, 8).toUpperCase()}`,
-                    bankInfo,
-                  )}
-                  className={`w-56 h-56 object-contain rounded-xl ${qrLoaded ? "block" : "hidden"}`}
-                  onLoad={() => setQrLoaded(true)}
-                  onError={() => setQrLoaded(true)}
-                  alt="QR Code"
-                />
-              </div>
-              <div className="text-center space-y-1 text-sm text-muted-foreground">
-                <p>Quét mã bằng ứng dụng ngân hàng.</p>
-                <p>Hệ thống tự động cộng hạn mức ngay lập tức!</p>
-                <p className="text-xs text-primary font-medium">
-                  Sau khi chuyển khoản, đóng cửa sổ này để làm mới hạn mức.
-                </p>
-              </div>
-              <Button
-                variant="outline"
-                className="mt-2 w-full"
-                onClick={async () => {
-                  setShowModal(false);
-                  const newWallet = await getMyWallet();
-                  setWallet(newWallet);
-                }}
-              >
-                Đã chuyển khoản — Đóng & làm mới
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+        target={{
+          name: "Mở rộng 500 liên hệ",
+          price: 150000,
+          subType: "contact_block_addon",
+        }}
+        userId={userId}
+        bizId={null}
+        bankInfo={bankInfo}
+      />
     </DashboardShell>
   );
 }

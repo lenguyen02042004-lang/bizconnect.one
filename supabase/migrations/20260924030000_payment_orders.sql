@@ -14,10 +14,12 @@ CREATE TABLE IF NOT EXISTS public.payment_orders (
 ALTER TABLE public.payment_orders ENABLE ROW LEVEL SECURITY;
 
 -- Users can read their own orders
+DROP POLICY IF EXISTS "Users can read own orders" ON public.payment_orders;
 CREATE POLICY "Users can read own orders" ON public.payment_orders
     FOR SELECT USING (auth.uid() = user_id);
 
 -- 2. Function to generate a random 6-character code
+DROP FUNCTION IF EXISTS public.generate_order_code();
 CREATE OR REPLACE FUNCTION public.generate_order_code()
 RETURNS VARCHAR(6)
 LANGUAGE plpgsql
@@ -35,6 +37,7 @@ END;
 $$;
 
 -- 3. RPC to create a new payment order
+DROP FUNCTION IF EXISTS public.create_payment_order(TEXT, NUMERIC, UUID);
 CREATE OR REPLACE FUNCTION public.create_payment_order(
     p_plan_id TEXT,
     p_amount NUMERIC,

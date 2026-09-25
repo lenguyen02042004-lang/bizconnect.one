@@ -86,23 +86,18 @@ serve(async (req: Request) => {
     }
 
     const content = payload.content.toUpperCase();
-    const match = content.match(/BIZC\s+([A-Z0-9_]+)\s+([A-Z0-9]{8})(?:\s+([A-Z0-9]{8})\b)?/i);
+    const match = content.match(/\b([A-Z0-9]{6})\b/);
     if (!match) return json({ success: true });
 
-    let planId = match[1].toLowerCase();
-    if (planId === "cba" || planId === "contactblockaddon") planId = "contact_block_addon";
-    if (planId === "b2b" || planId === "b2bblock500") planId = "b2b_block_500";
-    if (planId === "ico" || planId === "iconpremium") planId = "icon_premium";
+    const orderCode = match[1];
 
     const configuredAccount = Deno.env.get("SEPAY_ACCOUNT_NUMBER");
     if (configuredAccount && payload.accountNumber !== configuredAccount) {
       return json({ success: false, error: "Unexpected account" }, 400);
     }
 
-    const { error } = await supabase.rpc("process_sepay_payment", {
-      p_short_user_id: match[2].toLowerCase(),
-      p_short_biz_id: match[3]?.toLowerCase() ?? null,
-      p_plan_id: planId,
+    const { error } = await supabase.rpc("process_payment_by_order_code", {
+      p_order_code: orderCode,
       p_amount: payload.transferAmount,
       p_ref: String(payload.id),
       p_raw_content: rawBody,

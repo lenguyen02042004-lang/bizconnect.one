@@ -14,16 +14,19 @@ CREATE TABLE IF NOT EXISTS public.business_invites (
 ALTER TABLE public.business_invites ENABLE ROW LEVEL SECURITY;
 
 -- Admins can manage invites
+DROP POLICY IF EXISTS "Admins can manage business_invites" ON public.business_invites;
 CREATE POLICY "Admins can manage business_invites" ON public.business_invites
   USING (
     EXISTS (SELECT 1 FROM public.user_roles WHERE user_roles.user_id = auth.uid() AND user_roles.role = 'admin')
   );
 
 -- Anyone can read unused invites to verify them before login
+DROP POLICY IF EXISTS "Anyone can read unused invites" ON public.business_invites;
 CREATE POLICY "Anyone can read unused invites" ON public.business_invites
   FOR SELECT USING (used_at IS NULL);
 
 -- 3. RPC to create invite
+DROP FUNCTION IF EXISTS public.create_business_invite(UUID);
 CREATE OR REPLACE FUNCTION public.create_business_invite(p_business_id UUID)
 RETURNS UUID
 LANGUAGE plpgsql
@@ -49,6 +52,7 @@ END;
 $$;
 
 -- 4. RPC to accept invite
+DROP FUNCTION IF EXISTS public.accept_business_invite(UUID);
 CREATE OR REPLACE FUNCTION public.accept_business_invite(p_invite_id UUID)
 RETURNS BOOLEAN
 LANGUAGE plpgsql
